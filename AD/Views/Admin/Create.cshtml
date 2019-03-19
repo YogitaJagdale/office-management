@@ -1,0 +1,594 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Admin
+@{
+    ViewBag.Title = "User :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["AdminAlert"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["AdminAlert"]');
+    </script>
+}
+
+
+<script type="text/javascript">
+
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32 || ascii == 40 ||
+            ascii == 41 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+</script>
+
+<script src="~/Scripts/jquery-1.7.1.min.js"></script>
+<script type="text/javascript">
+    function show(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                $('#user_img').attr('src', e.target.result);
+            }
+            filerdr.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+
+
+@if (TempData["invalidmsgloginID"] != null)
+{
+    <script> $("#divinvalidtest").show();
+    </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show failed alerts
+}
+<style>
+footer#colophon {position: relative!important;}
+</style>
+
+@using (Html.BeginForm("Create", "Admin", FormMethod.Post, new { id = "FormUsersListCreate", enctype = "multipart/form-data" }))
+{
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Add User</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="">
+                    <p class="mandatory">Fields marked by <strong>(*)</strong> are mandatory</p>
+                </div>
+                <div id="divval" class="valiation">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <img class="img-thumbnail" alt="Click Here to select User Image" id = "user_img" src= "@Url.Content(Model.MapFilePath)" 
+                            style="width: 140px; height: 140px;">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <input type="file" title="search image" id="file" name="file" onchange="show(this)" value="@Model.MapFilePath "/>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>LoginID *</label>
+                                    @Html.TextBoxFor(m => m.ULoginID, new { id = "txtULoginID", maxlength = 50, @class = "form-control required" })
+                                    @Html.ValidationMessageFor(m => m.ULoginID, null, new { @class = "valiation", id = "errorIsValidULoginID" })
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Password *</label>
+                                    @Html.PasswordFor(m => m.UserPassword, new
+                       {
+                           id = "txtUserPassword",
+                           maxlength = 50,
+                           @class = "form-control required"
+                       })
+                                    @Html.ValidationMessageFor(m => m.UserPassword, null, new { @class = "valiation", id = "errorIsValidUserPassword" })
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Confirm Password *</label>
+                                    @Html.PasswordFor(m => m.confirmpassword, new
+                       {
+                           id = "txtconfirmpassword",
+                           maxlength = 50,
+                           @class = "form-control required"
+                       })
+                                    @Html.ValidationMessageFor(m => m.confirmpassword, null, new { @class = "valiation", id = "errorIsValidconfirmpassword" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+
+                                    <label>User Name *</label>
+                                    @Html.TextBoxFor(m => m.UserName, new
+                                   {
+                                       id = "txtUserName",
+                                       maxlength = 50,
+                                       @class = "form-control required"
+                                   })
+                                    @Html.ValidationMessageFor(m => m.UserName, null, new { @class = "valiation", id = "errorIsValidUserName" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>User Type *</label>
+                                    @Html.DropDownListFor(model => model.UserTypeID, new SelectList(Model.lstUsertype, "Value", "Text"), "---Select---",
+                                        new { @class = "form-control required", @id = "ddlUserType" })
+                                    @Html.ValidationMessageFor(model => model.UserTypeID, null, new { @class = "valiation", id = "errorIsValidUserType" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="divDelaers" style="display: none;">
+                                <div class="form-group">
+                                    <label>Dealer Name *</label>
+                                    @Html.DropDownListFor(model => model.DealerID, new SelectList(Model.lstDealers, "Value", "Text", "---Select---"), "---Select---",
+                                    new { @class = "form-control required", @id = "ddlDealers" })
+                                    @Html.ValidationMessageFor(model => model.DealerID, null, new { @class = "valiation", id = "errorIsValidDealerID" })
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="divClients" style="display: none;">
+                                <div class="form-group">
+                                    <label>Client Name *</label>
+                                    @Html.DropDownListFor(model => model.ClientID, new SelectList(Model.lstClients, "Value", "Text", "---Select---"), "---Select---",
+                                    new { @class = "form-control required", @id = "ddlClients" })
+                                    @Html.ValidationMessageFor(model => model.ClientID, null, new { @class = "valiation", id = "errorIsValidClientID" })
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="divWarehouse" style="display: none;">
+                                <div class="form-group">
+                                    <label>Warehouse *</label>
+                                    @Html.DropDownListFor(model => model.WareID, new SelectList(Model.lstWarehouse, "Value", "Text", "---Select---"), "---Select---",
+                                    new { @class = "form-control required", @id = "ddlWarehouse" })
+                                    @Html.ValidationMessageFor(model => model.ClientID, null, new { @class = "valiation", id = "errorIsValidWarehouse" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Shift *</label>
+                                    @Html.DropDownListFor(model => model.ShiftID, new SelectList(Model.lstshift, "Value", "Text"), "---Select---",
+                                    new { @class = "form-control required", @id = "ddlshift" })
+                                    @Html.ValidationMessageFor(model => model.ShiftID, null, new { @class = "valiation", id = "errorIsValidshift" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Address *</label>
+                                    @Html.TextBoxFor(model => model.Address, new
+                               {
+                                   id = "txtAddress",
+                                   maxlength = 150,
+                                   @class = "form-control required",
+                                   @onkeypress = "return varcharonly(event)"
+                               })
+                                    @Html.ValidationMessageFor(model => model.Address, null, new { @class = "valiation", id = "errorIsValidAddress" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Mobile No *</label>
+                                    @Html.TextBoxFor(m => m.CellNumber, new
+                       {
+                           id = "txtMobileNo",
+                           maxlength = 12,
+                           @class = "form-control required",
+                           @onkeypress = "return validateNumber(event)"
+                       })
+                                    @Html.ValidationMessageFor(m => m.CellNumber, null, new { @class = "valiation", id = "errorIsValidMobileNo" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email ID *</label>
+                                    @Html.TextBoxFor(m => m.Email, new { id = "txtEmailID", maxlength = 50, @class = "form-control required" })
+                                    @Html.ValidationMessageFor(m => m.Email, null, new { @class = "valiation", id = "errorIsValidEmailID" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>State Name *</label>
+                                    @Html.DropDownListFor(m => m.StateID, new SelectList(Model.lstState as System.Collections.IEnumerable, "Value", "Text"), "---Select---",
+                            new { @class = "form-control required", @id = "ddlstate" })
+                                    @Html.ValidationMessageFor(m => m.StateID, null, new { @class = "valiation", id = "errorIsValidstate" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>City Name *</label>
+                                    @Html.DropDownListFor(m => m.CityID, new SelectList(Model.lstCity as System.Collections.IEnumerable, "Value", "Text"),"---Select---",
+                           new { @class = "form-control required", @id = "ddlCity" })
+                                    @Html.ValidationMessageFor(m => m.CityID, null, new { @class = "valiation", id = "errorIsValidCity" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Pincode *</label>
+                                    @Html.TextBoxFor(m => m.Pincode, new
+                       {
+                           id = "txtPincode",
+                           maxlength = 6,
+                           @class = "form-control required",
+                           @onkeypress = "return validateNumber(event)"
+                       })
+                                    @Html.ValidationMessageFor(m => m.Pincode, null, new { @class = "valiation", id = "errorIsValidPinCode" })
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="divdashaccess" style="display: none">
+                                <div class="form-group">
+                                    <label>Dashboard Access </label>
+                                    @Html.CheckBoxFor(x => x.ChkDashboardBool)Charts
+                                                @Html.CheckBoxFor(x => x.ChkImageBool)Live View
+                                                @Html.CheckBoxFor(x => x.ChkReportsBool)Reports
+                                </div>
+                            </div>
+
+
+
+
+
+                        </div>
+                        <div class="row">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                @Html.HiddenFor(m => Model.PageAccess, new { id = "lblPageaccess" })
+
+                <div class="col-md-12">
+                    <div class="alert alert-danger" id="divinvalidtest" role="alert" style="display: none" align="Left">
+                        @if (TempData["invalidmsgloginID"] != null)
+                        {      @TempData["invalidmsgloginID"]
+
+                        }
+                    </div>
+
+                    <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                        @if (TempData["notice"] != null)
+                        {      @TempData["notice"]
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-footer text-center">
+                <input class="btn btn-success btn-md" type="submit" value="Add" id="btnadduser"  />
+
+                <a class="btn btn-info" id="btnrefresh" href="Create">Refresh</a>
+
+                <input type="button" class="btn btn-warning btn-md"  data-dismiss="modal" value="Close"
+                     onclick="@("window.location.href='" + @Url.Action("Index", "Admin") + "'")    ;" />
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+}
+
+
+<script>
+    $(document).ready(function () {
+
+        debugger;
+        var value = $("#ddlUserType").val();
+        if ((value == 5)) {
+            $('#ddlDealers').show();
+            $('#divDelaers').show();
+            $('#divdashaccess').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+            $('#ddlWarehouse').hide();
+            $('#divWarehouse').hide();
+        }
+        else if (value == 7) {
+            $('#ddlClients').show();
+            $('#divClients').show();
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#divdashaccess').hide();
+            $('#ddlWarehouse').hide();
+            $('#divWarehouse').hide();
+        }
+
+        else if (value == 3 || value == 4 || value == 6 || value == 9) {
+            $('#divdashaccess').hide();
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+            $('#btncirclelist').show();
+            $('#ddlWarehouse').hide();
+            $('#divWarehouse').hide();
+        }
+        else if (value == 8 || value == 10) {
+            $('#divdashaccess').show();
+            $('#ddlClients').show();
+            $('#divClients').show();
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#btncirclelist').show();
+            $('#ddlWarehouse').hide();
+            $('#divWarehouse').hide();
+        }
+        else if (value == 33) {
+            $('#divdashaccess').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#btncirclelist').hide();
+            $('#ddlWarehouse').show();
+            $('#divWarehouse').show();
+
+        }
+        else {
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+            $('#divdashaccess').hide();
+            $('#ddlWarehouse').hide();
+            $('#divWarehouse').hide();
+        }
+
+        $('#user_img').on('click', function () { $('#file').click(); })
+        $("#btnRefresh").on('click', function () {
+            $('#user_img')[0].src = "";
+            $('#validationsummaryerrors').empty();
+        })
+
+        $('#ddlUserType').on('change', function () {
+            debugger;
+            var value = $("#ddlUserType").val();
+            $.ajax({
+                url: "GetUserAccess",
+                data: { userType: value },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    debugger;
+                    console.log(data);
+                    $('#lblPageaccess').val('' + data[0]["PageAccess"] + '');
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+
+
+
+
+            if ((value == "5")) {
+                $('#ddlDealers').show();
+                $('#divDelaers').show();
+                $('#divdashaccess').hide();
+                $('#ddlClients').hide();
+                $('#divClients').hide();
+                $('#ddlWarehouse').hide();
+                $('#divWarehouse').hide();
+            }
+            else if (value == "7") {
+                $('#ddlClients').show();
+                $('#divClients').show();
+                $('#ddlDealers').hide();
+                $('#divDelaers').hide();
+                $('#divdashaccess').show();
+                $('#ddlWarehouse').hide();
+                $('#divWarehouse').hide();
+            }
+            else if (value == "3" || value == "4" || value == "6" || value == "9") {
+                $('#divdashaccess').hide();
+                $('#ddlDealers').hide();
+                $('#divDelaers').hide();
+                $('#ddlClients').hide();
+                $('#divClients').hide();
+                $('#btncirclelist').show();
+                $('#ddlWarehouse').hide();
+                $('#divWarehouse').hide();
+            }
+            else if (value == "7" || value == "8" || value == "10") {
+                $('#divdashaccess').show();
+                $('#ddlClients').show();
+                $('#divClients').show();
+                $('#ddlDealers').hide();
+                $('#divDelaers').hide();
+                $('#btncirclelist').show();
+                $('#ddlWarehouse').hide();
+                $('#divWarehouse').hide();
+            }
+            else if (value == "33") {
+                $('#divdashaccess').hide();
+                $('#ddlClients').hide();
+                $('#divClients').hide();
+                $('#ddlDealers').hide();
+                $('#divDelaers').hide();
+                $('#btncirclelist').hide();
+                $('#ddlWarehouse').show();
+                $('#divWarehouse').show();
+            }
+            else {
+                $('#ddlDealers').hide();
+                $('#divDelaers').hide();
+                $('#ddlClients').hide();
+                $('#divClients').hide();
+                $('#divdashaccess').hide();
+                $('#ddlWarehouse').hide();
+                $('#divWarehouse').hide();
+            }
+        });
+
+
+
+        $('#ddlstate').change(function () {
+            var url = '@Url.Action("bindCityList")';
+            $.ajax({
+                url: url,
+                data: { stateid: $('#ddlstate').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    $("#ddlCity").empty();
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $("#ddlCity").html(markup).show();
+                }
+            });
+
+
+        });
+    });
+    $(document).ready(function () {
+        $("#btnadduser1").on("click", function () {
+            var status = true;
+            var selected = "0";
+            var errors = "";
+            var checkconfirm = confirm('Are you sure you want to add user ?')
+            debugger;
+            if (checkconfirm == true) {
+                if (($("#ddlUserType").val() == '5') && ($("#ddlDealers").val() == '')) {
+                    status = false;
+                    errors += "Select dealer name. <br/>";
+
+                }
+                else if (($("#ddlUserType").val() == '7') && ($("#ddlClients").val() == '')) {
+                    status = false;
+                    errors += "Select client name. " + '<br/>';
+                }
+
+                if ($('#txtUserName').val() == '') {
+                    status = false;
+                    errors += "User Name can not be blank. <br/>";
+                }
+                if ($('#ddlUserType').val() == '') {
+                    status = false;
+                    errors += "Select user type. <br/>";
+                }
+                if ($('#txtAddress').val() == '') {
+                    status = false;
+                    errors += "Address can not be blank. <br/>";
+                }
+                if ($('#ddlshift').val() == '') {
+                    status = false;
+                    errors += "Shift can not be blank. <br/>";
+                }
+                if ($('#ddlstate').val() == '') {
+                    status = false;
+                    errors += "Select State Name. <br/>";
+                }
+                if ($('#ddlCity').val() == '') {
+                    status = false;
+                    errors += "Select City Name. <br/>";
+                }
+                if ($('#txtPincode').val() == '') {
+                    status = false;
+                    errors += "Address can not be blank. <br/>";
+                }
+                if ($('#txtMobileNo').val() == '') {
+                    status = false;
+                    errors += "Mobile no can not be blank. <br/>";
+                } else {
+
+                    var phone = $("#txtMobileNo").val(),
+                         intRegex = /^91[0-9]{10,12}$/;
+                    if ((phone.length != 12) || (!intRegex.test(phone))) {
+                        errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                        $("#txtMobileNo").focus();
+                        status = false;
+                    }
+                }
+
+                if ($('#txtEmailID').val() == '') {
+                    status = false;
+                    errors += "EmailID can not be blank. <br/>";
+                }
+                else {
+                    var email = $("#txtEmailID").val()
+                    var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                    if (!pattern.test(email)) {
+                        errors += "Please enter a valid Email Id.<br/>";
+                        $("txtEmailID").focus();
+                        status = false;
+                    }
+                }
+                if ($('#txtULoginID').val() == '') {
+                    status = false;
+                    errors += "LoginID can not be blank. <br/>";
+                }
+                if (status == true) {
+                    $("form").attr('action', 'Create')
+
+                    $("form")[0].submit();
+                }
+                else {
+                    $('#divval').html(errors);
+                    $('#txtUserPassword').val('');
+                    $('#txtconfirmpassword').val('');
+                }
+            }
+        });
+    });
+
+
+</script>

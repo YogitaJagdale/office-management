@@ -1,0 +1,133 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.TerritoryMaster>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}
+
+@using (Html.BeginForm("Index", null, FormMethod.Get))
+{
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);           
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <h2>Territory Manager</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" 
+                                placeholder="Search by Territory Name Or Manager Name" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Create">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-4 col-md-4" id="divnewadd">
+                        <a class="btn btn-success pull-left" id="btnCreateTerritoryMaster" data-modal="" href="Create"><i class="fa fa-plus"></i>&nbsp;Add
+                        </a>
+                        <a class="btn btn-success pull-right" data-modal="" href="Addnewterritoryname" id="btnAddnewTerritory">
+                        <span>Add New Territory</span></a>
+
+                        <a class="btn btn-success pull-left" style="display: none" id="btnHideTerritoryMaster" data-modal="" ><i class="fa fa-plus"></i>&nbsp;Add</a>
+                        <a class="btn btn-success pull-right" data-modal="" style="display: none" id="btnHideAddnewTerritory"><span>Add New Territory</span></a>
+
+                    </div>
+                    
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                      <div class="pull-right">Total no. records found : @grid.TotalRowCount</div>  
+
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (                                        
+                        grid.Column("TerritoryName", "Territory Name"),
+                        grid.Column("TerritoryManager", "Territory Manager"),
+                        grid.Column("MobileNo", "Mobile No"),
+                        grid.Column("EmailID", "Email Id"),
+                        grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+
+                    @Html.Raw("<a  name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.TerritoryID + "'></a>")
+                    @Html.Raw("<a name='EditHide' data-toggle='tooltip' style='display:none' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></a>")
+
+                    </text>),
+
+                    grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.TerritoryID },
+                    new { onclick = "return confirm('Are you sure you want to Delete this Territory Details ?');", @Name = "Delete", 
+                        @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" })),                         
+                      grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Index", new {  },
+                      new { @Name = "DeleteHide", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs",@style="display:none" }))), mode: WebGridPagerModes.Numeric)
+
+<script type="text/javascript">
+    function updateGrid()
+    {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+    }
+ </script>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        var res = '@ViewBag.NewAdd'; 
+        if (res == "False" || res == "false")
+        {
+            $('#btnCreateTerritoryMaster').hide();
+            $('#btnHideTerritoryMaster').show();
+            $('#btnHideTerritoryMaster').attr('disabled', true);
+            $('#btnHideTerritoryMaster').attr("title", "No Rights To Add");
+            $('#btnAddnewTerritory').hide();
+            $('#btnHideAddnewTerritory').show();
+            $('#btnHideAddnewTerritory').attr('disabled', true);
+            $('#btnHideAddnewTerritory').attr("title", "No Rights To Add");
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false")
+        {
+            $('[name=Edit]').hide();
+            $('[name=EditHide').show();
+            $('[name=EditHide').attr('disabled', true);
+            $('[name=EditHide').attr("title", "No Rights To Edit");
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false")
+        {
+            $('[name=Delete]').hide();
+            $('[name=DeleteHide]').show();
+            $('[name=DeleteHide]').attr('disabled', true);
+            $('[name=DeleteHide').attr("title", "No Rights To Delete")
+        }
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+

@@ -1,0 +1,168 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Dealer>
+
+
+@{
+    ViewBag.Title = "Allocate Panel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+@if (TempData["AllocatePanelFailure"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divinvalid").show();
+        });
+    </script>
+}
+@if (TempData["AllocatePanelSuccess"] != null)
+{
+    <script>
+        $(document).ready(function () { 
+            $("#divSuccess").show();
+        });
+    </script>
+}
+
+<style>
+footer#colophon {position: relative!important;}
+</style>
+<script>
+    $(document).ready(function () {
+        // 1st replace first column header text with checkbox
+
+        $("#checkableGrid th").each(function () {
+            if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                $(this).text('');
+                $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                $(this).append("<span>Select All</span>");
+            }
+        });
+
+        //2nd click event for header checkbox for select /deselect all
+        $("#cbSelectAll").on("click", function () {
+            var ischecked = this.checked;
+            $('#checkableGrid').find("input:checkbox").each(function () {
+                this.checked = ischecked;
+            });
+        });
+
+
+        //3rd click event for checkbox of each row
+        $("input[name='ids']").click(function () {
+            var totalRows = $("#checkableGrid td :checkbox").length;
+            var checked = $("#checkableGrid td :checkbox:checked").length;
+
+            if (checked == totalRows) {
+                $("#checkableGrid").find("input:checkbox").each(function () {
+                    this.checked = true;
+                });
+            }
+            else {
+                $("#cbSelectAll").removeAttr("checked");
+            }
+        });
+
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    var grid = new WebGrid(Model, canSort: false);
+        
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <h2>Dealer : @ViewBag.Dealer</h2>    
+                    </div>
+
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by panel" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" name="Command" value="Search">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2">
+                        <input type="submit" class="btn btn-success" id="allocate" name="Command" value="Allocate">
+                        @Html.ActionLink("Dealer List", "Index", "Dealer", new {@class="btn btn-primary" })
+                    </div>
+                   
+                    <div class="clearfix"></div>
+                </div>
+             
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                         <div class="pull-right">Total no. records found : @grid.TotalRowCount</div> 
+                        @grid.GetHtml(tableStyle: "table table-hover table-striped", htmlAttributes: new { id = "checkableGrid" }, footerStyle: "tfoot dataTables_paginate", columns:
+                            grid.Columns
+                            (
+                                grid.Column(format: @<text><input type="checkbox" value="@item.ClientPanel" name="ids" /></text>, header: "{checkall}"),
+                                grid.Column("PanelID", "Panel ID"),
+                                grid.Column("SiteID", "Site ID"),
+                                grid.Column("PanelName", "Panel Name"),
+                                grid.Column("ClientName", "Client Name"),
+                                grid.Column("CityName", "City"),
+                                grid.Column("Location", "Location"),
+                                 grid.Column("SubName", "Subscription")
+                          ), mode: WebGridPagerModes.Numeric)
+
+
+                        <script type="text/javascript">
+                            function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                                }
+                        </script>
+                    </div>
+                </div>               
+            </div>           
+
+            <div class="modal-footer">                
+                <div class="alert alert-warning" role="alert" align="Left">
+                     *Only live panels can be allocated to dealer.
+                    </div>
+            
+                <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                    @if (TempData["AllocatePanelFailure"] != null)
+                    {      @TempData["AllocatePanelFailure"]
+                    }
+                </div>
+                <div class="panel-footer text-center">
+                </div>
+
+                <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                    @if (TempData["AllocatePanelSuccess"] != null)
+                    {
+                        @TempData["AllocatePanelSuccess"]
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var allocate = '@ViewBag.Allocate';
+        if (allocate == "false" || allocate == "False") {
+
+            $("#allocate").css('disable', 'disable');
+        }
+        else {
+            $("#allocate").css('enable', 'enable');
+        }
+    });
+</script>

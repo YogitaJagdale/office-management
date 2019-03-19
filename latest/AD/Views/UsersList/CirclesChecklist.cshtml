@@ -1,0 +1,27 @@
+﻿@model List<SECU_CAMSPlus_DEV.Models.UsersList>
+@{
+    Layout = "";
+}
+
+<div >
+@using (Html.BeginForm())  
+{  
+   for (var i = 0; i < Model.Count(); i++)  
+   {  
+   <table>  
+      <tr>  
+         <td>  
+            @Html.HiddenFor(it => it[i].Id)  
+            @Html.DisplayFor(it => it[i].Name)  
+         </td>  
+         <td>  
+            @Html.CheckBoxFor(it => it[i].Checked,new {Style ="vertical-align:3px}"})  
+         </td>  
+      </tr>  
+   </table> 
+  
+   }    
+  
+} 
+         
+    </div>

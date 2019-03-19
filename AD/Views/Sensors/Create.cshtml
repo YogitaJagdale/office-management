@@ -1,0 +1,178 @@
+﻿@model SECU_CAMSPlus_DEV.Models.SensorMaster
+
+@{
+    ViewBag.Title = "Sensor";
+    Layout = null;
+}
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show failed alerts
+
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Add</h3>
+</div>
+
+
+@using (Html.BeginForm("Create", "Sensors", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SensorType, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(Model => Model.SensorType, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.SensorType, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PnlManufacturer, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.PnlManufacturer, new SelectList(ViewBag.ManufList as System.Collections.IEnumerable, "Value", "Text"), new { @class = "form-control" })
+
+                    
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Alarm, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Alarm, new SelectList(ViewBag.AlarmList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control", @id = "ddlAlarmType" })
+                    @Html.ValidationMessageFor(Model => Model.Alarm, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RestoralType, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.RestoralType, htmlAttributes: new { @class = "form-control", @id = "txtRestoral", })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AlarmSMSMessage, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.AlarmSMSMessage, htmlAttributes: new { @class = "form-control", style = "height:34px" })
+                    @Html.ValidationMessageFor(Model => Model.AlarmSMSMessage, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RestoralSMSMessage, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.RestoralSMSMessage, htmlAttributes: new { @class = "form-control", style = "height:34px"})
+                    @Html.ValidationMessageFor(Model => Model.RestoralSMSMessage, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AlarmEmailSubject, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.AlarmEmailSubject, htmlAttributes: new { @class = "form-control"})
+                    @Html.ValidationMessageFor(Model => Model.AlarmEmailSubject, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RestoralEmailSubject, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.RestoralEmailSubject, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(Model => Model.RestoralEmailSubject, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AlarmEmailMesaage, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.AlarmEmailMesaage, htmlAttributes: new { @class = "form-control", style = "height:34px"})
+                    @Html.ValidationMessageFor(Model => Model.AlarmEmailMesaage, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RestoralEmailMesaage, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.RestoralEmailMesaage, htmlAttributes: new { @class = "form-control", style = "height:34px" })
+                    @Html.ValidationMessageFor(Model => Model.RestoralEmailMesaage, null, htmlAttributes: new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Create" id="btnaddShift" onclick="return confirm('Are you sure you wish to add this Sensors?');" />
+            <input type="button"  class="btn btn-warning"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Index", "Sensors") + "'")    ;" />
+        </div>
+    </div>
+}
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#ddlAlarmType').change(function () {
+            var url = "RestoralType";
+            $.ajax({
+                url: url,
+                data: { AlarmType: $('#ddlAlarmType').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    for (var x = 0; x < data.length; x++) {
+                        $("#txtRestoral").val(data[x].Text);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+    });
+
+</script>
+
+<script>
+
+    $(document).ready(function () {
+
+        document.getElementById("txtRestoral").readOnly = true;
+    });
+
+</script>
+
+<style>
+    .textbox
+    {
+        display: block;
+        width: 116px;
+        height: 21px;
+        padding: 1px 5px;
+        font-size: 11px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>

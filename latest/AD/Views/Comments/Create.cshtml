@@ -1,0 +1,124 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Comments
+@{
+    ViewBag.Title = "Create";
+    Layout = null;
+}
+
+<script language="javascript" type="text/javascript">
+        
+    function varcharonly(evt) 
+    {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58)) 
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function IsValidValidUserComments() {
+        $("#errorInValidUserComments").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtUserComments").val();
+        if (!pwdreg.test(pwdval)) 
+        {
+            $("#txtUserComments").after('<span id="errorInValidUserComments" class="mandatory">Enter Valid User Comments</span>');
+            $('#btnaddComment').attr('disabled', true);
+        }
+        else {
+            $("#errorInValidUserComments").html('');
+            $('#btnaddComment').attr('disabled', false);
+        }
+    }
+    function setValue() {
+        $("#errorInValidUserComments").remove();
+        $('#btnaddComment').attr('disabled', false);
+    }
+</script>
+
+@if (TempData["AddFailnotice"] != null)
+{
+    <script>
+        $("#divinvalid").show();
+        $("#btnRefresh").hide();
+    </script>
+}
+@if (TempData["AddSuccessnotice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $("#btnRefresh").hide();
+        $('#btnaddComment').attr('disabled', true);
+    </script>
+
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+         onclick="@("window.location.href='" + @Url.Action("Index", "Comments", new { name = @ViewBag.CommentType }) + "'")">x</button>
+    <h3 class="modal-title" id="myModalLabel">Add</h3>
+</div>
+
+@using (Html.BeginForm("Create", "Comments", FormMethod.Post, new { @id = "FormCommentsMasterCreate" }))
+{
+    @Html.AntiForgeryToken()      
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.UserComments, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(Model => Model.UserComments, htmlAttributes: new { id="txtUserComments",@class = "form-control",
+                   @onblur="IsValidValidUserComments()", maxlength = 250 })
+                    @Html.ValidationMessageFor(Model => Model.UserComments,null,new { @class = "valiation",id="errorInValidUserComments"})
+                </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["AddFailnotice"] != null)
+            {      @TempData["AddFailnotice"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["AddSuccessnotice"] != null)
+            {      @TempData["AddSuccessnotice"]
+            }
+        </div>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddComment" 
+                onclick="if ($(FormCommentsMasterCreate).valid() && $('#txtUserComments').val() != '') 
+                    { return confirm('Are you sure to Add this User Comments?') };" />
+            <input class="btn btn-info" type="reset" value="Refresh" id="btnRefresh"  onclick="setValue()" />
+            <input type="button" class="btn btn-warning"  data-dismiss="modal" value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "Comments", new { name = @ViewBag.CommentType }) + "'")" />
+        </div>
+    </div>
+}

@@ -1,0 +1,133 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Manufacturer
+
+@{
+    ViewBag.Title = "EditManufacturer";
+    Layout = null;
+}
+
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid2").show(); </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+        $("#divSuccess2").show();
+        $("#btnUpdate").attr('disabled', true);
+    </script>// this script to show failed alerts
+}
+<script language="javascript" type="text/javascript">
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function IsValidCompanyName() {
+        $("#errorInValidCompanyName").html('');
+        var pwdreg = /^[a-zA-Z \.\-\/ , ( )]+$/;
+        var pwdval = $("#txtCompanyName").val();
+        if (!pwdreg.test(pwdval) && $("#txtCompanyName").val()!="") {
+            $("#txtCompanyName").after('<span id="errorInValidCompanyName" class="mandatory">Enter Valid Company Name</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorInValidCompanyName").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsselectedDeviceTypeName() {
+        $("#errorIsValidDeviceTypeName").html('');
+        var ddlState = $("#DeviceTypeName");
+        if (ddlState.val() == "") {
+            $("#DeviceTypeName").after('<span id="errorIsValidDeviceTypeName" class="mandatory">Please Select Device Name</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidDeviceTypeName").html('');
+            $('#btnaddManufacturer').attr('disabled', false);
+
+        }
+    }
+
+    function setValue() {
+        $("#errorInValidCompanyName").remove();
+        $("#errorIsValidDeviceTypeName").remove();
+        $('#btnUpdate').attr('disabled', false);
+    }
+
+</script>
+<div class="modal-header">
+      <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+@using (Html.BeginForm("Edit", "Manufacturer", FormMethod.Post, new { @id = "FormManufacturerMasterEdit" }))
+{
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.DeviceTypeName, new { @class = "control-label" })
+                    @Html.DropDownList("DeviceTypeName", null, "---Select---", 
+                    new {@onclick="IsselectedDeviceTypeName()", @class = "form-control required", id = "DeviceTypeName" })
+                    @Html.ValidationMessageFor(m => m.DeviceTypeName,null,new { @class = "valiation",id="errorIsValidDeviceTypeName" })
+
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.CompanyName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.CompanyName, new {id="txtCompanyName", @class = "form-control form-texttransform", maxlength = 100,
+                   @onblur="IsValidCompanyName()", @onkeypress = "return charonly(event)"})
+                   @Html.ValidationMessageFor(m => m.CompanyName,null,new { @class = "valiation",id="errorInValidCompanyName" })
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid2" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess2" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" id="btnUpdate" value="Update" 
+                 onclick="if ($(FormManufacturerMasterEdit).valid() && $('#txtCompanyName').val() != '')
+                    { return confirm('Do you want to update this Manufacturer Details?') };" />
+            <input type="button"  class="btn btn-warning"  value="Close" onclick="@("window.location.href='" + @Url.Action("Index", "Manufacturer") + "'")    ;" />
+        </div>
+    </div>
+}

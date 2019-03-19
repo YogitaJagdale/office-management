@@ -1,0 +1,96 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Project
+
+
+@{
+    ViewBag.Title = "Project";
+}
+
+<style>
+footer#colophon {position: relative!important;}
+</style>
+
+@using (Ajax.BeginForm("NewAssetMFGStep5", "Project", new AjaxOptions { UpdateTargetId = "divgrid" }))
+{
+    @Html.AntiForgeryToken()
+
+    
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+
+                    <div class="col-md-12">
+                        <h2>Add Project</h2>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="Panel-body">
+                <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="note note-info">
+
+                            <h3 class="box-heading">
+                                @Html.Label("lblprojectname", Convert.ToString(Session["ProjectName"]), new { @class = "ProjectLabel" })</h3>
+                            <p>Escalation Master</p>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Template Name :</label>
+                            @Html.DropDownList("lstESCTemplate", null, new { @class = "form-control required", @id = "ddlesctemplate" })
+
+                        </div>
+
+                    </div>
+                </div>
+                    </div>
+                <div class="clearfix"></div>
+
+
+                <div id="divgrid" style="display: none">
+
+                    @if (Model.EscalationList != null)
+                    {
+                        @Html.Partial("EscalationGrid", Model.EscalationList);
+                    }
+
+                    <div class="clearfix"></div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+         
+           
+}
+
+<script>
+    history.pushState(null, null, location.href);
+    window.onpopstate = function (event) {
+        history.go(1);
+    };
+    $(document).ready(function () {
+
+        $("#ddlesctemplate").change(function (e) {
+            $("#divgrid").show();
+            e.preventDefault();
+            var url = '@Url.Action("SearchTemplate")';
+            $.get(url, { TemplateName: $(this).val() }, function (result) {
+                $('#divgrid').html(result);
+            });
+        });
+
+        //function disableBack() { window.history.forward() }
+
+        //window.onload = disableBack();
+        //window.onpageshow = function (evt) { if (evt.persisted) disableBack() }
+
+    });
+</script>

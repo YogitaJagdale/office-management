@@ -1,0 +1,138 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.PanelServiceVendor>
+@{
+    ViewBag.Title = "Panel Service Vendor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+        $('#btnCreate').click(function () {
+            window.location.href = 'Create';
+            return false;
+        });
+    </script>
+}
+@if (TempData["NoRecordMsg"] != null)
+{
+    <script>
+        alert('@TempData["NoRecordMsg"]');
+    
+    </script>
+}
+
+@using (Html.BeginForm("Index", null, FormMethod.Get))
+{
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                   <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Panel Service Vendor</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" 
+                                    placeholder="Search by Company Name or Address" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Create">Go</button>
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-1 col-md-1" id="divnewadd">
+                     <a class="btn btn-success" id="btnCreate" data-modal="" href="Create"> <i class="fa fa-plus"></i>&nbsp;Add</a>
+                    <a class="btn btn-success" id="hidebtnCreate" style="display:none" ><i class="fa fa-plus"></i>&nbsp;Add</a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+
+            <div class="panel-body">
+                <div class="table-responsive">
+
+                      <div class="pull-right">Total no. records found : @grid.TotalRowCount</div>  
+
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                        ////grid.Column("CompID", "CompID"),
+                        grid.Column("CompanyName", "Company Name"),
+                        grid.Column("CompanyAddress", "Company Address"),
+                        grid.Column("StateName", "State"),
+                        grid.Column("CityName", "City"),                       
+                        grid.Column("ContactPersonName", "Contact Person"),
+                        grid.Column("PhoneNo", "Phone No"),
+                        grid.Column("MobileNo", "Mobile No"),
+                        grid.Column("EmailID", "Email Id"),
+                        grid.Column(header: "", canSort: false, style: "action",
+                         format: @<text>
+                    @Html.Raw("<a name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.CompID + "'> </a>")
+                    </text>),
+
+                        grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.CompID },
+                        new { onclick = "return confirm('Do you want to Delete this Panel Service Vendors Details?'); ", @Name = "Delete", 
+                            @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" }))), mode: WebGridPagerModes.Numeric)
+                    <script type="text/javascript">
+                        function updateGrid()
+                        {
+                                @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                        }
+                    </script>
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+}
+<div class="clearfix"></div>
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function ()
+    { 
+        var res = '@ViewBag.NewAdd';
+        if (res == "false" || res == "False")
+        {
+            $('#btnCreate').hide();
+            $('#hidebtnCreate').show();
+            $('#hidebtnCreate').attr('disabled', true);
+            $('#hidebtnCreate').attr("title", "No Rights To Add");
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false")
+        {
+            $('[name=Edit]').hide();
+            $('[name=EditHide').show();
+            $('[name=EditHide').attr('disabled', true);
+            $('[name=EditHide').attr("title", "No Rights To Edit");
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false")
+        {
+            $('[name=Delete]').hide();
+            $('[name=DeleteHide]').show();
+            $('[name=DeleteHide]').attr('disabled', true);
+            $('[name=DeleteHide').attr("title", "No Rights To Delete");
+        }
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

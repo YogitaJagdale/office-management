@@ -1,0 +1,153 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.DashCircle>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@if (TempData["DashCircleMessage"] != null)
+{
+    <script>
+        alert('@TempData["DashCircleMessage"]');
+        TempData["DashCircleMessage"] = "";
+    </script>
+}
+
+
+@using (Html.BeginForm("Index", "DashCircle", FormMethod.Get))
+{   
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Index</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text"
+                        name="filter"
+                        value="@ViewBag.filter"
+                        class="form-control"
+                        style="display: inline"
+                        placeholder="Search by dash circle" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Index">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                        <a class="btn btn-success" data-modal="" href="Create" id="btnCreate">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Add
+                        </a>
+                        <button class="btn btn-success" style="display: none" disabled="disabled" id="btnCreateNew" title="No rights to add">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Add
+                        </button>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div> 
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                      <div class="pull-right">Total no. records found : @ViewBag.TotalRowCount</div> 
+
+                    @if (ViewData["CircleList"] != null)
+                    {
+                       <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayNameFor(model => model.DashCircleName)
+                                </th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        @foreach (System.Data.DataRow dr in (ViewData["CircleList"] as System.Data.DataTable).Rows)
+                        {
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["CircleName"])
+                                    </td>
+                                    <td>
+                                        @Html.Raw("<a name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + dr["CircleName"] + "' id='" + dr["CircleName"] + "'></a>")
+                                        @Html.Raw("<button name='EditNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to edit' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></button>")
+                                    </td>
+                                    <td>
+                                        @Html.Raw("<a name='Delete' data-toggle='tooltip' data-placement='right' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs' href='Delete/" + dr["CircleName"] + "' id='" + dr["CircleName"] + "'> </a>")
+                                        @Html.Raw("<button name='DeleteNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to delete' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs'></button>")
+                                    </td>
+                                    <td>
+                                        @Html.Raw("<a name='ViewPanel' data-toggle='tooltip' data-placement='right' data-original-title='View Panel' class='glyphicon glyphicon-eye-open btn btn-info btn-xs' href='ViewPanel/" + dr["CircleName"] + "'></a>")
+                                        @Html.Raw("<button name='ViewPanelNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to view panel' data-original-title='View panel' class='glyphicon glyphicon-eye-open btn btn-info btn-xs'></button>")
+                                    </td>
+                                    <td>
+                                        @Html.Raw("<a name='AddPanel' data-toggle='tooltip' data-placement='right' data-original-title='Add Panel' class='glyphicon glyphicon-plus btn btn-primary btn-xs' href='AddPanel/" + dr["CircleName"] + "' id='" + dr["CircleName"] + "'> </a>")
+                                        @Html.Raw("<button name='AddPanelNew' d data-placement='right' disabled='disabled' style='display:none' title='No rights to add panel' data-original-title='Add Panel' class='glyphicon glyphicon-plus btn btn-primary btn-xs'></button>")
+                                    </td>
+                                </tr>
+                            </tbody>                 
+                        }
+                    </table>
+                    }
+                   
+                </div>
+            </div>
+        </div>
+    </div>        
+}
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        var res = '@ViewBag.NewAdd';
+
+        if (res == "false" || res == "False") {
+            $("#btnCreate").hide();
+            $("#btnCreateNew").show();
+        }
+        var Edit = '@ViewBag.NewEdit';
+        if (Edit == "false" || Edit == "False") {
+            $('[name=Edit]').hide();
+            $('[name=EditNew]').show();
+        }
+        var Delete = '@ViewBag.NewDelete'
+        if (Delete == "false" || Delete == "False") {
+            $('[name=Delete]').hide();
+            $('[name=DeleteNew]').show();
+        }
+
+        var viewpanel = '@ViewBag.ViewPanel'
+        if (viewpanel == "false" || viewpanel == "False") {
+            $('[name=ViewPanel]').hide();
+            $('[name=ViewPanelNew]').show();
+        }
+        var addpanel = '@ViewBag.AddPanel'
+        if (addpanel == "false" || addpanel == "False") {
+            $('[name=AddPanel]').hide();
+            $('[name=AddPanelNew]').show();
+        }
+    });
+</script>
+
+
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+

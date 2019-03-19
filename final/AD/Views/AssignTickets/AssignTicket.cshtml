@@ -1,0 +1,92 @@
+﻿@model SECU_CAMSPlus_DEV.Areas.Miscellaneous.Models.AssignTickets
+
+@{
+    ViewBag.Title = "AssignTicket";
+}
+
+<h2>AssignTicket</h2>
+<html>
+<head><title></title>
+
+    <script>
+        $(document).ready(function () {
+            $('input[type=radio]').live('change', function()
+            {
+                alert($(this).val());
+                window.location = '@Url.Action("radioButtonChangeEvent", "AssignTickets")';
+            })});
+    </script>
+</head>
+   
+<body>
+    @using (Html.BeginForm("AssignTicket", "AssignTickets", FormMethod.Get))
+    {
+        @Html.ValidationSummary(true)
+
+        //var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+        <div>
+            <img src="~/Images/camslogo.jpg" />
+            <span>Central Alarm Monitoring System</span>
+        </div>
+        <div>
+            <img src="~/Images/arrow1.png" />
+            <span>Assigned Tickets To Other Operator/Supervisor :</span>
+        </div>
+        <br />
+        <div>
+     @*       <input type="radio" id="Isactive" name="Isactive" value="1" title="Yes"/>
+ <input type="radio" id="Isactive1" name="Isactive1" value="0" title="No"/>*@
+    
+            @Html.RadioButtonFor(model => model.Operator, "Operator" ,new { onchange = "radioButtonChangeEvent()" , style = "width:15px"  }) Operator	
+            @Html.RadioButtonFor(model => model.Supervisor, "Supervisor", new { style = "width:15px" }) Supervisor
+        </div>
+        <div>
+           @Html.DropDownListFor(model=>model.AssignOperator, new SelectList(ViewBag.AssignOperator as System.Collections.IEnumerable, "Value","Text"),"------select------", new { @style = "width: 170px;" })
+        </div>
+        <div>
+            <a href="#" onclick="imgbtnAssignClick"><img src="~/Images/User-icon.png"/></a>
+
+            @*<img src="~/Images/User-icon.png" />*@
+        </div>
+        <div>
+            <input id="btnSubmit" onclick="" type="submit" value="" class="btn btn-success btn-sm" />
+        </div>
+        <div>
+
+            <input type="button" value="Cancel" class="btn btn-default"
+                            onclick="javascript:document.location.href='@Url.Action("", "")    '" />
+        </div>
+        <div>
+
+        @*    <div class="col-lg-12">
+                @grid.GetHtml(tableStyle: "table", selectedRowStyle: "#CCC", footerStyle: "foot", alternatingRowStyle: "webgrid-alternating-row", headerStyle: "grid-header", columns:
+                grid.Columns
+                (
+                        grid.Column("TicketNo", "TicketNo"),
+                        grid.Column("ActivityID", "ActivityID"),
+                        grid.Column("ClientName", "Client_Name"),
+                        grid.Column("Panel_Address", "Panel_Address"),
+                        grid.Column("PanelLocation", "Panel_Location"),
+                        grid.Column("Ticket_Open_Time", "Ticket_Open_Time"),                         
+                        grid.Column("ZoneNo", "ZoneNo"),
+                        grid.Column("Location", "Location"),
+                        grid.Column("ClientID", "ClientID"),
+                        grid.Column("PanelID", "PanelID"),
+                        grid.Column("ZoneID", "ZoneID"),
+                        grid.Column("descp", "descp"),                            
+                        grid.Column("ArmedStatus", "ArmedStatus"),
+                        grid.Column("PActive", "PActive"),
+                        grid.Column("CategoryName", "CategoryName"),                       
+                        grid.Column("MessageDescription", "MessageDescription"),                   
+                        grid.Column("Camera", "Camera"),
+                        grid.Column("OCircleID", "O_CircleID"),
+                        grid.Column("siren", "siren"),
+                        grid.Column("MessageType", "MessageType")
+                       
+     ), mode: WebGridPagerModes.Numeric)
+
+            </div>*@
+        </div>
+    }
+</body>
+</html>

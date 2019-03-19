@@ -1,0 +1,314 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ADRequest
+@{
+    ViewBag.Title = "AD On Request :: CAMSPlus";
+}
+<style>
+    #divLoader {
+    position: absolute;
+    background: 000;
+    top: 55%;
+    left: 47%;
+    }
+</style>
+
+@*@if (TempData["DVRIP"] != null)
+{
+<script>
+        var PanelIP = '@Session["DVRIP"].ToString()';
+    </script>
+}
+else
+{
+        
+}*@
+<script>
+    function ADRequest() {
+        debugger;
+       // $("#btnADrequest").disabled = true;
+        
+        var Camerano = $("#ddlCameraNo").val();
+        var FrameFrequency = $("#ddlFrameFrequency").val();
+        var ClientID = $("#ddlClientID").val();
+        var PanelID = $("#txtPanelID").val();
+        var StartDate = $("#txtStartDate").val();
+        var StartTime = $("#txtStartTime").val();
+        var Endtime = $("#txtEndTime").val();
+
+        if (ClientID == "--Select--") {
+            alert("Please select client name");
+            return false;
+        }
+
+        if (PanelID == "") {
+            alert("Panel Id cannot be blank");
+            return false;
+        }
+
+        if (PanelID.length != 6) {
+            alert("Panel Id should be of 6 character.");
+            return false;
+        }
+
+
+        var selectedDate = new Date(StartDate);
+        var today = new Date();
+
+        //splits start start Time into a HH, MM 
+        var hourStartTime = StartTime.substr(0, 2);
+
+        var minStartTime = StartTime.substr(3, 2);
+
+        //splits start date into a yyyy, MM , dd
+        var year = StartDate.substr(0, 4);
+        var month = StartDate.substr(5, 2);
+        var date = StartDate.substr(8, 2);
+
+        //Converts into datetime format for selected date and Start time Value
+        var EnterStartDateTime = new Date(year, month - 1, date, hourStartTime, minStartTime);
+
+        ////splits start End Time into a HH, MM 
+        //var hourEndTime = Endtime.substr(0, 2);
+
+        //var minEndTime = Endtime.substr(3, 2);
+
+        ////Converts into datetime format for selected date and End time Value
+        //var EnterEndDateTime = new Date(year, month - 1, date, hourEndTime, minEndTime);
+
+        if (EnterStartDateTime > today) {
+            alert("You cannot enter a start time from the future!");
+            return;
+        }
+
+        //if (EnterEndDateTime > today) {
+        //    alert("You cannot enter a End time from the future!");
+        //    return;
+        //}
+
+       // alert(today + " " + reserv);
+
+        if (selectedDate > today) {
+            alert("You cannot enter a date from the future!");
+            return false;
+        }
+
+        var diff = (new Date("1970-1-1 " + Endtime) - new Date("1970-1-1 " + StartTime));
+
+        if (StartDate == "") {
+            alert("Please select valid date");
+            return false;
+        }
+
+        if (StartTime == "") {
+            alert("Please enter start time");
+            return false;
+        }
+
+        if (Endtime == "") {
+            alert("Please enter end time");
+            return false;
+        }
+
+        if (diff <= 900000 && diff > 0) {
+            document.getElementById("btnADrequest").disabled = true;
+            $("#divLoader").show();
+            $.ajax({
+                type: "POST",
+                traditional: true,
+                url: '@Url.Action("AddADRequestData")',
+                 data: {
+                     ClientID: ClientID,
+                     PanelID: PanelID,
+                     CameraNum: Camerano,
+                     FrameFrequency: FrameFrequency,
+                     StartDate: StartDate,
+                     StartTime: StartTime,
+                     EndTime: Endtime
+                 },
+                 success: function (data) {
+                     debugger;
+
+                     $("#divLoader").hide();
+                     $('#divImageRender').attr("style", "display: block");
+                     $('#divImageRender').html(data);
+                 },
+                 error: function (reponse) {
+                     debugger;
+
+                     //if (reponse.statusText == "Internal Server Error") {
+                     //    alert("Panel Id does not exists.")
+                     //}
+                     //else {
+                         alert("Error!!")
+                     //}
+                     $("#divLoader").hide();
+                     return false;
+                 }
+             });
+         }
+        else if (diff > 0) {
+            alert("The time difference should be of maximum 15 Mins.");
+            $("#divLoader").hide();
+             return false;
+        }
+        else if (diff < 0) {
+            alert("End time should be greater than start time");
+            $("#divLoader").hide();
+            return false;
+        }
+        else if (diff == 0) {
+            alert("Start time and end time should be different");
+            $("#divLoader").hide();
+            return false;
+        }
+     }
+
+</script>
+
+<script>
+    function RefreshFilter() {
+        debugger;
+
+        var Camerano = $("#ddlCameraNo").val();
+        var ClientID = $("#ddlClientID").val();
+        var PanelID = $("#txtPanelID").val();
+        var StartDate = $("#txtStartDate").val();
+        var StartTime = $("#txtStartTime").val();
+        var Endtime = $("#txtEndTime").val();
+
+        $.ajax({
+            type: "POST",
+            traditional: true,
+            url: '@Url.Action("CancelADRequest", "RequestAD", new { Controller = "RequestAD", Action = "CancelADRequest" })',
+            data: {
+                PanelID: PanelID,
+                ClientID: ClientID,
+                Request:"Cancel",
+                StartDate: StartDate,
+                StartTime: StartTime,
+                EndTime: Endtime,
+                CameraNo: Camerano,
+                Comments: "",
+            },
+            success: function (data) {
+                debugger;
+
+        $("#divLoader").hide();
+        document.getElementById('ddlClientID').value = "--Select--";
+        document.getElementById('txtPanelID').value = "";
+        document.getElementById('ddlFrameFrequency').value = "5";
+        document.getElementById('ddlCameraNo').value = "1";
+        document.getElementById('txtStartDate').value = "";
+        document.getElementById('txtStartTime').value = "00:00:00";
+        document.getElementById('txtEndTime').value = "00:00:00";
+        document.getElementById("btnADrequest").disabled = false;
+        $('#divImageRender').attr("style", "display: none");
+            },
+            error: function (reponse) {
+                debugger;
+
+                //if (reponse.statusText == "Internal Server Error") {
+                //    alert("Panel Id does not exists.")
+                //}
+                //else {
+                alert("Error!!")
+                //}
+                $("#divLoader").hide();
+                return false;
+            }
+        });
+
+
+        //$("#divLoader").hide();
+        //document.getElementById('ddlClientID').value = "--Select--";
+        //document.getElementById('txtPanelID').value = "";
+        //document.getElementById('ddlFrameFrequency').value = "5";
+        //document.getElementById('ddlCameraNo').value = "1";
+        //document.getElementById('txtStartDate').value = "";
+        //document.getElementById('txtStartTime').value = "00:00:00";
+        //document.getElementById('txtEndTime').value = "00:00:00";
+        //document.getElementById("btnADrequest").disabled = false;
+        //$('#divImageRender').attr("style", "display: none");
+    }
+
+</script>
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7">
+                    <h2>AD on Request</h2>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+        <div class="container">
+        </div>
+        <div class="panel-body">
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Client Name*</label>
+                        @Html.DropDownListFor(m => m.Client_Name, new SelectList(ViewBag.ClientList as System.Collections.IEnumerable, "Value", "Text"), new { @class = "form-control required", @id = "ddlClientID", })
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Panel ID*</label>
+                        @Html.TextBox("txtPanelID", null, new { @class = "form-control required", @maxlength = "6", @placeholder = "PanelID" })
+                    </div>
+                </div>
+
+                 <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Frame Frequency*</label>
+                        @Html.DropDownList("ddlFrameFrequency", ViewData["FrameList"] as SelectList, new { @class = "form-control required " })
+
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Camera No*</label>
+                        @Html.DropDownList("ddlCameraNo", ViewData["Cameralist"] as SelectList, new { @class = "form-control required " })
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Start Date*</label>
+                        @Html.TextBox("txtStartDate", "{dd-MM-yyyy}", new { type = "date", @class = "form-control required ", @Value = Model.StartDate.ToString("dd-MM-yyyy") })
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>Start Time*</label>
+                        @Html.TextBox("txtStartTime", "{HH:mm:ss}", new { type = "time", @class = "form-control required ", @Value = Model.StartDate.ToString("HH:mm:ss") })
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-md-3">
+                    <div class="form-group">
+                        <label>End Time*</label>
+                        @Html.TextBox("txtEndTime", "{HH:mm:ss}", new { type = "time", @class = "form-control required ", @Value = Model.EndDate.ToString("HH:mm:ss") })
+                    </div>
+                </div>
+               
+
+            </div>
+        </div>
+        <div class="panel-footer text-center">
+            <button id="btnADrequest" type="button" class="btn btn-success" onclick="ADRequest()">Search</button>
+            <input type="button" class="btn btn-warning" value="Refresh" onclick="RefreshFilter();" />
+        </div>
+    </div>
+</div>
+<div id="divLoader" class="row" style="display: none;">
+    <img src="~/Content/ajax-loader.gif" class="text-center" alt="Loading Data" />
+</div>
+<h2></h2>
+<div>
+    <div class="clearfix"></div>
+    <div id="divImageRender" style="display: none">
+    </div>
+
+</div>

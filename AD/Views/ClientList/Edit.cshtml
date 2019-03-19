@@ -1,0 +1,399 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Clients
+@{
+    ViewBag.Title = "Client :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*@if (TempData["Updatenotice"] != null)
+{
+    <script>
+        $(document).ready(function () { 
+           // alert('@TempData["Updatenotice"]');
+        });
+     </script>
+}*@
+
+@if (TempData["Failnotice"] != null)
+{
+    <script>
+        $(document).ready(function () { 
+            //alert('@TempData["Failnotice"]'); 
+            $(document).ready(function () {
+                $("divinvalidFailnotice").show();
+            });  
+        });
+    </script>
+}
+
+@if (TempData["Updatenotice"] != null)
+{
+    <script>
+        $(document).ready(function ()
+        {
+            $("#divSuccessUpdatenotice").show();
+            $("#btnUpdate").attr('disabled', true);
+
+        });
+    </script>// this script to show alerts
+}
+
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script>
+        $(document).ready(function () { 
+            $("#divinvalid").show();
+        });
+    </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>// this script to show alerts
+}
+
+<script language="javascript" type="text/javascript">
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 40 || ascii == 41 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) ||
+            (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+
+    function IsValidClientName() {
+        $("#errorIsValidClientName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  
+        var pwdval = $("#txtClientName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtClientName").after('<span id="errorIsValidClientName" class="mandatory">Enter Valid Client Name</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidClientName").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+    function IsValidversionNo() {
+        $("#errorIsValidversionNo").html('');
+        var pwdreg = /^[a-zA-Z0-9 \.]+$/;
+        var pwdval = $("#txtversionNo").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtversionNo").after('<span id="errorIsValidversionNo" class="mandatory">Enter Valid version No</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidversionNo").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function IsValidClientAddress() {
+        $("#errorIsValidClientAddress").html('');
+        var pwdreg = /^[a-zA-Z0-9 \.\-\/ , ( )]+$/;
+        var pwdval = $("#txtClientAddress").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtClientAddress").after('<span id="errorIsValidClientAddress" class="mandatory">Enter Valid Client Address</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidClientAddress").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function IsValidPinCode() {
+        $("#errorIsValidPinCode").html('');
+        var pwdreg = /^[0-9]+$/;
+        var pwdval = $("#txtPinCode").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtPinCode").after('<span id="errorIsValidPinCode" class="mandatory">Enter Valid Pin Code</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidPinCode").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function IsselectedState() {
+        $("#errorIsValidstate").html('');
+        var ddlState = $("#State");
+        if (ddlState.val() == "") {
+            $("#State").after('<span id="errorIsValidstate" class="mandatory">Please Select State</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidstate").html('');
+            $("#btnUpdate").attr('disabled', false);
+
+        }
+    }
+
+    function IsselectedCity() {
+        $("#errorIsValidCity").html('');
+        var ddlState = $("#City");
+        if (ddlState.val() == "") {
+            $("#City").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidCity").html('');
+            $("#btnUpdate").attr('disabled', false);
+
+        }
+    }
+
+    function IsselectedSubscription() {
+        $("#errorIsValidSubscription").html('');
+        var ddlSubName = $("#ddlSubName");
+        if (ddlSubName.val() == "") {
+            $("#ddlSubName ").after('<span id="errorIsValidSubscription" class="mandatory">Please Select Subscription</span>');
+            $('#btnUpdate').attr('disabled', true);
+            return false;
+        }
+        else {
+            $("#errorIsValidSubscription").html('');
+            $('#btnUpdate').attr('disabled', false);
+
+        }
+    }
+
+    function setValue() {
+        $("#errorIsValidClientName").remove();
+        $("#errorIsValidversionNo").remove();
+        $("#errorIsValidClientAddress").remove();
+        $("#errorIsValidPinCode").remove();
+        $("#errorIsValidstate").remove();
+        $("#errorIsValidCity").remove();
+        $("#txtPinCode").value == '';
+        $("#btnUpdate").attr('disabled', false);
+    }
+</script>
+
+
+
+@using (Html.BeginForm())
+{
+   <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Edit</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="mandatory">Fields marked by <strong>(*)</strong> are mandatory</p>
+                    </div>
+                   
+                    <div class="col-md-12">
+                        @Html.AntiForgeryToken()
+                    </div>
+                      </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Client_Name, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Client_Name, new {id = "txtClientName", @onblur = "IsValidClientName()",
+                           @onkeypress = "return charonly(event)", maxlength = 100, @class = "form-control required" })
+                         @Html.ValidationMessageFor(m => m.Client_Name,null,new { @class = "valiation",id="errorIsValidClientName" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.versionNo, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.versionNo, new { id = "txtversionNo", @onblur = "IsValidversionNo()", maxlength = 10, 
+                           @onkeypress = "return varcharonly(event)", @class = "form-control required" })
+                           @Html.ValidationMessageFor(m => m.versionNo,null,new { @class = "valiation",id="errorIsValidversionNo" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Client_Address, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Client_Address, new {autocomplete="off",id = "txtClientAddress", @onblur = "IsValidClientAddress()", 
+                           maxlength = 250,@onkeypress = "return varcharonly(event)", @class = "form-control required" })
+                           @Html.ValidationMessageFor(m => m.Client_Address,null,new { @class = "valiation",id="errorIsValidClientAddress" })
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.StateName, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.StateName, new SelectList(ViewBag.States, "Value", "Text"), "---Select---", 
+                            new {@onclick="IsselectedState()", @class = "form-control required", @id = "State" })
+                            @Html.ValidationMessageFor(m => m.StateName,null,new { @class = "valiation",id="errorIsValidstate" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                           @Html.LabelFor(m => Model.CityName, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.CityName, new SelectList(ViewBag.City, "Value", "Text"), "---Select---", 
+                            new {@onclick="IsselectedCity()", @class = "form-control required", @id = "City" })
+                            @Html.ValidationMessageFor(m => m.CityName,null,new { @class = "valiation",id="errorIsValidCity" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Pincode, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Pincode, new {autocomplete="off",id = "txtPinCode", @onblur = "IsValidPinCode()", @onkeypress = "return validateNumber(event)",
+                           maxlength = 6, @class = "form-control required" })
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div id="divDeviceVersion" class="form-group">
+                             @Html.LabelFor(m => Model.SubName, new { @class = "control-label " })
+                            @Html.DropDownList("SubName", null, "---Select---", 
+                            new   { @class = "form-control required",@onclick="IsselectedSubscription()",@id = "ddlSubName" })  
+                            @Html.ValidationMessageFor(m => m.SubName,null,new { @class = "valiation required",id="errorIsValidSubscription" })                          
+                                                     
+                        </div>
+                    </div>
+                    <div style="display: none" class="col-md-12">
+                        @Html.LabelFor(m => Model.ClientCircleName, new { data_val = false })
+                    </div>
+                    </div>    
+
+                 <div class="col-md-12">
+                        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                            @if (TempData["invalidmsg"] != null)
+                            {      @TempData["invalidmsg"]
+
+                            }
+                        </div>
+
+                        <div class="alert alert-danger" id="divinvalidFailnotice" role="alert" style="display: none" align="Left">
+                            @if (TempData["Failnotice"] != null)
+                            {      @TempData["Failnotice"]
+
+                            }
+                        </div>
+
+
+                        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                            @if (TempData["notice"] != null)
+                            {      @TempData["notice"]
+                            }
+                        </div>
+                                                
+                        <div class="alert alert-success" role="alert" id="divSuccessUpdatenotice" style="display: none" align="Left">
+                            @if (TempData["Updatenotice"] != null)
+                            {      @TempData["Updatenotice"]
+                            }
+                        </div>                     
+                    </div>
+
+
+
+            </div>
+            <div class="panel-footer text-center">
+                <input class="btn btn-success" type="submit" name="btn" value="Update" id="btnUpdate" 
+                    onclick="return confirm('Do you want to Update this Client Details?');" />
+                <input type="button"  class="btn btn-warning"  value="Close" onclick="@("window.location.href='" + @Url.Action("Index", "ClientList") + "'");" />
+            </div>
+        </div>
+    </div>   
+}
+
+<script type="text/javascript">
+    $("#ClientCircleName").removeAttr("data-val-required")
+    $(document).ready(function ()
+    {
+        $('#State').change(function ()
+        {
+            var url = '@Url.Content("~/")' + "ClientList/GetSelectedCity";
+            var ddlsource = "#State";
+            var ddltarget = "#City";
+            $.getJSON(url, { id: $(ddlsource).val() }, function (data)
+            {
+                $(ddltarget).empty();
+                var markup = "<option value='0'>---Select---</option>";
+                $(ddltarget).append(markup);
+                $.each(data, function (index, optionData) {
+                    $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+                });
+
+            });
+            if ($("#State").val() != "")
+            {
+                $("#errorIsValidCity").html('');
+                $("#City").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+                $('#btnUpdate').attr('disabled', true);
+            }
+        });
+
+
+        $('#City').change(function ()
+        {
+            if ($("#City").val() == "" || $("#City").val() == '0')
+            {
+                $("#errorIsValidCity").html('');
+                $("#City").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+                $('#btnUpdate').attr('disabled', true);
+            }
+            else {
+                $('#btnUpdate').attr('disabled', false);
+            }
+
+        });
+
+        $('#btnUpdate').click(function () {
+            if ($("#City").val() == '0' || $("#City").val() == '') {
+                $("#errorIsValidCity").html('');
+                $("#City").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+                $("#btnUpdate").attr('disabled', true);
+            }
+            else {
+                $("#btnUpdate").attr('disabled', false);
+            }
+        });
+
+    });
+    
+    
+</script>

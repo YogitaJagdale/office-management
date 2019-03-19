@@ -1,0 +1,74 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Panel
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm())
+{
+
+
+          
+  @Html.Hidden("hdnaccessbit", Session["BinaryAccessBit"], new { @id = "hdnaccessbit" })
+
+   @Html.Hidden("hdnactivebit", Session["rbtnActive"], new { @id = "hdnactivebit" })
+      @Html.Hidden("hdnsearchFilter", Session["searchFilter"], new { @id = "hdnSearchFilter" })
+            
+    <div class="row">
+        <div class="col-xs-12 col-sm-4 col-lg-4 m-bot15">
+         
+
+                <input type="text" name="filter" value="@ViewBag.filter" class="form-control"  placeholder="Search by panelID and client name" id="txtsearch"/>
+          
+        </div>
+        <div class="col-xs-12 col-sm-8 col-lg-8 m-bot15">
+
+            @*             @Html.RadioButtonFor(model => model.ActiveList, "1", new { @checked = "checked", id = "active", @class = "rdo" }) Active  
+                    @Html.RadioButtonFor(model => model.ActiveList, "0", htmlAttributes: new { @class = "rdo" }) Deactive 
+          @Html.RadioButtonFor(model => model.ActiveList, "2", htmlAttributes: new { @class = "rdo" }) All  *@
+            @Html.RadioButton("Active", "1", true, new { id = "rbtAct" }) Active
+                                  @Html.RadioButton("Active", "0", false, new { id = "rbtDeactive" }) Deactive
+                                @Html.RadioButton("Active", "2", false, new { id = "rbtAll" }) All
+             
+                  
+                   
+                        <input class="btn btn-warning" type="submit" id="btnsearch" value="Search" name="Command" />
+
+            <input class="btn btn-info" type="submit" id="btnExport" name="Command" value="Export" />
+        </div>
+
+
+
+
+
+    </div>
+
+}
+<script>
+    $(document).ready(function () {
+
+        debugger;
+        var access = $('#hdnaccessbit').val();
+        var accessbit = access.substr(3, 1);
+
+        if (accessbit == 0) {
+            $('#btnsearch').prop('disabled', true);
+            $('#btnsearch').attr("title", "No Rights To View");
+        }
+
+        if ($('#hdnactivebit').val() == "1") {
+            $('#rbtAct').attr('checked', 'checked')
+        }
+        else if ($('#hdnactivebit').val() == "0") {
+
+            $('#rbtDeactive').attr('checked', 'checked')
+        }
+        else if ($('#hdnactivebit').val() == "2") {
+
+            $('#rbtAll').attr('checked', 'checked')
+        }
+
+        if ($('#hdnSearchFilter').val() != "") {
+            $('#txtsearch').val($('#hdnSearchFilter').val());
+        }
+    });
+</script>

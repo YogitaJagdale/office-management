@@ -1,0 +1,124 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.PanelStatus>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Panel Status :: CAMSPlus";
+}
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7">
+                    <h2>Panel Status</h2>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div id="panellist">
+
+                @using (Html.BeginForm("Index", null, FormMethod.Get))
+                {
+                    <div class="col-sm-12">
+                        <div class="row">
+                            @{Html.RenderAction("SearchPanel", "PanelStatus"); }
+                        </div>
+                    </div>
+                             if (TempData["PanelStatusFailMsg"] != null)
+                              {
+                                <script type="text/javascript">
+                                    alert('@TempData["PanelStatusFailMsg"]');
+  
+                                </script>
+                              }
+                              else
+                              {
+                                  if (Session["Active"].ToString() != "Empty")
+                                  { 
+                                      if (Model.Count() > 0)
+                                      {
+
+                                          var grid = new WebGrid(Model, canSort: false, ajaxUpdateContainerId: "grid", rowsPerPage: 10);
+                                          grid.Pager(WebGridPagerModes.All);
+                    <div class="clearfix"></div>
+                    <div id="grdPaneldata" class="table-responsive">
+
+                        <hr />
+                         <div class="pull-right">Total no. records found : @grid.TotalRowCount</div> 
+
+                        @grid.GetHtml(tableStyle: "table table-striped table-hover panel-status-grid", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                        grid.Column("PanelID", "PanelID"),
+                        grid.Column("Panel_SOLID", "SOLID/ATMSiteID"),
+                        grid.Column("Panel_IP", "IP Address"),
+                        grid.Column("Panel_Name", "Panel Name"),
+                        grid.Column("Client_Name", "Client Name"),
+                        grid.Column("PanelLatestVersion", "Panel Latest Version"),
+                        grid.Column("PanelCurrentVersion", "Panel Current Version"),
+                        grid.Column("Panel_Location", "Panel Location"),
+                        grid.Column("CityName", "City"),
+                        grid.Column("SubName", "Subscription"),
+                        //grid.Column("ATMSiteID", "ATMSiteID"),
+                        grid.Column("PnlArmStatus", "", null, "DisplayNone"),
+                       grid.Column("PnlStatusString", "", null, "DisplayNone"),
+                       grid.Column("ClientID", "", null, "DisplayNone"),
+
+                       grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+
+                        @Html.ActionLink("show", "BindZoneGrid", new { PanelID = item.PanelID, ClientID = item.ClientID, ClientName = item.Client_Name,PanelIP = item.Panel_IP }, new { @class = "btn btn-info btn-xs" })
+                        </text>)
+
+    ), mode: WebGridPagerModes.Numeric)
+                        <script type="text/javascript">
+                            function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                            }
+                        </script>
+                          
+                    </div>
+                    
+                    
+                                      }
+
+                                      else
+                                      {
+                    <div>No records found</div>
+                                      }
+                                  }
+                                  }
+                }
+              
+                <script>
+                    $(document).ready(function () {
+
+                        $('tr').each(function (index) { //iterate over all table rows
+                            if (index > 0) {     //skip header
+                                if ($(this).children('td').eq(10).text().trim() == 'Armed')  //look for the 10th td in each row. thats where your ArmStatus is.
+                                {
+                                    $(this).children('td').eq(0).css("background-color", "#FFBB55");
+                                }
+                                if ($(this).children('td').eq(10).text().trim() == 'Disconnected') {
+                                    $(this).children('td').eq(0).css("background-color", "#FFFFCC");
+                                }
+                                if ($(this).children('td').eq(10).text().trim() == 'Disarmed') {
+                                    $(this).children('td').eq(0).css("background-color", "#C5FF8A");
+                                }
+                                if ($(this).children('td').eq(10).text().trim() == 'Armed' && $(this).children('td').eq(11).text().trim() == '01000000000000000000') {
+                                    $(this).children('td').eq(0).css("background-color", "#99CCFF");
+                                }
+                                if ($(this).children('td').eq(10).text().trim() == 'Disarmed' && $(this).children('td').eq(11).text().trim() == '01000000000000000000') {
+                                    $(this).children('td').eq(0).css("background-color", "#C6FFFF");
+                                }
+                            }
+                        });
+
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+

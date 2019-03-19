@@ -1,0 +1,46 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Panel
+@{
+    ViewBag.Title = "PanelList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>PanelList</h2>
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<div class="well">
+     <div class="col-sm-8">
+              
+                @{Html.RenderAction("_SearchPanel", "Panel"); }
+               </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var selected = "1";
+        $('.rdo').click(function () {
+            if ($(this).val() == '1') {;
+                selected = $(this).val();
+            }
+            else if ($(this).val() == '0') {
+                selected = $(this).val();
+
+            }
+            else if ($(this).val() == '2') {
+                selected = $(this).val();
+            }
+            console.log(selected);
+        });
+
+
+
+        $("#btnsearch").click(function (e) {
+            $("#divgrid").show();
+            e.preventDefault();
+            var url = '@Url.Action("SearchTemplate")';
+            $.get(url, { active: selected, Parameter: $("#txtsearch").val() }, function (result) {
+                $('#divgrid').html(result);
+            });
+        });
+    });
+</script>

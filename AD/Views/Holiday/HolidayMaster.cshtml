@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "HolidayMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Holiday Master</h2>
+ @using (Html.BeginForm("HolidayMaster", "Holiday", FormMethod.Get))
+ {
+
+     var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+     
+           <div class="col-sm-8">
+                <div class="input-group">
+
+                    <input type="text"
+                        name="filter"
+                        value="@ViewBag.filter"
+                        class="form-control"
+                        style="display: inline"
+                        placeholder="Search by Holiday name" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit" value="cityMaster">Go</button>
+                    </span>
+                     <span class="input-group-btn">
+                        @*  @Html.ActionLink("Add City", "City",null,new  {@class="btn btn-default"})*@
+                       @* <button class="btn btn-default" data-modal="" href="/Panel/SensorConfig" id="btnCreate" >ADD</button>*@
+                          <a class="btn btn-success"  id="btnCreate"  data-modal="" href="Create">
+                     <span class="glyphicon glyphicon-plus"></span>      
+                </a>
+                    </span>
+                   <!-- Button trigger modal -->
+@*<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal2">
+  Launch demo modal
+</button>
+ <a   id="btnCreate2"  data-modal="" href="Create" class="btn btn-primary btn-lg" data-target="#myModal2"></a>*@
+                </div>
+            </div>
+
+<div>
+
+     @grid.GetHtml(tableStyle: "table",selectedRowStyle:"#CCC" , footerStyle: "foot", alternatingRowStyle:"webgrid-alternating-row", headerStyle: "grid-header",columns:
+                grid.Columns
+                (
+                      //grid.Column("HolidayID", "ID"),
+                      grid.Column("HolidayName", "Holiday Name"),
+                        grid.Column("HD_Date", "Holiday Date"),
+                        grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                
+                   @Html.Raw("<a data-modal='' href='Edit/" + item.HolidayID + "' id='" + item.HolidayID + "' title='Edit''> Edit</a>")
+                
+               </text>),
+                        grid.Column(header: "", format: (item) => Html.ActionLink("Delete", "Delete", new { id = item.HolidayID}, 
+    new { onclick = "return confirm('Are you sure you wish to delete this Holiday?');" }) )
+       
+                
+                          
+     ), mode: WebGridPagerModes.Numeric)         
+</div>
+     
+ }
+
+<div id='myModal' class='modal fade in' style="top: 20%;left: 20%;right: 20%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

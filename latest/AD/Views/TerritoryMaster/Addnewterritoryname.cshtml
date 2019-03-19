@@ -1,0 +1,236 @@
+﻿@model SECU_CAMSPlus_DEV.Models.AddNewTerritory
+@{
+    ViewBag.Title = "Add new territory name";
+    Layout = null;
+}
+
+
+@if (TempData["Failnotice"] != null)
+{
+    <script> $("#divinvalid").show();
+        $("#btnRefresh").hide();
+    </script>// this script to show failed alerts
+}
+@if (TempData["Successnotice"] != null)
+{
+    <script> $("#divSuccess").show();
+        $("#btnRefresh").hide();
+        $('#btnaddterritoryname').attr('disabled', true);
+    </script>
+}
+<script>
+  
+
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function IsValidTerritoryName() {
+        $("#errorIsValidTerritoryName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtTerritoryName").val();
+        
+        if (!pwdreg.test(pwdval))
+        {
+            $("#errorIsValidTerritoryName").html('');
+            $("#txtTerritoryName").after('<span id="errorIsValidTerritoryName" class="mandatory">Enter Valid Territory Name</span>');
+            $('#btnaddterritoryname').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidTerritoryName").html('');
+            $('#btnaddterritoryname').attr('disabled', false);
+        }
+    }
+
+    function setValue()
+    {
+        $("#errorIsValidTerritoryName").remove();
+        $('#btnaddterritoryname').attr('disabled', false);
+    }
+    
+    $("#TerritoryName").removeAttr("data-val-required")
+    $("#TerritoryManager").removeAttr("data-val-required")
+    $("#MobileNo").removeAttr("data-val-required")
+
+</script>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Add New Territory Name</h3>
+</div>
+
+
+@using (Ajax.BeginForm("Addnewterritoryname", "TerritoryMaster", FormMethod.Post, new AjaxOptions { UpdateTargetId = "divTerritoryName" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.TerritoryName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.TerritoryName, new
+               {
+                   id = "txtTerritoryName",
+                   @onblur = "IsValidTerritoryName()",
+                   @onkeypress = "return charonly(event)",
+                   maxlength = 150,
+                   @class = "form-control required"
+               })
+                   @Html.ValidationMessageFor(m => m.TerritoryName, null, new { @class = "valiation", id = "errorIsValidTerritoryName" })
+                </div>
+            </div>
+        </div>
+        <table id="tblAllTerritoryName" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                 <th>Name
+                </th>
+                <th></th>
+           </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.AllTerritoryName.Count; i++)
+            {
+                <tr id=@Model.AllTerritoryName[i]>
+                    
+                    <td>
+                        @Html.DisplayFor(m => m.AllTerritoryName[i].TerritoryName, new { @class = "form-control required ", @id = "txtcontactperson"  })
+                    </td> 
+                    <td>
+                        @Html.ActionLink(" ", "DeleteTerritoryName", new { onclick = "return confirm('Do you want to Delete this territory name?')", TerritoryName = Model.AllTerritoryName[i].TerritoryName }, new {@class = "glyphicon glyphicon-trash btn btn-danger btn-xs"})
+                        
+                         </td> 
+                </tr>
+                                        
+            }
+        </tbody>
+
+    </table>
+        <div class="clearfix"></div>
+    </div>
+         
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["Failnotice"] != null)
+            {      @TempData["Failnotice"]
+
+            }
+
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["Successnotice"] != null)
+            {      @TempData["Successnotice"]
+            }
+        </div>
+        <div class="text-center">
+        <input class="btn btn-success" type="submit" value="Add" id="btnaddterritoryname" 
+            onclick="if ($('#txtTerritoryName').val() != '')
+                        { return confirm('Are you sure to Add Territory Name?') };" />
+        <input class="btn btn-info" type="reset" value="Refresh" id="btnRefresh" onclick="setValue()"/>
+        <input type="button" data-dismiss="modal" class="btn btn-warning"  value="Cancel" 
+            onclick="@("window.location.href='" + @Url.Action("Index", "TerritoryMaster") + "'");" />
+            </div>
+    </div>
+   
+}
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+<script type="text/javascript">
+
+    $('#btnaddterritoryname').click(function () {
+        if ($("#txtTerritoryName").val() == "")
+        {
+            $("#txtTerritoryName").after('<span id="errorIsValidTerritoryName" class="mandatory">Required</span>');
+           
+        }
+        else {
+            $('#btnaddAgency').attr('disabled', false);
+        }
+    });
+ </script>
+
+<style type="text/css">
+
+    div.pager {
+    text-align: center;
+    margin: 1em 0;
+}
+
+div.pager span {
+    display: inline-block;
+    width: 1.8em;
+    height: 1.8em;
+    line-height: 1.8;
+    text-align: center;
+    cursor: pointer;
+    /*background: #000;*/
+    color: #000;
+    margin-right: 0.5em;
+}
+
+div.pager span.active {
+    background: #cac2ba;
+}
+
+
+</style>
+
+
+<script>
+
+    $("#tblAllTerritoryName").each(function () {
+        var currentPage = 0;
+        var numPerPage = 5;
+        var $table = $(this);
+        $table.bind('repaginate', function ()
+        {
+            $table.find('tbody tr').hide().slice(currentPage * numPerPage, (currentPage + 1) * numPerPage).show();
+        });
+
+        $table.trigger('repaginate');
+        var numRows = $table.find('tbody tr').length;
+        var numPages = Math.ceil(numRows / numPerPage);
+        var $pager = $('<div class="pager"></div>');
+        for (var page = 0; page < numPages; page++)
+        {
+            $('<span class="page-number"></span>').text(page + 1).bind('click', {
+                newPage: page
+            }, function (event) {
+                currentPage = event.data['newPage'];
+                $table.trigger('repaginate');
+                $(this).addClass('active').siblings().removeClass('active');
+            }).appendTo($pager).addClass('clickable');
+        }
+        $pager.insertAfter($table).find('span.page-number:first').addClass('active');
+    });
+</script>

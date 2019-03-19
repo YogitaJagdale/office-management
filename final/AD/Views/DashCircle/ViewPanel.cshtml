@@ -1,0 +1,173 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.DashCircle>
+
+@{
+    ViewBag.Title = "ViewPanel";
+}
+
+@if (TempData["DashViewPanelSuccess"] != null)
+{    
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>// this script to show successslerts
+}
+
+@if (TempData["DashViewPanelFailure"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divinvalid").show();
+        });
+    </script>// this script to show failed alerts
+}
+
+@using (Html.BeginForm("ViewPanel", null, FormMethod.Post))
+{
+    var grid = new WebGrid(Model, canSort: false);
+        
+        
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <h2>View Panel</h2>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-md-4">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Selected Circle :
+                <label id="lbl1">@ViewBag.CircleName</label>
+                            </div>
+                         </div>
+                    </div>
+                    <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text"
+                        name="filter"
+                        value="@ViewBag.filter"
+                        class="form-control"
+                        style="display: inline"
+                        placeholder="Search by " />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" name="Command" value="Search">Search</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-5">
+                        <div class="form-group">
+                            @*<input class="btn btn-success" type="submit" name="Command" value="Allocate" />*@
+                            <input class="btn btn-warning" type="submit" name="Command" value="Deallocate" />
+                           @Html.ActionLink("Dash Circle List", "Index", "DashCircle", new {@class="btn btn-primary" })      
+                        </div>                       
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12"> 
+                        <div class="table-responsive">
+                             <div class="pull-right">Total no. records found : @grid.TotalRowCount</div> 
+                            @grid.GetHtml(tableStyle: "table table-hover table-striped", htmlAttributes: new { id = "checkableGrid" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                    grid.Column(format: @<text><input type="checkbox" value="@item.ClientPanel" name="ids" /></text>, header: "{checkall}"),
+                    grid.Column("PanelID", "PanelID"),
+                    grid.Column("ATMSiteName", "SiteID"),
+                    grid.Column("ClientName", "Client Name"),
+                    grid.Column("Dealer_Name", "Dealer"),
+                    grid.Column("CityName", "City"),
+                    grid.Column("Location", "Panel Location")
+     ), mode: WebGridPagerModes.Numeric)
+
+
+                            <script type="text/javascript">
+                                function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                                    }
+                            </script>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+
+                        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                            @if (TempData["DashViewPanelFailure"] != null)
+                            {      @TempData["DashViewPanelFailure"]
+
+                            }
+                        </div>
+
+                        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                            @if (TempData["DashViewPanelSuccess"] != null)
+                            {      @TempData["DashViewPanelSuccess"]
+
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>           
+        
+}
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+<script>
+    $(document).ready(function () {
+        // 1st replace first column header text with checkbox
+
+        $("#checkableGrid th").each(function () {
+            if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                $(this).text('');
+                $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                $(this).append("<span>Select All</span>");
+            }
+        });
+
+        //2nd click event for header checkbox for select /deselect all
+        $("#cbSelectAll").on("click", function () {
+            var ischecked = this.checked;
+            $('#checkableGrid').find("input:checkbox").each(function () {
+                this.checked = ischecked;
+            });
+        });
+
+
+        //3rd click event for checkbox of each row
+        $("input[name='ids']").click(function () {
+            var totalRows = $("#checkableGrid td :checkbox").length;
+            var checked = $("#checkableGrid td :checkbox:checked").length;
+
+            if (checked == totalRows) {
+                $("#checkableGrid").find("input:checkbox").each(function () {
+                    this.checked = true;
+                });
+            }
+            else {
+                $("#cbSelectAll").removeAttr("checked");
+            }
+        });
+
+    });
+</script>

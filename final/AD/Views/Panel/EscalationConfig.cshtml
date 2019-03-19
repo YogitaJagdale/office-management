@@ -1,0 +1,2056 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Panel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7">
+                    <h2>Escalation Configuration of panel: <a  class='btn btn-success btn-xs' href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btnEscalationConfig'>@Request.Params["PanelID"]</a></h2>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-body">
+            @using (Html.BeginForm())
+            {      @Html.Hidden("ClientID", @Request.Params["ClientID"], htmlAttributes: new { @id = "hdnClientID" })
+                @Html.Hidden("PanelID", @Request.Params["PanelID"], htmlAttributes: new { @id = "hdnPanelID" })
+        
+                @Html.Hidden("hdnBankESCbit", Session["BinaryAccessBitBankESC"], new { @id = "hdnBankESCbit" })
+                @Html.Hidden("hdnMspESCbit", Session["BinaryAccessBitMspESC"], new { @id = "hdnMspESCbit" })
+                @Html.Hidden("hdnQrtESCbit", Session["BinaryAccessBitQrtESC"], new { @id = "hdnQrtESCbit" })
+                @Html.Hidden("hdnPublicESCbit", Session["BinaryAccessBitPublicESC"], new { @id = "hdnPublicESCbit" })
+                @Html.Hidden("hdnAgencybit", Session["BinaryAccessBitAgency"], new { @id = "hdnAgencybit" })
+        
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="responsive-tabs-container accordion-xs accordion-sm">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                @if ((Request.Params["command"] == "Bank") || (Request.Params["command"] == null))
+                                {
+                                    <li role="presentation" class="active"><a href="#Bank" id="Bank-tab1" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Bank</a></li>
+                                }
+                                else
+                                {   <li role="presentation" class=""><a href="#Bank" id="Bank-tab2" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Bank</a></li>}
+                                @if (Request.Params["command"] == "MSP")
+                                {
+                                    <li role="presentation" class="active"><a href="#MSP" role="tab" id="MSP-tab1" data-toggle="tab" aria-controls="profile" aria-expanded="false">MSP</a></li>
+                                }
+                                else
+                                {
+                                    <li role="presentation" class=""><a href="#MSP" role="tab" id="MSP-tab2" data-toggle="tab" aria-controls="profile" aria-expanded="false">MSP</a></li>}
+
+
+                                @if (Request.Params["command"] == "QRT")
+                                {
+                                    <li role="presentation" class="active"><a href="#QRT" role="tab" id="QRT-tab1" data-toggle="tab" aria-controls="profile" aria-expanded="false">QRT</a></li>
+                                }
+                                else
+                                {   <li role="presentation" class=""><a href="#QRT" role="tab" id="QRT-tab2" data-toggle="tab" aria-controls="profile" aria-expanded="false">QRT</a></li>}
+                                @if (Request.Params["command"] == "Public")
+                                {
+                           
+                                    <li role="presentation" class="active"><a href="#Public" role="tab" id="Public-tab1" data-toggle="tab" aria-controls="profile" aria-expanded="false">Public</a></li>
+                                }
+                                else
+                                {   <li role="presentation" class=""><a href="#Public" role="tab" id="Public-tab2" data-toggle="tab" aria-controls="profile" aria-expanded="false">Public</a></li>}
+                                @if (Request.Params["command"] == "HKA")
+                                {
+                                    <li role="presentation" class="active"><a href="#HKA" aria-controls="HKA-tab" role="tab" data-toggle="tab" aria-expanded="false">HKA</a></li>
+                                }
+                                else
+                                {  <li role="presentation" class=""><a href="#HKA" aria-controls="HKA-tab" role="tab" data-toggle="tab" aria-expanded="false">HKA</a></li>}
+                                @if (Request.Params["command"] == "CRA")
+                                {
+                                    <li role="presentation" class="active"><a href="#CRA" aria-controls="CRA-tab" role="tab" data-toggle="tab" aria-expanded="false">CRA</a></li>
+                                }
+                                else
+                                {    <li role="presentation" class=""><a href="#CRA" aria-controls="CRA-tab" role="tab" data-toggle="tab" aria-expanded="false">CRA</a></li>}
+                                @if (Request.Params["command"] == "INS")
+                                {
+                                    <li role="presentation" class="active"><a href="#INS" aria-controls="Installation-tab" role="tab" data-toggle="tab" aria-expanded="false">Installation Partner</a></li>
+                                }
+                                else
+                                {   <li role="presentation" class=""><a href="#INS" aria-controls="Installation-tab" role="tab" data-toggle="tab" aria-expanded="false">Installation Partner</a></li>}
+                                @if (Request.Params["command"] == "NTW")
+                                {
+                                    <li role="presentation" class="active"><a href="#NTW" aria-controls="Network-tab" role="tab" data-toggle="tab" aria-expanded="false">Network Provider</a></li>
+                                }
+                                else
+                                {    <li role="presentation" class=""><a href="#NTW" aria-controls="Network-tab" role="tab" data-toggle="tab" aria-expanded="false">Network Provider</a></li>}
+
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+
+                                <div role="tabpanel" class="tab-pane active" id="Bank">
+                                    <div id="divvalbank" class="valiation"></div>
+                                    @if (Model.escBANKlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablebank">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.escBANKlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.escBANKlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.escBANKlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escBANKlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.escBANKlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escBANKlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escBANKlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escBANKlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.escBANKlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escBANKlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.escBANKlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escBANKlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.escBANKlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escBANKlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.escBANKlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escBANKlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.escBANKlist[i].Priority), new { @class = "form-control required ddlPriorBank", @style = "width:70px",@id="ddlPriority-" + @Model.escBANKlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.escBANKlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.escBANKlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.escBANKlist[i].EscPubID  })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escBANKlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.escBANKlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id="ddlRepeatInterval" + @Model.escBANKlist[i].EscPubID  })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.escBANKlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.escBANKlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.escBANKlist[i].PublicType)
+                                                            @Html.HiddenFor(m => m.escBANKlist[i].PnlTemplateName)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                        </div> 
+                              
+                                        <input class="btn btn-success" type="button" value="Save" id="btnupdatebank" name="command" />
+                                        <input class="btn btn-danger" type="button" value="Delete" id="btndeletebank" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelbank'>Cancel</a>
+                                    }
+                                    else
+                                    {
+                                        <p>Bank escalations not added for this panel</p>
+                                    }
+
+                                    <div class="alert alert-danger" id="divinvalidescbank" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescbank"] != null)
+                                        {      @TempData["errorescbank"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescbank" style="display: none" align="Left">
+                                        @if (TempData["noticeescbank"] != null)
+                                        {      @TempData["noticeescbank"]
+
+                                        }
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="MSP">
+                                    <div id="divvalmsp" class="valiation"></div>
+                                    @if (Model.escMSPlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablemsp">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.escMSPlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.escMSPlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.escMSPlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escMSPlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.escMSPlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escMSPlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escMSPlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escMSPlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.escMSPlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escMSPlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.escMSPlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escMSPlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.escMSPlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escMSPlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.escMSPlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escMSPlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.escMSPlist[i].Priority), new { @class = "form-control required ddlPriormsp", @style = "width:70px",@id="ddlPriority-" + @Model.escMSPlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.escMSPlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.escMSPlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.escMSPlist[i].EscPubID })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escMSPlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.escMSPlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id="ddlRepeatInterval" + @Model.escMSPlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.escMSPlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.escMSPlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.escMSPlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                        </div> 
+                            
+                              
+                                        <input class="btn btn-success" type="button" value="Save" id="btnupdatemsp" name="command" />
+                                        <input class="btn btn-danger" type="button" value="Delete" id="btndeletemsp" name="command" />
+                              <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelmsp'>Cancel</a>
+                                    }
+                                    else
+                                    {
+                                        <p>MSP escalations not added for this panel</p>
+                                    }
+
+                                    <div class="alert alert-danger" id="divinvalidescmsp" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescmsp"] != null)
+                                        {      @TempData["errorescmsp"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescmsp" style="display: none" align="Left">
+                                        @if (TempData["noticeescmsp"] != null)
+                                        {      @TempData["noticeescmsp"]
+
+                                        }
+                                    </div>
+
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="QRT">
+                                    <div id="divvalqrt" class="valiation"></div>
+                                    @if (Model.escQRTlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tableqrt">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.escQRTlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.escQRTlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.escQRTlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escQRTlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.escQRTlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escQRTlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escQRTlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escQRTlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.escQRTlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escQRTlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.escQRTlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escQRTlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.escQRTlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escQRTlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.escQRTlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escQRTlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.escQRTlist[i].Priority), new { @class = "form-control required ddlPriorqrt", @style = "width:70px",@id = "ddlPriority-" + @Model.escQRTlist[i].EscPubID  })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.escQRTlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.escQRTlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id = "ddlInterval" + @Model.escQRTlist[i].EscPubID  })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escQRTlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.escQRTlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id = "ddlRepeatInterval" + @Model.escQRTlist[i].EscPubID  })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.escQRTlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.escQRTlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.escQRTlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdateqrt" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeleteqrt" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelqrt'>Cancel</a>
+                                        </div> 
+                            
+                              
+                               
+                                    }
+                                    else
+                                    {
+                                        <p>QRT escalations not added for this panel</p>
+                                    }
+
+                                    <div class="alert alert-danger" id="divinvalidescqrt" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescqrt"] != null)
+                                        {      @TempData["errorescqrt"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescqrt" style="display: none" align="Left">
+                                        @if (TempData["noticeescqrt"] != null)
+                                        {      @TempData["noticeescqrt"]
+
+                                        }
+                                    </div>
+
+                                </div>
+
+
+                                <div role="tabpanel" class="tab-pane" id="Public">
+                                    <div id="divvalpub" class="valiation"></div>
+                                    @if (Model.escPubliclist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablepublic">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.escPubliclist.Count; i++)
+                                                {
+                                                    <tr id=@Model.escPubliclist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.escPubliclist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escPubliclist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.escPubliclist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escPubliclist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escPubliclist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escPubliclist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.escPubliclist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escPubliclist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.escPubliclist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.escPubliclist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.escPubliclist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.escPubliclist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.escPubliclist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escPubliclist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.escPubliclist[i].Priority), new { @class = "form-control required ddlPriorpublic", @style = "width:70px" ,@id="ddlPriority-" + @Model.escPubliclist[i].EscPubID})
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.escPubliclist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.escPubliclist[i].Interval), new { @class = "form-control required", @style = "width:70px" ,@id="ddlInterval" + @Model.escPubliclist[i].EscPubID})
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.escPubliclist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.escPubliclist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px" ,@id="ddlRepeatInterval" + @Model.escPubliclist[i].EscPubID})
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.escPubliclist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.escPubliclist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.escPubliclist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdatepub" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeletepub" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelpub'>Cancel</a>
+                                        </div> 
+                         
+                                
+                                    }
+                                    else
+                                    {
+                                        <p>Public escalations not added for this panel</p>
+                                    }
+
+
+
+
+                                    <div class="alert alert-danger" id="divinvalidescpub" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescpub"] != null)
+                                        {      @TempData["errorescpub"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescpub" style="display: none" align="Left">
+                                        @if (TempData["noticeescpub"] != null)
+                                        {      @TempData["noticeescpub"]
+
+                                        }
+                                    </div>
+
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="HKA">
+                                    <div id="divvalhka" class="valiation"></div>
+                                    @if (Model.AgnHKAlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablehka">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.AgnHKAlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.AgnHKAlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.AgnHKAlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnHKAlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.AgnHKAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnHKAlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnHKAlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnHKAlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.AgnHKAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnHKAlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.AgnHKAlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnHKAlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.AgnHKAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnHKAlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.AgnHKAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnHKAlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.AgnHKAlist[i].Priority), new { @class = "form-control required ddlPriorhka", @style = "width:70px",@id="ddlPriority-" + @Model.AgnHKAlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.AgnHKAlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.AgnHKAlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.AgnHKAlist[i].EscPubID })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnHKAlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.AgnHKAlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id="ddlRepeatInterval" + @Model.AgnHKAlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.AgnHKAlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.AgnHKAlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.AgnHKAlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdatehka" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeletehka" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelhka'>Cancel</a>
+                                        </div> 
+                            
+                  
+                                
+                                    }
+                                    else
+                                    {
+                                        <p>HKA escalations not added for this panel</p>
+                                    }
+
+                                    <div class="alert alert-danger" id="divinvalideschka" role="alert" style="display: none" align="Left">
+                                        @if (TempData["erroreschka"] != null)
+                                        {      @TempData["erroreschka"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccesseschka" style="display: none" align="Left">
+                                        @if (TempData["noticeeschka"] != null)
+                                        {      @TempData["noticeeschka"]
+
+                                        }
+                                    </div>
+                                </div>
+
+
+                                <div role="tabpanel" class="tab-pane" id="CRA">
+                                    <div id="divvalcra" class="valiation"></div>
+                                    @if (Model.AgnCRAlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablecra">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.AgnCRAlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.AgnCRAlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.AgnCRAlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnCRAlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.AgnCRAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnCRAlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnCRAlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnCRAlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.AgnCRAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnCRAlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.AgnCRAlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnCRAlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.AgnCRAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnCRAlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.AgnCRAlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnCRAlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.AgnCRAlist[i].Priority), new { @class = "form-control required ddlPriorcra", @style = "width:70px",@id="ddlPriority-" + @Model.AgnCRAlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.AgnCRAlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.AgnCRAlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.AgnCRAlist[i].EscPubID })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnCRAlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.AgnCRAlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id="ddlRepeatInterval" + @Model.AgnCRAlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.AgnCRAlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.AgnCRAlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.AgnCRAlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdatecra" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeletecra" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelcra'>Cancel</a>
+                                        </div> 
+                            
+                            
+                             
+                                    }
+                                    else
+                                    {
+                                        <p>Public escalations not added for this panel</p>
+                                    }
+
+                                    <div class="alert alert-danger" id="divinvalidesccra" role="alert" style="display: none" align="Left">
+                                        @if (TempData["erroresccra"] != null)
+                                        {      @TempData["erroresccra"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessesccra" style="display: none" align="Left">
+                                        @if (TempData["noticeesccra"] != null)
+                                        {      @TempData["noticeesccra"]
+
+                                        }
+                                    </div>
+
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="INS">
+                                    <div id="divvalins" class="valiation"></div>
+                                    @if (Model.AgnINSlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tableins">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.AgnINSlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.AgnINSlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.AgnINSlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnINSlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.AgnINSlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnINSlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnINSlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnINSlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.AgnINSlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnINSlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.AgnINSlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnINSlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.AgnINSlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnINSlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.AgnINSlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnINSlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.AgnINSlist[i].Priority), new { @class = "form-control required ddlPriorins", @style = "width:70px",@id="ddlPriority-" + @Model.AgnINSlist[i].EscPubID  })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.AgnINSlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.AgnINSlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.AgnINSlist[i].EscPubID })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnINSlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.AgnINSlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px",@id="ddlRepeatInterval" + @Model.AgnINSlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.AgnINSlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.AgnINSlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.AgnINSlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdateins" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeleteins" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelins'>Cancel</a>
+
+                                        </div> 
+                            
+                       
+                                
+                              
+                                    }
+                                    else
+                                    {
+                                        <p>Installation partner escalations not added for this panel</p>
+                                
+                                    }
+                                    <div class="alert alert-danger" id="divinvalidescins" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescins"] != null)
+                                        {      @TempData["errorescins"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescins" style="display: none" align="Left">
+                                        @if (TempData["noticeescins"] != null)
+                                        {      @TempData["noticeescins"]
+
+                                        }
+                                    </div>
+
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="NTW">
+                                    <div id="divvalntw" class="valiation"></div>
+                                    @if (Model.AgnNTWlist.Count() > 0)
+                                    {             
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-hover" id="tablentw">
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name
+                                                    </th>
+                                                    <th>Designation
+                                                    </th>
+                                                    <th>Telephone No
+                                                    </th>
+                                                    <th>SMS
+                                                    </th>
+                                                    <th>Mobile No
+                                                    </th>
+                                                    <th>Email
+                                                    </th>
+                                                    <th>Email ID
+                                                    </th>
+                                                    <th>Priority
+                                                    </th>
+                                                    <th>Interval
+                                                    </th>
+                                                    <th>Repeat Interval (min.)
+                                                    </th>
+
+                                                </tr>
+
+                                                @for (int i = 0; i < Model.AgnNTWlist.Count; i++)
+                                                {
+                                                    <tr id=@Model.AgnNTWlist[i].EscPubID  style="border-top: 1px solid #ddd;">
+                                                        <td>
+                                                            @Html.HiddenFor(m => Model.AgnNTWlist[i].EscPubID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnNTWlist[i].Contact_Person, new { @class = "form-control required ", @id = "txtcontactperson" + @Model.AgnNTWlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnNTWlist[i].Comments, new { @class = "form-control required " })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnNTWlist[i].Tel_No, new { @class = "form-control required ", @style = "width:140px" })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnNTWlist[i].SMSMarkBool, new { @class = "chk", @id = "chksms" + @Model.AgnNTWlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnNTWlist[i].Cell_No, new { @class = "form-control required ", @style = "width:140px", @id = "txtcellno" + @Model.AgnNTWlist[i].EscPubID })
+                                                        </td>
+                                                        <td style="width: 5%">
+
+                                                            @Html.CheckBoxFor(m => m.AgnNTWlist[i].EmailMarkBool, new { @class = "chk", @id = "chkemail" + @Model.AgnNTWlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.TextBoxFor(m => m.AgnNTWlist[i].EmailID, new { @class = "form-control required ", @id = "txtemail" + @Model.AgnNTWlist[i].EscPubID })
+                                                        </td>
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnNTWlist[i].Priority,
+                         new SelectList(ViewBag.lstpriority, "Value", "Text", Model.AgnNTWlist[i].Priority), new { @class = "form-control required ddlPriorntw", @style = "width:70px" ,@id="ddlPriority-" + @Model.AgnNTWlist[i].EscPubID })
+
+                                                        </td>
+                                                        <td>
+                                                        @Html.DropDownListFor(m => m.AgnNTWlist[i].Interval,
+                         new SelectList(ViewBag.lstinterval, "Value", "Text", Model.AgnNTWlist[i].Interval), new { @class = "form-control required", @style = "width:70px",@id="ddlInterval" + @Model.AgnNTWlist[i].EscPubID })
+
+                                                        <td>
+                                                            @Html.DropDownListFor(m => m.AgnNTWlist[i].RepeatInterval,
+                         new SelectList(ViewBag.lstrepinterval, "Value", "Text", Model.AgnNTWlist[i].RepeatInterval), new { @class = "form-control required", @style = "width:70px" ,@id="ddlRepeatInterval" + @Model.AgnNTWlist[i].EscPubID})
+
+                                                        </td>
+                                                        <td>
+                                                            @Html.HiddenFor(m => m.AgnNTWlist[i].ClientID)
+                                                            @Html.HiddenFor(m => m.AgnNTWlist[i].PanelID)
+                                                            @Html.HiddenFor(m => m.AgnNTWlist[i].PublicType)
+                                                        </td>
+                                                    </tr>
+                                        
+                                                }
+
+                                            </table>
+                                            <input class="btn btn-success" type="button" value="Save" id="btnupdatentw" name="command" />
+                                            <input class="btn btn-danger" type="button" value="Delete" id="btndeletentw" name="command" />
+                                             <a  class="btn btn-warning" href='Edit?PanelID=@Request.Params["PanelID"]&ClientID=@Request.Params["ClientID"]' id='btncancelntw'>Cancel</a>
+                                        </div> 
+                            
+                              
+                                    }
+                                    else
+                                    {
+                                        <p>Network provider escalations not added for this panel</p>
+                                    }
+                                    <div class="alert alert-danger" id="divinvalidescntw" role="alert" style="display: none" align="Left">
+                                        @if (TempData["errorescntw"] != null)
+                                        {      @TempData["errorescntw"]
+
+                                        }
+                                    </div>
+
+                                    <div class="alert alert-success" role="alert" id="divSuccessescntw" style="display: none" align="Left">
+                                        @if (TempData["noticeescntw"] != null)
+                                        {      @TempData["noticeescntw"]
+
+                                        }
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        // Read a page's GET URL variables and return them as an associative array.
+        function getUrlVars() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+
+        var vCommand = getUrlVars()["command"];
+        if (vCommand != undefined) {
+            console.log(vCommand);
+            console.log($('#' + vCommand + ''))
+            $('#Bank').removeClass('active');
+            $('#' + vCommand + '').addClass('active');
+        }
+        else { $('#Bank').addClass('active'); }
+
+        //bank Escalation
+        var accessBankESC = $('#hdnBankESCbit').val();
+        var accessbitBankESCUpdate = accessBankESC.substr(0, 1);
+        var accessbitBankESCDelete = accessBankESC.substr(1, 1);
+
+        if (accessbitBankESCUpdate == 0) {
+            $('#btnupdatebank').prop('disabled', true);
+            $('#btnupdatebank').attr("title", "No Rights To Update");
+        }
+        if (accessbitBankESCDelete == 0) {
+
+            $('#btndeletebank').prop('disabled', true);
+            $('#btndeletebank').attr("title", "No Rights To Delete");
+        }
+
+        //MSP Escalation
+        var accessMspESC = $('#hdnMspESCbit').val();
+        var accessbitMspESCUpdate = accessMspESC.substr(0, 1);
+        var accessbitMspESCDelete = accessMspESC.substr(1, 1);
+
+        if (accessbitMspESCUpdate == 0) {
+            $('#btnupdatemsp').prop('disabled', true);
+            $('#btnupdatemsp').attr("title", "No Rights To Update");
+        }
+        if (accessbitMspESCDelete == 0) {
+
+            $('#btndeletemsp').prop('disabled', true);
+            $('#btndeletemsp').attr("title", "No Rights To Delete");
+        }
+
+        //QRT Escalation
+        var accessQrtESC = $('#hdnQrtESCbit').val();
+        var accessbitQrtESCUpdate = accessQrtESC.substr(0, 1);
+        var accessbitQrtESCDelete = accessQrtESC.substr(1, 1);
+
+        if (accessbitQrtESCUpdate == 0) {
+            $('#btnupdateqrt').prop('disabled', true);
+            $('#btnupdateqrt').attr("title", "No Rights To Update");
+        }
+        if (accessbitQrtESCDelete == 0) {
+
+            $('#btndeleteqrt').prop('disabled', true);
+            $('#btndeleteqrt').attr("title", "No Rights To Delete");
+        }
+
+        //Public Escalation
+        var accessPublicESC = $('#hdnPublicESCbit').val();
+        var accessbitPublicESCUpdate = accessPublicESC.substr(0, 1);
+        var accessbitPublicESCDelete = accessPublicESC.substr(1, 1);
+
+        if (accessbitPublicESCUpdate == 0) {
+            $('#btnupdatepub').prop('disabled', true);
+            $('#btnupdatepub').attr("title", "No Rights To Update");
+        }
+        if (accessbitPublicESCDelete == 0) {
+
+            $('#btndeletepub').prop('disabled', true);
+            $('#btndeletepub').attr("title", "No Rights To Delete");
+        }
+
+        //Agency
+
+        var accessAgency = $('#hdnAgencybit').val();
+        var accessbitAgencyUpdate = accessAgency.substr(1, 1);
+        var accessbitAgencyDelete = accessAgency.substr(2, 1);
+
+        if (accessbitAgencyUpdate == 0) {
+            $('#btnupdatehka').prop('disabled', true);
+            $('#btnupdatehka').attr("title", "No Rights To Update");
+
+            $('#btnupdatecra').prop('disabled', true);
+            $('#btnupdatecra').attr("title", "No Rights To Update");
+
+            $('#btnupdateins').prop('disabled', true);
+            $('#btnupdateins').attr("title", "No Rights To Update");
+
+            $('#btnupdatentw').prop('disabled', true);
+            $('#btnupdatentw').attr("title", "No Rights To Update");
+        }
+        if (accessbitAgencyDelete == 0) {
+
+            $('#btndeletehka').prop('disabled', true);
+            $('#btndeletehka').attr("title", "No Rights To Delete");
+
+            $('#btndeletecra').prop('disabled', true);
+            $('#btndeletecra').attr("title", "No Rights To Delete");
+
+            $('#btndeleteins').prop('disabled', true);
+            $('#btndeleteins').attr("title", "No Rights To Delete");
+
+            $('#btndeletentw').prop('disabled', true);
+            $('#btndeletentw').attr("title", "No Rights To Delete");
+        }
+        $('#tablebank >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tablemsp >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tableqrt >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tablepublic >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tablehka >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tablecra >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tableins >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('#tablentw >  tbody  > tr').each(function (index) {
+            if (index != 0) {
+
+                var id = $(this)[0].id;
+
+                if ($('#ddlPriority-' + id).val() == '1') {
+                    $("#ddlInterval" + id).prop("disabled", true);
+                    //  $("#ddlRepeatInterval"+id).prop("disabled", true);
+                }
+
+            }
+        });
+        $('.ddlPriorBank').change(function () {
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+      
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+            }
+        });
+        $('.ddlPriormsp').change(function () {      
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+             
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+            }
+        });
+        $('.ddlPriorqrt').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+            
+           
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+   
+            }
+        });
+        $('.ddlPriorpublic').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+          
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+
+            }
+        });
+        $('.ddlPriorhka').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+             
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+
+            }
+        });
+        $('.ddlPriorcra').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+           
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+
+            }
+        });
+        $('.ddlPriorins').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+         
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+
+            }
+        });
+        $('.ddlPriorntw').change(function () {
+
+            var selectedid = $(this)[0].id;
+            var array = selectedid.split("-");
+            console.log(array);
+            if ($(this).val() != "1") {
+                $("#ddlInterval" + array[1]).prop("disabled", false);
+
+              
+
+            } else {
+                $("#ddlInterval" + array[1]).prop("disabled", true);
+                $("#ddlInterval" + array[1]).val('0')
+
+            }
+        });
+        $("#btnupdatebank").on("click", function () {
+
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablebank >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    } else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=Bank')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divvalbank').html(errors);
+            }
+
+        });
+
+        $("#btnupdateqrt").on("click", function () {
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tableqrt >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=QRT')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divvalqrt').html(errors);
+            }
+
+        });
+        $("#btnupdatemsp").on("click", function () {
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablemsp >  tbody  > tr').each(function (index) {
+                console.log(index);
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+                    console.log(id);
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=MSP')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divvalmsp').html(errors);
+            }
+        });
+        $("#btnupdatepub").on("click", function () {
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablepublic >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=Public')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divvalpub').html(errors);
+            }
+        });
+        $("#btnupdatehka").on("click", function () {
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablehka >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=HKA')
+                $("form")[0].submit();
+
+            }
+            else {
+                $('#divvalhka').html(errors);
+            }
+        });
+        $("#btnupdatecra").on("click", function () {
+
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablecra >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=CRA')
+                $("form")[0].submit();
+
+            }
+            else {
+                $('#divvalcra').html(errors);
+            }
+        });
+        $("#btnupdateins").on("click", function () {
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tableins >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=INS')
+                $("form")[0].submit();
+
+            }
+            else {
+                $('#divvalins').html(errors);
+            }
+        });
+        $("#btnupdatentw").on("click", function () {
+
+            debugger;
+            var status = true;
+            var errors = "";
+            $('#tablemtw >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+
+                    var id = $(this)[0].id;
+
+                    if ($("#txtcontactperson" + id).val() != "") {
+                        if ($('#chksms' + id).prop('checked') == true) {
+                            if ($("#txtcellno" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Mobile no can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($('#chkemail' + id).prop('checked') == true) {
+
+                            if ($("#txtemail" + id).val() == "") {
+                                // alert("Please select valid details.");
+                                errors += "Email id can not be blank. <br/>";
+                                status = false;
+                                return false;
+                            }
+                        }
+                        if ($("#txtcellno" + id).val() != "") {
+                            var phone = $("#txtcellno" + id).val(),
+                             intRegex = /^91[0-9]{10,12}$/;
+                            if ((phone.length  !=  12) || (!intRegex.test(phone))) {
+                                // alert('Please enter a valid phone number.');
+                                  errors += "Please enter a valid mobile number.Mobile number should start with 91.<br/>";
+                                $("#txtcellno" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+
+
+                        if ($("#txtemail" + id).val() != "") {
+                            var email = $("#txtemail" + id).val()
+
+                            var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
+                            //   return pattern.test(email);
+
+                            if (!pattern.test(email)) {
+                                // alert('Please enter a valid phone number.');
+                                errors += "Please enter a valid Email Id.<br/>";
+                                $("#txtemail" + id).focus();
+                                status = false;
+                                return false;
+                            }
+                        }
+                    }
+                    else {
+                        errors += "Contact person can not be blank. <br/>";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+
+
+                $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=NTW')
+                $("form")[0].submit();
+
+            }
+            else {
+                $('#divvalntw').html(errors);
+            }
+        });
+
+        $("#btndeletebank").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=Bank&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeletemsp").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=MSP&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeleteqrt").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=QRT&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeletepub").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=Public&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeletehka").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=HKA&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeletecra").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=CRA&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeleteins").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=INS&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+        $("#btndeletentw").on("click", function () {
+
+            $("form").attr('action', 'EscalationConfig?PanelID=' + $('#hdnPanelID').val() + '&ClientID=' + $('#hdnClientID').val() + '&command=NTW&method=Delete')
+            $("form")[0].submit();
+
+
+        });
+
+    });
+
+
+</script>
+@if (TempData["noticeescbank"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescbank").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescbank"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescbank").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeescmsp"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescmsp").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescmsp"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescmsp").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeescqrt"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescqrt").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescqrt"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescqrt").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeescpub"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescpub").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescpub"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescpub").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeeschka"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccesseschka").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["erroreschka"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalideschka").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeesccra"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessesccra").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["erroresccra"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidesccra").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeescins"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescins").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescins"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescins").show(); }); </script>// this script to show failed alerts
+}
+@if (TempData["noticeescntw"] != null)
+{
+    <script>       $(document).ready(function () { $("#divSuccessescntw").show(); });   </script>// this script to show successslerts
+}
+
+@if (TempData["errorescntw"] != null)
+{
+    <script>  $(document).ready(function () { $("#divinvalidescntw").show(); }); </script>// this script to show failed alerts
+}

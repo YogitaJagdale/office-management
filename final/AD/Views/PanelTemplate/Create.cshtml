@@ -1,0 +1,304 @@
+﻿@model SECU_CAMSPlus_DEV.Models.PanelTemplate
+
+@{
+    ViewBag.Title = "Panel Template :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["PanelTemplateValid"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>
+}
+@if (TempData["PanelTemplateInvalid"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divinvalid").show();
+        });
+    </script>
+}
+
+@using (Html.BeginForm("Create", "PanelTemplate", FormMethod.Post))
+{
+  
+
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <h2>Panel Template</h2>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                      <div class="col-md-12">
+                        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                            @if (TempData["PanelTemplateValid"] != null)
+                            {      @TempData["PanelTemplateValid"]
+                            }
+                        </div>
+                        <span id="progress" class="text-center" style="display: none;">
+                            <img src="/images/ajax-loader.gif" alt="Wait" />
+                            Wait..
+                        </span>
+
+                    </div>
+                     <div class="col-md-12">
+                           <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                            @if (TempData["PanelTemplateInvalid"] != null)
+                            {      @TempData["PanelTemplateInvalid"]
+                            }
+                        </div>
+                        <span id="progress1" class="text-center" style="display: none;">
+                            <img src="/images/ajax-loader.gif" alt="Wait" />
+                            Wait..
+                        </span>
+
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <label>TemplateName*</label>
+                            @Html.TextBoxFor(m => m.TemplateName, new { @class = "form-control required", maxlength=100 })
+                            @Html.ValidationMessageFor(model => model.TemplateName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <label>Client*</label>
+                            @Html.DropDownListFor(m => m.ClientID, new SelectList(Model.ClientList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.ClientID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <label>Panel Type*</label>
+                            @Html.DropDownListFor(m => m.PanelType, new SelectList(Model.PaneltypeList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.PanelType, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>State Name*</label>
+                            @Html.DropDownListFor(m => m.StateName, new SelectList(Model.StateList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlstate" })
+                            @Html.ValidationMessageFor(model => model.StateName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>City Name*</label>
+                            @Html.DropDownListFor(m => m.CityName, new SelectList(Model.CityList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlCity" })
+                            @Html.ValidationMessageFor(model => model.CityName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                             
+                            <label>Phone No*</label>
+                            @Html.TextBoxFor(m => m.PhoneNo1, new { @class = "form-control required", @maxlength="15" })
+                            @Html.ValidationMessageFor(model => model.PhoneNo1, null, new { @type = "number", @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Pincode*</label>
+                            @Html.TextBoxFor(m => m.Pincode, new { @type = "number", @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.Pincode, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>CRA Company*</label>
+                            @Html.DropDownListFor(m => m.CRAID, new SelectList(Model.CRACompList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.CRAID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>MSP Company*</label>
+                            @Html.DropDownListFor(m => m.MSPID, new SelectList(Model.MSPList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.MSPID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Panel Manufacture*</label>
+                            @Html.DropDownListFor(m => m.PanelMakeID, new SelectList(Model.PanelManufList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlpanelmfgid" })
+                            @Html.ValidationMessageFor(model => model.PanelMakeID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Panel Model*</label>
+                            @Html.DropDownListFor(m => m.PanelModelID, new SelectList(Model.PanelModelList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlpanelmodelid" })
+                            @Html.ValidationMessageFor(model => model.PanelModelID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>HK Company*</label>
+                            @Html.DropDownListFor(m => m.HKAID, new SelectList(Model.HKList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.HKAID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Installation Vendor*</label>
+                            @Html.DropDownListFor(m => m.INSID, new SelectList(Model.InstList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.INSID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Project Co-Ordinator*</label>
+                            @Html.DropDownListFor(m => m.CoordinatorID, new SelectList(Model.ProjectCoordinatorList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.CoordinatorID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Project Lead*</label>
+                            @Html.DropDownListFor(m => m.LeadID, new SelectList(Model.ProjectLeadList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.LeadID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Territory Name*</label>
+                            @Html.DropDownListFor(m => m.TerritoryName, new SelectList(Model.TerritoryNameList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlTerritoryName" })
+                            @Html.ValidationMessageFor(model => model.TerritoryName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Territory Manager*</label>
+                            @Html.DropDownListFor(m => m.TerritoryID, new SelectList(Model.TerriotoryManagerList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required", @id = "ddlTerritoryManager" })
+                            @Html.ValidationMessageFor(model => model.TerritoryID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+
+                            <label>Project Manager*</label>
+                            @Html.DropDownListFor(m => m.ManagerID, new SelectList(Model.ProjectManagerList as System.Collections.IEnumerable, "Value", "Text"), "------select------", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(model => model.ManagerID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+
+                </div>
+               
+            </div>
+            <div class="panel-footer text-center">
+                <input class="btn btn-success" type="button" value="Create" id="btnadd" />
+                @Html.ActionLink("Cancel", "Index", new object { }, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    $(document).ready(function () {
+
+        $("#btnadd").on("click", function () {
+            debugger;
+            var checkconfirm = confirm('Are you sure you wish to add Panel Template ?')
+            if (checkconfirm == true) {
+                $("form").attr('action', 'Create')
+                $("form")[0].submit();
+            }
+
+        });
+
+
+        $('#ddlstate').change(function () {
+            var url = "BindCityList";
+            $.ajax({
+                url: url,
+                data: { stateid: $('#ddlstate').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $("#ddlCity").html(markup).show();
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+        $('#ddlpanelmfgid').change(function () {
+            var url = "BindPanelModel";
+            $.ajax({
+                url: url,
+                data: { mfgid: $('#ddlpanelmfgid').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+
+                    $("#ddlpanelmodelid").html(markup).show();
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+        $('#ddlTerritoryName').change(function () {
+            var url = "BindTerritotryManager";
+            $.ajax({
+                url: url,
+                data: { TerritotryName: $('#ddlTerritoryName').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $("#ddlTerritoryManager").html(markup).show();
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+    });
+</script>
+
+
+        
+
+      

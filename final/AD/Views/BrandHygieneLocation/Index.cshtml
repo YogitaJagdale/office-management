@@ -1,0 +1,162 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.BrandHygieneLocation>
+
+@{
+    ViewBag.Title = "Camera Location :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Editsuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9" id="divNotify">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["Editsuccess"]
+        </div>
+    </div>
+   
+}
+
+
+
+
+@if (TempData["AddSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["AddSuccess"]
+        </div>
+    </div>
+                                             
+}
+
+@if (TempData["DeleteSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["DeleteSuccess"]
+        </div>
+    </div>
+}
+
+@if (TempData["DeleteFail"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-danger alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["DeleteFail"]
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Index", "BrandHygieneLocation", FormMethod.Get))
+{
+
+
+
+    var grid = new WebGrid(Model, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10);
+    grid.Pager(WebGridPagerModes.All);
+        
+@*<div class="col-md-3 col-md-offset-9" id="divNotify">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: none; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @if (TempData["noticeEdit"] != null)
+            { 
+                @TempData["noticeEdit"];
+            }
+        </div>
+    </div>*@
+    
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Camera Location</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by location" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Index">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                        <a class="btn btn-success btn" data-modal="" id="btnaddui" href="Create"><i class="fa fa-plus"></i>&nbsp;ADD   </a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                    @if (Model != null)
+                    {<div class="col-md-12">
+                        <div class="pull-right">Total number of records found :  @Model.Count()</div>
+                    </div>
+                        if (Model.Count() > 0)
+                        {
+                            
+
+                        @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                grid.Column("Location", "Location", null, style: "CameraLocationGrid"),
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                        @Html.Raw("<a data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.CameraLocationID + "' id='" + item.CameraLocationID + "''> </a>")
+
+                        </text>)
+
+                            ,
+
+ grid.Column(header: "", canSort: false, format: (item) => Html.ActionLink(" ", "Delete", new { id = item.CameraLocationID },
+    new { onclick = "return confirm('Do you want to delete this camera location?'); ", @Name = "Delete", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs", @title = "Delete", data_toggle = "tooltip", data_placement = "right" }))
+
+     ), mode: WebGridPagerModes.Numeric)
+                        }
+                        else
+                        {
+                        <div>No records found</div>
+                        }
+                    }
+
+                    <script type="text/javascript">
+                        function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                        }
+                    </script>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //$('#myModal').attr("display", "none");
+        window.setTimeout(function () {
+            $(".AutoHide").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+    });
+</script>
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

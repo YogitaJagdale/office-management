@@ -1,0 +1,81 @@
+﻿
+@model IEnumerable<SECU_CAMSPlus_DEV.Models.Manufacturer>
+@{
+    ViewBag.Title = "ManufacturerMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@*@if (TempData["Message"] != null)
+{
+<script >
+    alert('@TempData["Message"]');
+</script>
+}*@
+@if (TempData["Message"] != null)
+{
+<script >
+    alert('@TempData["Message"]');
+    $('#btnCreate').click(function () {
+        window.location.href = '~/Manufacturer/Create';
+        return false;
+    });
+</script>
+}
+<h2>Manufacturer Master</h2>
+<div class="well">
+   @using (Html.BeginForm("ManufacturerMaster", null, FormMethod.Get))
+ {
+               
+        var grid = new WebGrid(Model, canSort: false);
+        <div class="row">
+                   
+            <div class="pull-right col-lg-1">   
+                <a class="btn btn-success" data-modal="" href="Create" id="btnCreate">
+                     <span class="glyphicon glyphicon-plus"></span>      
+                </a>
+                </div>
+            </div>
+       
+
+        <div style="margin-top:17px;">
+               @grid.GetHtml(tableStyle: "table", footerStyle: "foot", columns:
+                grid.Columns
+                (
+                   // grid.Column("MfgID","MfgID"),
+                    grid.Column("DeviceTypeName" ,"Device Name"),
+                    grid.Column("CompanyName", "Company Name"),
+                        
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                  
+                   @Html.Raw("<a data-modal='' href='Edit/" + item.MfgID + "' id='" + item.MfgID + "' title='Edit''> Edit</a>")
+                
+               </text>),
+
+ grid.Column(header: "", format: (item) => Html.ActionLink("Delete", "Delete", new { id = item.MfgID}, 
+    new { onclick = "return confirm('Are you sure you wish to delete this Device?'); " }) )
+       
+ 
+     ), mode: WebGridPagerModes.Numeric)         
+<script type="text/javascript">
+    function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+    }
+</script>
+</div>
+ }
+</div>
+<div id='myModal' class='modal fade in' style="top: 20%;left: 20%;right: 20%;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

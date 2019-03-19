@@ -1,0 +1,212 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.BrandHygieneChecklist>
+
+@{
+    ViewBag.Title = "Brand Hygiene Checklist :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["CheckListMessage"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["CheckListMessage"]
+ </div>
+</div>
+
+    @*<script>
+        alert('@TempData["CheckListMessage"]');
+        
+    </script>*@
+}
+
+@if (TempData["CheckListNoRecordMsg"] != null)
+{
+    
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["CheckListNoRecordMsg"]
+ </div>
+</div>
+   
+@*<script >
+    alert('@TempData["CheckListNoRecordMsg"]');
+   
+</script>*@
+    
+}
+
+
+@if (TempData["AddSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["AddSuccess"]
+ </div>
+</div>
+    //@TempData["AddSuccess"]
+}
+
+
+@if (TempData["EditSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["EditSuccess"]
+ </div>
+</div>
+   // @TempData["EditSuccess"]
+}
+<style>
+    .itemname {
+    width: 500px;
+}
+
+.location {
+    width: 500px;
+}
+</style>
+@using (Html.BeginForm("Index", "BrandHygieneChecklist", FormMethod.Get))
+{
+    <div id="msg" width="100px" ></div>
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Brand Hygiene Checklist</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by Item name or location" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Index">Go</button></span>
+                            </div>
+                            <!-- /input-group -->
+
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-1">
+                        <a class="btn btn-success" data-modal="" href="~/BrandHygieneChecklist/Create" id="btnCreate"><i class="fa fa-plus"></i>&nbsp;ADD
+                        </a>
+
+                         <button class="btn btn-success btn-sm pull-right margin"  disabled='disabled' id="btnDummyaddui" style="display:none"><i class="fa fa-plus"></i>&nbsp;ADD</button>
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="table-responsive">
+                    <div class="pull-right">Total number of records found : @grid.TotalRowCount</div> 
+
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+                        grid.Column("ItemName", "Checklist Item",  style: "itemname"),
+                        grid.Column("CameraLocation", "Camera location", style: "location"),
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                    @* @Html.Raw("<a data-modal='' href='/City/details/" + item.CityID + "' id='" + item.CityID + "' data-toggle='modal' title='Detail'> <span class='glyphicon glyphicon-search'> </span> </a>")*@
+                    @Html.Raw("<a  name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.CheckListID + "' id='" + item.CheckListID + "''></a>")
+
+                     @*@Html.ActionLink(" ", "Edit", new { CameraLocation = item.CameraLocation, ItemName = item.ItemName, id = item.CheckListID}, new { @class = "glyphicon glyphicon-edit btn btn-success btn-xs", title = "Edit" })*@
+
+                    @Html.Raw("<button name='EditNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to edit' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></button>")           
+                    </text>),
+
+            grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.CheckListID },
+            new { onclick = "return confirm('Do you want to delete this check list item?'); ", @Name = "Delete", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs", @title = "Delete", data_toggle = "tooltip", data_placement = "right" })),
+                grid.Column(header: "", canSort: false, style: "action",
+                            format: @<text>
+                    @* @Html.Raw("<a  name='Delete' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs'></a>")*@
+                   @* @Html.Raw("<button name='DeleteNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to delete' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs' ></button>")*@
+                            </text>)
+
+
+     ), mode: WebGridPagerModes.All)
+                    
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="clearfix"></div>
+}
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var res = '@ViewBag.NewAdd';
+
+        if (res == "false" || res == "False") {
+
+            $('#btnCreate').hide();
+            $('#btnDummyaddui').show();
+            $('#btnDummyaddui').attr("title", "No Rights To Add");
+
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false") {
+            $('[name=Edit]').hide();
+            $('[name=EditNew]').show();
+
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false") {
+            $('[name=Delete]').hide();
+            $('[name=DeleteNew]').show();
+
+        }
+
+        $("#btnCreate").on("click", function () {
+            if (res == "false" || res == "False") {
+                $('#myModal').css('display', 'none');
+            }
+        });
+
+        window.setTimeout(function () {
+            $(".AutoHide").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+
+    });
+</script>
+<script>
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    
+</script>

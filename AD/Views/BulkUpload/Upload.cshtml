@@ -1,0 +1,316 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Bulkupload
+@{
+    ViewBag.Title = "Bulk Upload :: CAMSPlus";
+}
+@if (TempData["BulkUploadFailure"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divinvalid").show();
+        //    $("#btndownloadfail").show();
+
+
+        });
+
+    </script>// this script to show failed alerts
+}
+
+@if (Convert.ToInt32(TempData["AllowedPanel"]) == (Convert.ToInt32(TempData["AddedPanel"])) && TempData["BulkUploadSuccess"] == null && Convert.ToString(TempData["AllowedPanel"]) != "")
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            ///For Bulk Upload
+
+            $("#btnupload").attr("Disabled", "Disabled");
+            //$("#btnupload").attr("title", "Cannot upload panel(s) as license limit achieved!");
+
+            $('#divLicenceAlert').attr("style", "display:block");
+            document.getElementById('divLicenceAlert').innerHTML = "Cannot upload panel(s) as license limit achieved.";
+
+        });
+
+    </script>
+}
+
+@if (Convert.ToInt32(TempData["AllowedPanel"]) == (Convert.ToInt32(TempData["AddedPanel"])) && TempData["BulkUploadSuccess"] != null && Convert.ToString(TempData["AllowedPanel"]) != "")
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            ///For Bulk Upload
+            $("#divSuccess").show();
+            $("#btnupload").attr("Disabled", "Disabled");
+            //$("#btnupload").attr("title", "Cannot upload panel(s) as license limit achieved!");
+
+            //$('#divLicenceAlert').attr("style", "display:block");
+            //document.getElementById('divLicenceAlert').innerHTML = "Cannot Upload Panel(s) as License Limit Achieved.";
+
+        });
+
+    </script>
+}
+
+@if (Convert.ToInt32(TempData["Difference"]) <= 500 && Convert.ToInt32(TempData["Difference"]) > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+
+            $('#divLicenceAlert').attr("style", "display:block");
+            document.getElementById('divLicenceAlert').innerHTML = "Only " + @TempData["Difference"] + " panel(s) are remaining for this license.";
+
+        });
+
+    </script>
+}
+@if (TempData["BulkUploadSuccess"] != null && Convert.ToInt32(TempData["Difference"]) <= 500 && Convert.ToInt32(TempData["Difference"]) > 0)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+            //  $("#btndownloadfail").show();
+            $("#divinvalidreq").hide();
+            //$('#divLicenceAlert').hide();
+
+            $('#divLicenceAlert').attr("style", "display:block");
+            document.getElementById('divLicenceAlert').innerHTML = "Only " + @TempData["Difference"] + " panel(s) are remaining for this license.";
+
+        });
+    </script>// this script to show success alerts
+}
+
+@if (TempData["BulkUploadSuccess"] != null && Convert.ToInt32(TempData["Difference"]) >= 500 && Convert.ToInt32(TempData["Difference"]) > 0)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+            //  $("#btndownloadfail").show();
+            $("#divinvalidreq").hide();
+            $('#divLicenceAlert').hide();
+
+        });
+    </script>// this script to show success alerts
+}
+
+@if (TempData["BulkUploadRequired"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divinvalidreq").show();
+
+
+        });
+
+    </script>// this script to show failed alerts
+}
+
+
+@if (TempData["LicenseFailure"] != null && Convert.ToInt32(TempData["Difference"]) == null)
+{
+      <script>
+          $(document).ready(function () {
+              $('#divLicenceAlert').attr("style", "display:none");
+              $("#divinvalidreq").show();
+
+
+          });
+
+    </script>// this script to show failed alerts
+}
+
+
+
+@using (Html.BeginForm(null, "BulkUpload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.Hidden("hdnactivebit", Request.Params["active"], new { @id = "hdnactivebit" })//For radion button selected text   
+         
+    <div class="col-md-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <h2>Bulk Upload</h2>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            @Html.RadioButton("rbtnUpload", "0", true, new { id = "upload", @class = "radiobuttonlist" }) Bulk Upload
+                            @Html.RadioButton("rbtnUpload", "1", false, new { id = "update", @class = "radiobuttonlist" }) Bulk Update
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Upload file</label>
+
+                            <input type="file" name="file" id="FileUpload1" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label>Select Sheet</label>
+                            @Html.DropDownList("SheetType", ViewData["SheetType"] as List<SelectListItem>, new { @class = "form-control", @onchange = "SelectedOperatorComment()"})
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-xs-12" id="divupload">
+                        <div class="form-group">
+                            <input type="submit" name="Command" id="btnupload" value="Upload" class="btn btn-success" />
+                            <input type="submit" name="Command" id="btnDlFile" value="Download Sample" class="btn btn-primary" />
+                        </div>
+                         <div class="alert alert-danger" id="divLicenceAlert" role="alert" style="display: none" align="Left">
+                        
+                    </div>
+                    </div>
+                    <div class="col-xs-12" id="divupdate" hidden="hidden">
+                        <div class="form-group">
+                            <input type="submit" name="Command" id="btnupdate" value="Update" class="btn btn-success" />
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12" id="divinvalid" style="display: none">
+                        <div class="alert alert-danger" role="alert"  align="Left">
+                            @if (TempData["BulkUploadFailure"] != null)
+                            {     
+                                @Html.Raw(TempData["BulkUploadFailure"]);
+                            }
+
+                             </div>
+                            <div class="panel-footer text-center">
+                                <input type="button"  class="btn btn-shadow btn-success"  value="Download Combined Failed & Successful Uploads Detail" onclick="@("window.location.href='" + @Url.Action("LinkButtonUploadStatusReport", "BulkUpload") + "'")    ;" />
+                            </div>
+                       
+                    </div>
+                    <div class="col-md-12" id="divSuccess" style="display: none">
+                        <div class="alert alert-success" role="alert"  align="Left">
+                            @if (TempData["BulkUploadSuccess"] != null)
+                            {       @Html.Raw(@TempData["BulkUploadSuccess"]);
+                            }
+                                </div>
+                          @*  <div class="panel-footer text-center">
+                                <input type="button" class="btn btn-shadow btn-success" value="Download Combined Failed & Successful Uploads Detail" onclick="@("window.location.href='" + @Url.Action("LinkButtonUploadStatusReport", "BulkUpload") + "'")    ;" />
+                            </div>*@
+                    
+                    </div>
+                    <div class="alert alert-danger" id="divinvalidreq" role="alert" style="display: none" align="Left">
+                        @if (TempData["BulkUploadRequired"] != null)
+                        {     
+                            @Html.Raw(TempData["BulkUploadRequired"]);
+                        }
+
+                         @if (TempData["LicenseFailure"] != null)
+                        {     
+                            @Html.Raw(TempData["LicenseFailure"]);
+                        }
+                    </div>
+                    
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger
+        var upload = '@ViewBag.upload';
+        if (upload == "false" || upload == "False") {
+            $("#btnupload").hide();
+        }
+        var update = '@ViewBag.update';
+        if (update == "false" || update == "False") {
+            $("#btnupdate").hide();
+        }
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        debugger
+        $("#update").on("click", function () {
+            debugger;
+            $('#divupload').hide();
+            $('#divupdate').show();
+            $('#divinvalid').hide();
+            $('#divSuccess').hide();
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#upload").on("click", function () {
+            debugger;
+            $('#divupload').show();
+            $('#divupdate').hide();
+            $('#divinvalid').hide();
+            $('#divSuccess').hide();
+            $('divLicenceAlert').show();
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        if ($('#hdnactivebit').val() == "0") {
+            $('#upload').attr('checked', 'checked')
+            $('#divupload').show();
+            $('#divupdate').hide();
+        }
+        else if ($('#hdnactivebit').val() == "1") {
+            $('#update').attr('checked', 'checked')
+            $('#divupdate').show();
+            $('#divupload').hide();
+        }
+
+    });
+</script>
+
+@if (TempData["BulkUploadSuccess"] == null && Convert.ToInt32(TempData["Difference"]) >= 500 )
+{
+    <script>
+        function SelectedOperatorComment() {
+            debugger;
+           
+                //$("#btnupload").attr("Disabled", "Disabled");
+
+                document.getElementById("btnupload").disabled = false;
+                $("#btnupload").attr("title", "Cannot upload panel(s) as license limit achieved!");
+            
+                document.getElementById("btnupload").disabled = false;
+                $("#btnupload").attr("title", "");
+        };
+    </script>// this script to show success alerts
+}
+
+@if (TempData["BulkUploadSuccess"] == null && Convert.ToInt32(TempData["Difference"]) >= 500 )
+{
+    <script>
+        function SelectedOperatorComment() {
+            debugger;
+
+            //$("#btnupload").attr("Disabled", "Disabled");
+
+            document.getElementById("btnupload").disabled = false;
+            $("#btnupload").attr("title", "Cannot upload panel(s) as license limit achieved!");
+
+            document.getElementById("btnupload").disabled = false;
+            $("#btnupload").attr("title", "");
+        };
+    </script>// this script to show success alerts
+}

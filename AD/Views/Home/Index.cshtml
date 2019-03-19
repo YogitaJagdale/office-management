@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "Home :: CAMSPlus";
+}
+
+@section featured {
+  @*<div class="jumbotron">
+    <div class="container">
+   
+     
+    </div>
+  </div>*@
+}
+  @if (TempData["PasswordAlert"] != null)
+    {
+    <script>
+        alert('@TempData["PasswordAlert"]');
+      
+    </script>
+    }
+
+<!-- Example row of columns -->
+<div class="row">
+  <div class="col-md-4">
+   @* <h2>Getting Started</h2>
+    ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+    enables a clean separation of concerns and that gives you full control over markup
+    for enjoyable, agile development. ASP.NET MVC includes many features that enable
+    fast, TDD-friendly development for creating sophisticated applications that use
+    the latest web standards.
+    <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=245151">Learn more &raquo;</a></p>*@
+  </div>
+  <div class="col-md-4">
+    @*<h2>Add NuGet packages and jump-start your coding</h2>
+    <p>NuGet makes it easy to install and update free libraries and tools.</p>
+    <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=245153">Learn more &raquo;</a></p>*@
+  </div>
+  <div class="col-md-4">
+   @* <h2>Find Web Hosting</h2>
+    <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+    <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=245157">Learn more &raquo;</a></p>*@
+  </div>
+</div>

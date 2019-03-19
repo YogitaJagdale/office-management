@@ -1,0 +1,39 @@
+﻿@model SECU_CAMSPlus_DEV.Models.UserInfo
+@{
+    Layout = null;
+}
+<div id="div_Forgotpassword" class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+            <h4 class="modal-title">Forgot Password ?</h4>
+        </div>
+        <div class="modal-body">
+            <p>Enter your e-mail address below to reset your password.</p>
+
+            @*<input type="text" name="LoginID" placeholder="Login ID" autocomplete="off" class="form-control placeholder-no-fix">*@
+          
+               @Html.TextBoxFor(a => a.ForgotLoginID, new { @class = "form-control", @placeholder = "LoginID" })
+                
+               @Html.ValidationMessageFor(a => a.ForgotLoginID)
+               <br />
+            @*<input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">*@
+
+             @Html.TextBoxFor(a => a.Email, new { @class = "form-control", @placeholder = "Email" })
+
+         @*   @Html.ValidationMessageFor(a => a.Email)*@
+
+        </div>
+        <div class="modal-footer">
+            @Html.DisplayFor(a => a.lblMessage, new { @CssClass = "label.error" })
+            @* <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+                          <button class="btn btn-success" type="button">Submit</button>*@
+
+            <input type="button" title="Submit" class="btn btn-default" value="Submit" onclick="location.href='@Url.Action("SendPassword", "Login", new { })    '" />
+
+
+
+            <input type="button" value="Cancel" data-dismiss="modal" class="btn btn-default" />
+        </div>
+    </div>
+</div>

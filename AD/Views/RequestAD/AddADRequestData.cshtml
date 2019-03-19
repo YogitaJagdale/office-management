@@ -1,0 +1,227 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ADRequest
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>AddADRequestData</title>
+    <style>
+        .mt10 {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<script>
+    var auto_refresh;
+    var AutoRefreshTimeOut;
+    AutoRefreshTimeOut = '@System.Web.Configuration.WebConfigurationManager.AppSettings["AutoRefreshTimeOut"]';
+
+    $(document).ready(function () {
+        // debugger;
+        function RefreshPartial() {
+            //this will wait 3 seconds and then fire the load partial function
+            auto_refresh = setTimeout(function () {
+                loadPartialView();
+                //recall this function so that it will continue to loop
+                RefreshPartial();
+            }, AutoRefreshTimeOut);
+        }
+        //initialize the loop
+        RefreshPartial();
+    });
+
+    function loadPartialView() {
+        debugger;
+        $.ajax({
+            url: '@Url.Action("GetLatestImage")',
+            type: 'post',
+            cache: false,
+            async: true,
+            success: function (result) {
+                //$('#ADImage').attr('src', '/RequestAD/GetLatestImage');
+                $('#ADImage').attr('src', '@Url.Action("GetLatestImage", "RequestAD", new { Controller = "RequestAD", Action = "GetLatestImage" })');
+            }
+        });
+        }
+
+        function SaveCancelADRequest() {
+            //debugger;
+            clearInterval(auto_refresh);
+            var action = "Save";
+            ADRequestAction(action);
+        }
+
+        function CancelADRequest() {
+            // debugger;
+            clearInterval(auto_refresh);
+            var action = "Cancel";
+            ADRequestAction(action);
+        }
+
+        function StopAutoRefresh() {
+            //debugger;
+            clearInterval(auto_refresh);
+        }
+
+</script>
+
+<script type="text/javascript">
+
+    function ADRequestAction(action) {
+        //debugger;
+
+
+        var comment = "";
+        var panelid = $('#lblPanelid').text();
+        var clientid = $('#lblClientID').text();
+        var ipaddress = $('#lblIpAdress').text();
+        var loginid = $('#lblLoginID').text();
+        var StartDate = $('#lblStartDate').text();
+        var StartTime = $('#lblStartTime').text();
+        var EndTime = $('#lblEndtime').text();
+        var cameraNo = $('#lblCameraNo').text();
+
+        comment = $('#txtSelectedComment').val();
+
+        if (comment != "") {              //To check if Comment is added or Not
+            jQuery.ajax({
+                url: '@Url.Action("CancelADRequest")',
+                type: 'POST',
+                data: {
+                    PanelID: panelid,
+                    ClientID: clientid,
+                    IPAddress: ipaddress,
+                    LoginId: loginid,
+                    Request: action,
+                    StartDate: StartDate,
+                    StartTime: StartTime,
+                    EndTime: EndTime,
+                    Comments: comment,
+                    CameraNo: cameraNo,
+                },
+                success: function (response) {
+                    //debugger
+                    //window.location.href = "/RequestAD/Index";
+                    window.location.href = "@Url.Action("Index", "RequestAD", new { Controller = "RequestAD", Action = "Index" })";
+                }
+            });
+            }
+            else {
+                alert("Please add AD Request Closure Comment");
+                return false;
+            }
+        }
+
+</script>
+
+<body>
+    <div>
+
+        <div class="col-md-5">
+            <div id="divimage">
+                @*@Html.Label("", @Model.Remark, htmlAttributes: new { id = "lblRemark", style = "display:block;color: red;font-size: medium;" })*@
+                <img class="img-responsive" src="@Url.Action("GetImage", "RequestAD", new { Controller = "RequestAD", Action = "GetImage" ,id = @Model.SrNo})" id="ADImage"/>
+            </div>
+        </div>
+
+
+        <div class="col-md-7">
+            <table id="AD_Details" class="table table-bordered table-striped">
+                <colgroup>
+                    <col width="30%" />
+                    <col width="70%" />
+                </colgroup>
+                <tr>
+                    <td>Panel ID : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.PanelID)
+                        @Html.Label("", @Model.PanelID, htmlAttributes: new { id = "lblPanelid", value = @Model.PanelID, text = @Model.PanelID, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Client Name : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Client_Name)
+                        @Html.Label("", @Model.ClientID, htmlAttributes: new { id = "lblClientID", value = @Model.ClientID, text = @Model.ClientID, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Date : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.StartDate)
+                        @Html.Label("", @Model.StartDate.ToString("dd-MM-yyyy"), htmlAttributes: new { id = "lblStartDate", text = @Model.StartDate.ToString("dd-MM-yyyy"), style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>Start Time : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.StartTime)
+                        @Html.Label("", @Model.StartTime, htmlAttributes: new { id = "lblStartTime", text = @Model.StartTime, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>End Time : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.EndTime)
+                        @Html.Label("", @Model.EndTime, htmlAttributes: new { id = "lblEndtime", text = @Model.EndTime, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>DVR IP / Panel IP : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.Panel_IP)
+                        @Html.Label("", @Model.Panel_IP, htmlAttributes: new { id = "lblIpAdress", text = @Model.Panel_IP, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>DVR Port : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.DVRPort)
+                    </td>
+                </tr>
+                <tr>
+                    <td>DVR Type : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.DVRType)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Camera NO : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.CameraNo)
+                        @Html.Label("", @Model.CameraNo.ToString(), htmlAttributes: new { id = "lblCameraNo", text = @Model.CameraNo, style = "display:none" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>LoginID : </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => modelItem.LoginId)
+                        @Html.Label("", @Model.LoginId, htmlAttributes: new { id = "lblLoginID", value = @Model.LoginId, text = @Model.LoginId, style = "display:none" })
+                    </td>
+                </tr>
+
+            </table>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.TextArea("txtSelectedComment", null, new { @class = "form-control", placeholder = "Comments", onclick = "StopAutoRefresh()" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group pull-left mt10">
+                        <input id="btnSaveCloseADRequest" type="button" class="btn btn-success" value="Save & Cancel" onclick="SaveCancelADRequest();" />
+                        <input id="btnCloseADRequest" type="button" class="btn btn-warning" value="Cancel" onclick="CancelADRequest();" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

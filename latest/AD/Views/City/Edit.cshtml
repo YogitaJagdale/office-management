@@ -1,0 +1,83 @@
+﻿@model SECU_CAMSPlus_DEV.Models.City
+
+@{
+    ViewBag.Title = "City :: CAMSPlus";
+    Layout = null;
+}
+
+@if (TempData["noticeEdit"] != null)
+{
+    <script> $("#divSuccess").show();</script>// this script to show successslerts
+}
+
+@if (TempData["invalidmsgEdit"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+
+<div class="modal-header">
+    <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit City Master</h3>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.StateName, new { @class = "control-label" })
+                    @Html.DropDownList("statename", null, "---Select---", new { @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.StateName, null, new { @class = "valiation" })
+
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.CityName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.CityName, new { @onkeypress = "return charonly()", @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.CityName, null, new { @class = "valiation" })
+
+                </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsgEdit"] != null)
+            {      @TempData["invalidmsgEdit"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["noticeEdit"] != null)
+            {      @TempData["noticeEdit"]
+
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" onclick="return confirm('Do you want to update this city?');" />
+            @*  <input class="btn btn-primary" type="submit" value="Save"  onclick="@("window.location.href='" + @Url.Action("Edit", "city",new { id=Model.CityID}) + "'") ;   " />*@
+            <input type="button"  class="btn btn-warning"  value="Close" onclick="@("window.location.href='" + @Url.Action("Index", "city") + "'")    ;" />
+        </div>
+    </div>
+}
+<script>
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+</script>

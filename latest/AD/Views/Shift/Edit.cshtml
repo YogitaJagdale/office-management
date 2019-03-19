@@ -1,0 +1,92 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Shift
+
+@{
+    ViewBag.Title = "EditShifts";
+    Layout = null;
+}
+
+@*<h2>EditShifts</h2>*@
+
+
+
+@if (TempData["noticeEdit"] != null)
+{
+    <script> $("#divSuccess").show();</script>// this script to show successslerts
+}
+
+@if (TempData["invalidmsgEdit"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+
+@using (Html.BeginForm())
+{
+
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.SearchList, new { @class = "control-label" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ShiftName, new { @class = "control-label" })
+                    @Html.TextBoxFor(Model => Model.ShiftName, htmlAttributes: new { @class = "form-control required" })
+                    @Html.ValidationMessageFor(model => model.ShiftName)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.TimeFrom, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.TimeFrom, new { type = "time", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TimeFrom)
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.TimeTo, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.TimeTo, new { type = "time", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TimeTo)
+                </div>
+
+
+
+
+            </div>
+            <div class="col-md-12">
+                @Html.ValidationMessageFor(m => m.SearchList)
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+            
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsgEdit"] != null)
+            {      @TempData["invalidmsgEdit"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["noticeEdit"] != null)
+            {      @TempData["noticeEdit"]
+
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" onclick="return confirm('Are you sure you wish to update this Shift?');" />
+            @*  <input class="btn btn-primary" type="submit" value="Save"  onclick="@("window.location.href='" + @Url.Action("Edit", "city",new { id=Model.CityID}) + "'") ;   " />*@
+            <input type="button"  class="btn btn-warning"  value="Close" onclick="@("window.location.href='" + @Url.Action("ShiftMaster", "shift") + "'")    ;" />
+        </div>
+    </div>
+}

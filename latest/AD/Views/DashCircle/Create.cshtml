@@ -1,0 +1,65 @@
+﻿@model SECU_CAMSPlus_DEV.Models.DashCircle
+
+@{
+    Layout = null;
+}
+
+@if (TempData["DashCircleFail"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["DashCircleSuccess"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show success alerts
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Add Circle</h3>
+</div>
+
+
+@using (Html.BeginForm("Create", "DashCircle", FormMethod.Post))
+{
+ 
+    @Html.AntiForgeryToken()
+    
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DashCircleName, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DashCircleName, htmlAttributes: new { @class = "form-control"})
+                    @Html.ValidationMessageFor(m => m.DashCircleName, null, new { @class = "valiation" })
+                </div>
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["DashCircleFail"] != null)
+            {      @TempData["DashCircleFail"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["DashCircleSuccess"] != null)
+            {      @TempData["DashCircleSuccess"]
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="Wait" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnadd" onclick="return confirm('Are you sure you wish to add  dashboard circle?');" />
+          <input type="button" class="btn btn-warning"  data-dismiss="modal" value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "DashCircle") + "'")    ;" />
+        </div>
+    </div>
+}
+

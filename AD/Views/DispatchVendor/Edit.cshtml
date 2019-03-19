@@ -1,0 +1,387 @@
+﻿@model SECU_CAMSPlus_DEV.Models.DispatchVendors
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $("#btnUpdate").attr('disabled', true);
+    </script>
+}
+<script language="javascript" type="text/javascript">
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 40 || ascii == 41 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47)
+            || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    }
+    function IsValidCompanyName() {
+        $("#errorIsValidCompanyName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  
+        var pwdval = $("#txtCompanyName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtCompanyName").after('<span id="errorIsValidCompanyName" class="mandatory">Enter Valid Company Name</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidCompanyName").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidCompanyAddress() {
+        $("#errorIsValidCompanyAddress").html('');
+        var pwdreg = /^[a-zA-Z0-9 \.\-\/ , ( )]+$/;
+        var pwdval = $("#txtCompanyAddress").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtCompanyAddress").after('<span id="errorIsValidCompanyAddress" class="mandatory">Enter Valid Company Address</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidCompanyAddress").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidPinCode() {
+        $("#errorIsValidPinCode").html('');
+        var pwdreg = /^[0-9]{6,6}$/;
+        var pwdval = $("#txtPinCode").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtPinCode").after('<span id="errorIsValidPinCode" class="mandatory">Enter Valid Pin Code</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidPinCode").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidContactPerson() {
+        $("#errorIsValidContactPersone").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  
+        var pwdval = $("#txtContactPerson").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtContactPerson").after('<span id="errorIsValidContactPersone" class="mandatory">Enter Valid Contact Persone Name</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidContactPersone").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidPhoneNo() {
+        $("#errorIsValidPhoneNo").html('');
+        var pwdreg = /^[0-9]{10,12}$/;
+        var pwdval = $("#txtPhoneNo").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtPhoneNo").after('<span id="errorIsValidPhoneNo" class="mandatory">Enter valid Phone No. with STD code</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidPhoneNo").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidMobileNo() {
+        $("#errorIsValidMobileNo").html('');
+        var pwdreg = /^91[0-9]{10,12}$/;
+        var pwdval = $("#txtMobileNo").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtMobileNo").after('<span id="errorIsValidMobileNo" class="mandatory">Enter Valid Mobile No start with 91</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidMobileNo").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidEmailID() {
+        $("#errorIsValidEmailID").html('');
+        var pwdreg = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,6})?$/;
+        var pwdval = $("#txtEmailID").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtEmailID").after('<span id="errorIsValidEmailID" class="mandatory">Enter Valid Email ID</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else if ($("#txtEmailID").val() == '') {
+            $("#txtEmailID").after('<span id="errorIsValidEmailID" class="mandatory">Enter Valid Email ID</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidEmailID").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function IsselectedState() {
+        $("#errorIsValidstate").html('');
+        var ddlState = $("#ddlState");
+        if (ddlState.val() == "") {
+            $("#ddlState").after('<span id="errorIsValidstate" class="mandatory">Please Select State</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidstate").html('');
+        }
+    }
+
+    function IsselectedCity() {
+        $("#errorIsValidCity").html('');
+        var ddlCity = $("#ddlCity");
+        if (ddlCity.val() == "") {
+            $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            $("#btnUpdate").attr('disabled', false);
+            return false;
+        }
+        else {
+            $("#errorIsValidCity").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function setValue() {
+        $("#txtCompanyName").attr("value", "");
+        $("#txtCompanyAddress").attr("value", "");
+        $("#txtPinCode").attr("value", "");
+        $("#txtContactPerson").attr("value", "");
+        $("#txtPhoneNo").attr("value", "");
+        $("#txtMobileNo").attr("value", "");
+        $("#txtEmailID").attr("value", "");
+
+        $("#errorIsValidCompanyName").remove();
+        $("#errorIsValidCompanyAddress").remove();
+        $("#errorIsValidPinCode").remove();
+        $("#errorIsValidContactPersone").remove();
+        $("#errorIsValidPhoneNo").remove();
+        $("#errorIsValidMobileNo").remove();
+        $("#errorIsValidstate").remove();
+        $("#errorIsValidCity").remove();
+        $("#errorIsValidEmailID").remove();
+        $('#btnUpdate').attr('disabled', true);
+    }
+</script>
+
+
+<div class="modal-header">
+  <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+@using (Html.BeginForm("Edit", "DispatchVendor", FormMethod.Post, new { @id = "FormDispatchVendorEdit" }))
+{
+   
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p class="mandatory">
+                            Fields marked by (*) are mandatory
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.CompanyName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.CompanyName, new { id = "txtCompanyName", @onblur = "IsValidCompanyName()",
+                           maxlength = 50, @class = "form-control required", @readonly = "readonly", @onkeypress = "return charonly(event)"})
+                            @Html.ValidationMessageFor(m => m.CompanyName,null,new { @class = "valiation",id="errorIsValidCompanyName" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.CompanyAddress, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.CompanyAddress, new {autocomplete="off", id = "txtCompanyAddress", @onblur = "IsValidCompanyAddress()", 
+                           maxlength = 150, @class = "form-control required", @onkeypress = "return varcharonly(event)" })
+                             @Html.ValidationMessageFor(m => m.CompanyAddress,null,new { @class = "valiation",id="errorIsValidCompanyAddress" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.StateName, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.StateName, new SelectList(ViewBag.States, "Value", "Text"), "---Select---", 
+                            new { @onclick="IsselectedState()", @class = "form-control required", @id = "ddlState" })
+                             @Html.ValidationMessageFor(m => m.StateName,null,new { @class = "valiation",id="errorIsValidstate" })                    
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.CityName, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.CityName, new SelectList(ViewBag.City, "Value", "Text"), "---Select---",
+                            new { @onclick="IsselectedCity()", @class = "form-control required", @id = "ddlCity" })
+                             @Html.ValidationMessageFor(m => m.CityName,null,new { @class = "valiation",id="errorIsValidCity" })
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.PinCode, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.PinCode, new {autocomplete="off", id = "txtPinCode", @onblur = "IsValidPinCode()", maxlength = 6, 
+                           @class = "form-control required", @onkeypress = "return validateNumber(event)"})
+                              @Html.ValidationMessageFor(m => m.PinCode,null,new { @class = "valiation",id="errorIsValidPinCode" })
+                        </div>
+                    </div>
+                    <div id="divDeviceVersion" class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.ContactPersonName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.ContactPersonName, new {autocomplete="off", id = "txtContactPerson", @onblur = "IsValidContactPerson()",
+                           maxlength = 50, @class = "form-control required", @onkeypress = "return charonly(event)" })
+                           @Html.ValidationMessageFor(m => m.ContactPersonName,null,new { @class = "valiation",id="errorIsValidContactPersone" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.PhoneNo, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.PhoneNo, new { id = "txtPhoneNo", @onblur = "IsValidPhoneNo()", maxlength = 12,
+                           @class = "form-control required", @onkeypress = "return validateNumber(event)"})
+                           @Html.ValidationMessageFor(m => m.PhoneNo,null,new { @class = "valiation",id="errorIsValidPhoneNo" })
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.MobileNo, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.MobileNo, new { id = "txtMobileNo", @onblur = "IsValidMobileNo()", maxlength = 12, 
+                           @class = "form-control required", @onkeypress = "return validateNumber(event)"})
+                          @Html.ValidationMessageFor(m => m.MobileNo,null,new { @class = "valiation" ,id="errorIsValidMobileNo"})
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.EmailID, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.EmailID, new { id = "txtEmailID", @onblur = "IsValidEmailID()",
+                             maxlength = 50, @class = "form-control required" })
+                           @Html.ValidationMessageFor(m => m.EmailID,null,new { @class = "valiation", id="errorIsValidEmailID"})
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>   
+
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" id="btnUpdate" 
+                        onclick="if ($('#ddlState').val() != '' && $('#ddlCity').val() != '')
+                    { return confirm('Do you want to update this Dispatch Vendor Details?') };" />
+            <input type="button"  class="btn btn-warning"  value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "DispatchVendor") + "'") ;" />
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $("#ddlState").change(function ()
+    {
+        var url = '@Url.Content("~/")' + "DispatchVendor/GetSelectedCity";
+        var ddlsource = "#ddlState";
+        var ddltarget = "#ddlCity";
+        $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+
+            $(ddltarget).empty();
+            var markup = "<option value='0'>---Select---</option>";
+            $(ddltarget).append(markup);
+            $.each(data, function (index, optionData) {
+                $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+            });
+        });
+        if ($("#ddlState").val() != "")
+        {
+            $("#errorIsValidCity").html('');
+            $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+    });
+
+    $('#ddlCity').click(function ()
+    {
+        if ($("#ddlCity").val() == "" || $("#ddlCity").val() == '0')
+        {
+            $("#errorIsValidCity").html('');
+            $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else
+        {
+            $("#btnUpdate").attr('disabled', false);
+        }      
+    });
+    $('#btnUpdate').click(function () {
+        
+        if ($("#ddlCity").val() == '0' || $("#ddlCity").val() == '')
+        {
+            $("#errorIsValidCity").html('');
+            $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#btnUpdate").attr('disabled', false);
+        }
+    });
+
+</script>

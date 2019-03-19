@@ -1,0 +1,540 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Project
+
+@{
+    ViewBag.Title = "Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .showrow {
+        visibility: visible;
+    }
+
+    .hiderow {
+        visibility: hidden;
+        display: none;
+    }
+</style>
+<script>
+    function getZeroAppended(num, lengthOfNumber) {
+        console.log(num);
+        var newnum = "";
+        if (num.toString().length == "1") {
+            newnum = "00" + num.toString();
+        }
+        else if (num.toString().length == "2") {
+            newnum = "0" + num.toString();
+        }
+        else {
+            newnum = num.toString();
+        }
+        return newnum;
+        console.log(newnum);
+    }
+    $(document).ready(function () {
+
+        history.pushState(null, null, location.href);
+        window.onpopstate = function (event) {
+            history.go(1);
+        };
+        $('.foronchange').on('change', function () {
+            var url = '@Url.Content("~/")' + "Project/CamModel_SelectedState";
+            source = $(this)[0];
+            // console.log(source);
+
+            // console.log('onchange fired');
+            $.getJSON(url, { id: $(this).val() }, function (data) {
+                //console.log(data);
+                //console.log($(source).class);
+                var ddltarget = $(source).parent().next().find('.ddlcammodel')[0];
+                // console.log(ddltarget);
+                $(ddltarget).empty();
+                var markup = "<option value='0'>---Select---</option>";
+                $(ddltarget).append(markup);
+                $.each(data, function (index, optionData) {
+                    // console.log(optionData);
+
+                    $(ddltarget).append(" <option value='" + optionData.Value + "' >" + optionData.Text + "</option>");
+
+                });
+
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#btnadd").on("click", function () {
+
+            var status = true;
+            var errors = "";
+            $('.table >  tbody  > tr').each(function (index) {
+
+                index = index + 1;
+                if ($(this).hasClass('showrow')) { //You can also use $(this).hasClass
+                    var ddlsource = "#CAMMfgID" + getZeroAppended(index, 3);
+                    var ddltarget = "#CAMModelID" + getZeroAppended(index, 3);
+                    if ($(ddlsource).val() == "0") {
+                        errors += "Please select valid camera manufacturer.<br/>";
+                        status = false;
+                        return// true;
+
+                    }
+                    else if ($(ddltarget).val() == "0") {
+                        errors += "Please select valid camera model.<br/>";
+                        status = false;
+                        return// false;
+                    }
+                }
+                //   }
+            });
+
+
+            if (status == true) {
+                $("form")[0].submit();
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+
+        });
+
+        $("#btnfinish").on("click", function () {
+
+            var status = true;
+            var errors = "";
+            $('.table >  tbody  > tr').each(function (index) {
+
+                index = index + 1;
+                if ($(this).hasClass('showrow')) { //You can also use $(this).hasClass
+                    var ddlsource = "#CAMMfgID" + getZeroAppended(index, 3);
+                    var ddltarget = "#CAMModelID" + getZeroAppended(index, 3);
+                    if ($(ddlsource).val() == "0") {
+                        errors += "Please select valid sensor manufacturer.<br/>";
+                        status = false;
+                        return// true;
+
+                    }
+                    else if ($(ddltarget).val() == "0") {
+                        errors += "Please select valid sensor model.<br/>";
+                        status = false;
+                        return// false;
+                    }
+                }
+                //   }
+            });
+
+
+            if (status == true) {
+                $("form")[0].submit();
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+
+        });
+    });
+</script>
+
+@using (Html.BeginForm("NewCameraMFGStep3", "Project", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>View Project</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="note note-info margin-top0 ">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 class="box-heading">@Html.Label("lblprojectname", Convert.ToString(Session["ProjectName"]), new { @class = "ProjectLabel" })</h3>
+                                    <p>Camera List - Configure the Manufacturers details of Camera, DVR, Router and Network Provider</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                            @if (TempData["invalidmsg"] != null)
+                            {      @TempData["invalidmsg"]
+
+                            }
+                        </div>
+
+                        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                            @if (TempData["notice"] != null)
+                            {      @TempData["notice"]
+
+                            }
+                        </div>
+
+
+                    </div>
+
+                    
+                </div>
+                <div class="clo-lg-12">
+
+                        <div id="divval" class="valiation"></div>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Camera No
+                                    </th>
+                                    <th>Camera Manufacturer
+                                    </th>
+                                    <th>Camera Model
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="@( Model.CameraNo001 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;"  >
+
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo001)
+                                        @Html.HiddenFor(m => m.CameraNo001)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID001, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID001, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+
+                                <tr class="@( Model.CameraNo002 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo002)
+                                        @Html.HiddenFor(m => m.CameraNo002)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID002, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID002, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo003 != "" ? "showrow" : "hiderow") " style="border-top: 1px solid #ddd;">
+
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo003)
+                                        @Html.HiddenFor(m => m.CameraNo003)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID003, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID003, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo004 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo004)
+                                        @Html.HiddenFor(m => m.CameraNo004)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID004, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID004, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo005 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo005)
+                                        @Html.HiddenFor(m => m.CameraNo005)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID005, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID005, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo006 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo006)
+                                        @Html.HiddenFor(m => m.CameraNo006)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID006, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID006, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo007 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo007)
+                                        @Html.HiddenFor(m => m.CameraNo007)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID007, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID007, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo008 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo008)
+                                        @Html.HiddenFor(m => m.CameraNo008)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID008, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID008, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo009 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo009)
+                                        @Html.HiddenFor(m => m.CameraNo009)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID009, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID009, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo010 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo010)
+                                        @Html.HiddenFor(m => m.CameraNo010)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID010, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID010, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo011 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo011)
+                                        @Html.HiddenFor(m => m.CameraNo011)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID011, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID011, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo012 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo012)
+                                        @Html.HiddenFor(m => m.CameraNo012)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID012, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID012, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo013 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo013)
+                                        @Html.HiddenFor(m => m.CameraNo013)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID013, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID013, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+
+                                <tr class="@( Model.CameraNo014 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo014)
+                                        @Html.HiddenFor(m => m.CameraNo014)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID014, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID014, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr class="@( Model.CameraNo015 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo015)
+                                        @Html.HiddenFor(m => m.CameraNo015)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID015, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID015, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+
+                                <tr class="@( Model.CameraNo016 != "" ? "showrow" : "hiderow")" style="border-top: 1px solid #ddd;">
+                                    <td>
+                                        @Html.DisplayFor(m => m.CameraNo016)
+                                        @Html.HiddenFor(m => m.CameraNo016)
+                                    </td>
+                                    <td>
+                                        @Html.DropDownListFor(x => x.CAMMfgID016, new SelectList(ViewBag.CameraMfgList, "Value", "Text"), new { @class = " form-control required foronchange " })
+                                    </td>
+                                    <td>
+
+                                        @Html.DropDownListFor(x => x.CAMModelID016, new SelectList(ViewBag.empty, "Value", "Text"), new { @class = " form-control required ddlcammodel " })
+
+                                        @* <select id="ddlProjectID" name="State" class="ddlcammodel form-control required" >
+                                                   <option value="0">---Select---</option>
+                                               </select>*@
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @Html.HiddenFor(m => m.ProjectName)
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+            </div>
+
+            <div class="panel-footer text-center">
+                @if (Session["ZoneNotInProject"] == "Yes")
+                {
+                    <input class="btn btn-info" type="button" value="Finish" id="btnfinish" />
+                }
+                else
+                {
+                    <input class="btn btn-success" type="button" value="Next" id="btnadd" />
+                }
+
+
+
+                @Html.ActionLink(
+                "Cancel",
+                "DiscardChnages",
+                "Project",
+                new { onclick = "return confirm('If you exit now, the project will not be created. You may run setup again. Do you want to cancel setup ?')", @class = "btn btn-warning" })
+            </div>
+        </div>
+    </div>
+           
+    
+   
+
+    <span id="progress" class="text-center" style="display: none;">
+        <img src="/images/ajax-loader.gif" alt="wiat" />
+        Wait..
+    </span>
+}
+

@@ -1,0 +1,315 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ZoneMaster
+@{
+    ViewBag.Title = "Panel Message Tracking :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", name = "editProjDetailsForm" }))
+{    
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Panel Message Tracking </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="">
+                    <p class="mandatory">Note: Panel Tracking will Start after <label id="lblAutoStart"></label> seconds.</p>
+                    @*<p class="mandatory">Note: Panel Tracking will Automatically Stop after <label id="lblAutoStop"></label> minutes.</p>*@
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => Model.ClientId, new { @class = "control-label" })
+                        @Html.DropDownListFor(m => m.ClientId, new SelectList(Model.ClientList as System.Collections.IEnumerable, "Value", "Text", Model.ClientId), "------select------",
+               new { @class = "form-control required", @id = "ddlClientID" })
+                    </div>
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(m => Model.PanelId, new { @class = "control-label" })
+                        @Html.DropDownListFor(m => m.PanelId, new SelectList(Model.PanelList as System.Collections.IEnumerable, "Value", "Text", Model.PanelId), "------select------",
+                   new { @class = "form-control required", @id = "ddlPanelId" })
+                    </div>
+                    <div class="col-md-4 m-top20">
+                        <input class="btn btn-info btn-md" type="button" value="Start Tracking" id="btnStartTacking" />
+                        <a class="btn btn-danger" onclick="stopRefresh()" id="btnstop" style="display: none">Stop Tracking</a>
+                        <input class="btn btn-info btn-md" type="button" id="btnPrint" onclick="PrintDiv();" style="display: none" value="Print" />
+                    </div>
+                </div> 
+                <div id="divPanleTracking">              
+                <div class="form-inline m-top20"  id="divPanelLocation">
+                    <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="pull-left">Panel Location : <label id="lblPanelLocation"></label> </label> 
+                        </div>
+                    </div>
+                </div>
+                <div id="dvCategoryResults" style="display: none">
+                    @Html.Action("_PartialView", "PanelMessageTrackPartial")
+                </div>
+                <br>
+              </div>
+            </div>
+        </div>
+    </div>
+           
+}
+
+<script>
+    function stopRefresh()
+    {
+        debugger;
+        clearInterval(1);
+        clearTimeout(2);
+        clearInterval(auto_refresh);
+        $("#btnStartTacking").show()
+        $("#btnstop").hide();
+        $("#divMessageTrackingStop").hide();
+        $("#dvCategoryResults").show();
+    }
+
+</script>
+
+<script type="text/javascript">
+    var refreshIntervalId;
+    var TrackingtimeOut;
+    var auto_refresh;
+
+    function PrintDiv()
+    {
+        var divContents = document.getElementById("divPanleTracking");
+        var printWindow = window.open('', '', 'height=200,width=400');
+        printWindow.document.write('<html><head><title> Panle Tracking Details</title>');
+        printWindow.document.write('</head><body >');
+        printWindow.document.write('Select Client * =' + $('#ddlClientID').val() + ' </br>');
+        printWindow.document.write('Select Panel ID * =' + $('#ddlPanelId').val() + ' ');
+        printWindow.document.write(divContents.innerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    $(document).ready(function ()
+    {
+        debugger;
+        $('#btnStartTacking').hide();
+   
+        TrackingtimeOut = '@System.Web.Configuration.WebConfigurationManager.AppSettings["StopTrackingtimeOut"]';
+        refreshIntervalId = '@System.Web.Configuration.WebConfigurationManager.AppSettings["TrackingrefreshInterval"]';
+        msToHMS(refreshIntervalId);
+        StopTrackingtimeOutmsToHMS(TrackingtimeOut);
+        refreshIntervalId = setInterval("$('#dvCategoryResults').load('_PartialView')", refreshIntervalId);
+
+        var auto_refresh;
+        var AutoRefreshTimeOut;
+        AutoRefreshTimeOut = '@System.Web.Configuration.WebConfigurationManager.AppSettings["AutoRefreshTrackingTime"]';
+
+        function msToHMS(ms) {
+            debugger;
+            var seconds = ms / 1000;
+            seconds = seconds % 60;
+            $('#lblAutoStart').text(seconds);
+        }
+
+        function StopTrackingtimeOutmsToHMS(ms2) {
+            debugger;
+            var StopTrackingseconds = ms2 / 1000;
+            StopTrackingseconds = StopTrackingseconds % 60;
+            $('#lblAutoStop').text(StopTrackingseconds);
+        }
+       
+
+        if ($('#ddlPanelId').val() == '0') {
+            $('#btnStartTacking').hide()
+        }
+
+        $("#btnstop").click(function () {
+            $("#btnPrint").show();
+            var url = "StopTracking";
+            $.get(url, function (data) {
+            });
+            $("#dvCategoryResults").attr("style", "display: none");
+        });
+
+
+        if ($('#ddlClientID').val() != '' && $('#ddlPanelId').val() != '') {
+            $("#btnstop").show();
+            $("#dvCategoryResults").show();
+        }
+
+        $('#ddlClientID').change(function () {
+            $("#lblPanelLocation").text('');
+            var url = "bindPanelList";
+            $.ajax({
+                url: url,
+                data: { ClientID: $('#ddlClientID').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>------select------</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $("#ddlPanelId").html(markup).show();
+                    $("#errorIsValidPanelId").html('');
+                    $("#ddlPanelId").after('<span id="errorIsValidPanelId" class="valiation">Please Select Panel ID *</span>');
+                },
+                error: function (reponse) {
+
+                }
+            });
+        });
+
+
+        $('#ddlPanelId').change(function () {
+            $("#lblPanelLocation").show();
+            if ($('#ddlPanelId').val() == '0' || $('#ddlPanelId').val() == "") {
+                $("#lblPanelLocation").text('');
+                $('#btnStartTacking').hide()
+            }
+            else {
+                $('#btnStartTacking').show()
+                $("#GrideviewDiv").show();
+                $("#btnstop").hide();
+                $("#errorIsValidPanelId").html('');
+            }
+        });
+
+
+        $('#ddlPanelId').click(function () {
+            $("#lblPanelLocation").show();
+            if ($('#ddlPanelId').val() == '0')
+            {
+                $("#lblPanelLocation").text('');
+                $('#btnStartTacking').hide()
+            }
+            else {
+                $('#btnStartTacking').show()
+                $("#GrideviewDiv").show();
+                $("#btnstop").hide();
+                $("#errorIsValidPanelId").html('');
+            }
+        });
+
+        //$("#btnStartTacking").click(function () {
+        //    debugger;
+        //    $("#btnPrint").show();
+        //    $("#errorIsValidPanelId").html('');
+        //    setTimeout(function ()
+        //    {
+        //        debugger;
+        //        var url = "StopTracking";
+        //        $.get(url, function (data) {
+
+        //        });
+        //        stopRefresh();
+        //        alert("Panel Tracking Stop");
+
+        //    }, TrackingtimeOut);
+
+        //    $.ajax({
+        //        url: "index",
+        //        type: "GET",
+        //        data: { ClientID: $('#ddlClientID').val(), PanelId: $('#ddlPanelId').val() },
+        //        success: function (response) { },
+        //        error: function (response) { }
+        //    });
+            
+        //    $("#divMessageTrackingStop").hide();
+        //    $("#btnstop").show();
+        //    $("#dvCategoryResults").show();
+        //    $("#btnStartTacking").hide();
+        //    var url = "index";
+        //    $.get(url, function (data) {
+
+        //    });
+        //});
+
+
+        $("#btnStartTacking").click(function () {
+           debugger;
+            //refreshIntervalId = setInterval("$('#dvCategoryResults').load('_PartialView')", refreshIntervalId);
+            //$("#btnPrint").show();
+            //$("#errorIsValidPanelId").html('');
+
+            setTimeout(function () {
+                debugger;
+                var url = "StopTracking";
+                $.get(url, function (data) {
+                });
+                stopRefresh();
+                $("#dvCategoryResults").attr("style", "display: none");
+                alert("Panel Tracking Stopped");
+                return false;
+
+            }, TrackingtimeOut);
+
+            function RefreshPartialTracking() {
+                //this will wait 3 seconds and then fire the load partial function
+                auto_refresh = setTimeout(function () {
+                    RefreshTracking();
+                    //recall this function so that it will continue to loop
+                    RefreshPartialTracking();
+                }, AutoRefreshTimeOut);
+            }
+            //initialize the loop
+            //RefreshPartial();
+
+            $.ajax({  //To Send PT Message to Outgoing Reader
+                url: "StartTracking",
+                data: { ClientID: $('#ddlClientID').val(), PanelId: $('#ddlPanelId').val() },
+                success: function (response) {
+                    //debugger;
+                    RefreshTracking();
+                },
+                error: function (response) {
+                    alert('Error!!!')
+                }
+            });
+        });
+
+        function RefreshTracking() {  //To get latest Messages
+          debugger;
+
+          $.ajax({
+              url: "index",
+              type: "GET",
+              data: { ClientID: $('#ddlClientID').val(), PanelId: $('#ddlPanelId').val() },
+              success: function (response) { },
+              error: function (response) { }
+          });
+
+          $("#divMessageTrackingStop").hide();
+          $("#btnstop").show();
+          $("#dvCategoryResults").show();
+          $("#btnStartTacking").hide();
+          var url = "index";
+          $.get(url, function (data) {
+
+          });
+        };
+
+
+        $("#ddlPanelId").change(function ()
+        {
+            $("#lblPanelLocation").show();
+            var ddlsource = "#ddlPanelId";
+            var ddlClientID = "#ddlClientID";
+            var ddltarget = "#ddlPanelId";
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetPanelLocation")', 
+            dataType: 'json',
+            data: { PanelID: $(ddlsource).val(), ClientID: $(ddlClientID).val() },
+            async: false,
+            success: function (data) {
+                $('#lblPanelLocation').text(data.Text);
+            },
+
+        });
+        return false;
+    });
+    });
+</script>

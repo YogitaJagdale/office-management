@@ -1,0 +1,839 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.ADinfo>
+
+@{
+    ViewBag.Title = "Auto AD :: CAMSPlus";
+    Layout = null;
+    
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Auto AD :: CAMSPlus</title>
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../Content/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../Content/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../Content/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../Content/ico/apple-touch-icon-57-precomposed.png">
+    <link href="../Content/ico/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <link href="~/Content/animate.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/jquery")
+
+
+
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @Scripts.Render("~/Scripts/modernizr-2.5.3.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.min.js")
+    @Scripts.Render("~/Scripts/jquery.validate.min.js")
+    <script src="~/Scripts/wow.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var bodyHeight = $("body").height();
+            var vwptHeight = $(window).height();
+            if (vwptHeight > bodyHeight) {
+                $("footer#colophon").css("position", "absolute").css("bottom", 0);
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".dropdown").hover(
+                function () {
+                    $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn("400");
+                    $(this).toggleClass('open');
+                },
+                function () {
+                    $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut("400");
+                    $(this).toggleClass('open');
+                }
+            );
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            // hide #back-top first
+            $("#back-top").hide();
+
+            // fade in #back-top
+            $(function () {
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 100) {
+                        $('#back-top').fadeIn();
+                    } else {
+                        $('#back-top').fadeOut();
+                    }
+                });
+
+                // scroll body to 0px on click
+                $('#back-top a').click(function () {
+                    $('body,html').animate({
+                        scrollTop: 0
+                    }, 800);
+                    return false;
+                });
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        new WOW().init();
+    </script>
+    <script lang="java">
+        $(function () {
+            $('#dailog-modal').dialog({
+                autoOpen: false,
+                width: 300,
+                height: 250,
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "explode",
+                    duration: 1000
+                }
+            });
+
+
+            $('#modal-opener').click(function () {
+                $('#dialog-modal').dialog("open");
+            });
+        });
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+
+    @if (TempData["ViewRendered"] != null)
+    {
+        
+        <script type="text/javascript">
+            debugger;
+            alert('@TempData["ViewRendered"]');
+            window.close();
+            //return false;
+        </script>
+    }
+
+    @if (TempData["ClosureFails"] != null)
+    {
+        
+        <script type="text/javascript">
+            debugger;
+            alert('@TempData["ClosureFails"]');
+        </script>
+    }
+   
+    
+@* <script type='text/javascript'>
+        //Maps an event to the window closing event
+        window.onbeforeunload = function (e) {
+            alert("The Window is closing!");
+        };
+</script>*@
+    <script>
+        var auto_refresh;
+        var AutoRefreshTimeOut;
+        var DropDownName;
+        AutoRefreshTimeOut = '@System.Web.Configuration.WebConfigurationManager.AppSettings["AutoRefreshTimeOut"]';
+        $(document).ready(function () {
+            //debugger;
+            function RefreshPartial() {
+                //this will wait 3 seconds and then fire the load partial function
+                auto_refresh = setTimeout(function () {
+                    loadView();
+                    //recall this function so that it will continue to loop
+                    RefreshPartial();
+                }, AutoRefreshTimeOut);
+            }
+            //initialize the loop
+            RefreshPartial();
+        });
+
+        function loadView() {
+            // debugger;
+            location.reload(true);
+              @*var OperatorID = "@ViewBag.LoginId";
+              jQuery.ajax({
+                  url: '@Url.Action("GetImage", "AutoAD", new {Controller="AutoAD", Action="GetImage"})',
+                  type: 'POST',
+                  data: {
+                      OperatorID:OperatorID,
+                  }
+              });*@
+          }
+
+        function SelectedOperatorComment() {
+            debugger;
+            clearInterval(auto_refresh);
+            
+
+            if (document.getElementById("ddlOperatorComments0").selectedIndex > 0) {
+                 DropDownName = "ddl0";
+            }
+
+            if (document.getElementById("ddlOperatorComments1")) {
+                if (document.getElementById("ddlOperatorComments1").selectedIndex > 0) {
+                    DropDownName = "ddl1";
+                }
+            }
+            if (document.getElementById("ddlOperatorComments2")) {
+                if (document.getElementById("ddlOperatorComments2").selectedIndex > 0) {
+                    DropDownName = "ddl2";
+                }
+            }
+
+            if (document.getElementById("ddlOperatorComments3")) {
+                if (document.getElementById("ddlOperatorComments3").selectedIndex > 0) {
+                    DropDownName = "ddl3";
+                }
+            }
+            if (document.getElementById("ddlOperatorComments4")) {
+                if (document.getElementById("ddlOperatorComments4").selectedIndex > 0) {
+                    DropDownName = "ddl4";
+                }
+            }
+            if (document.getElementById("ddlOperatorComments5")) {
+                if (document.getElementById("ddlOperatorComments5").selectedIndex > 0) {
+                    DropDownName = "ddl5";
+                }
+            }
+            var text = $("textarea[name=txtSelectedComment]").val();
+            if (text == "") {
+
+                if ($("#ddlOperatorComments0").val() != "--Select--") {
+
+                    if (document.getElementById("btncloseTicket+1")) {
+                        document.getElementById("btncloseTicket+1").disabled = true;
+                    }
+
+                    if (document.getElementById("btncloseTicket+2")) {
+                        document.getElementById("btncloseTicket+2").disabled = true;
+                    }
+
+                    if (document.getElementById("btncloseTicket+3")) {
+                        document.getElementById("btncloseTicket+3").disabled = true;
+                    }
+
+                    if (document.getElementById("btncloseTicket+4")) {
+                        document.getElementById("btncloseTicket+4").disabled = true;
+                    }
+
+                    if (document.getElementById("btncloseTicket+5")) {
+                        document.getElementById("btncloseTicket+5").disabled = true;
+                    }
+
+                    text = $("#ddlOperatorComments0").val();
+                    $("textarea[id=txtSelectedComment0]").val(text);
+
+                }
+                if (document.getElementById("ddlOperatorComments1")) {
+
+                    if ($("#ddlOperatorComments1").val() != "--Select--") {
+                        if (document.getElementById("btncloseTicket+0")) {
+                            document.getElementById("btncloseTicket+0").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+2")) {
+                            document.getElementById("btncloseTicket+2").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+3")) {
+                            document.getElementById("btncloseTicket+3").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+4")) {
+                            document.getElementById("btncloseTicket+4").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+5")) {
+                            document.getElementById("btncloseTicket+5").disabled = true;
+                        }
+                        text = $("#ddlOperatorComments1").val();
+                        $("textarea[id=txtSelectedComment1]").val(text);
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments2")) {
+
+                    if ($("#ddlOperatorComments2").val() != "--Select--") {
+                        if (document.getElementById("btncloseTicket+1")) {
+                            document.getElementById("btncloseTicket+1").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+0")) {
+                            document.getElementById("btncloseTicket+0").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+3")) {
+                            document.getElementById("btncloseTicket+3").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+4")) {
+                            document.getElementById("btncloseTicket+4").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+5")) {
+                            document.getElementById("btncloseTicket+5").disabled = true;
+                        }
+                        text = $("#ddlOperatorComments2").val();
+                        $("textarea[id=txtSelectedComment2]").val(text);
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments3")) {
+
+                    if ($("#ddlOperatorComments3").val() != "--Select--") {
+                        if (document.getElementById("btncloseTicket+1")) {
+                            document.getElementById("btncloseTicket+1").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+2")) {
+                            document.getElementById("btncloseTicket+2").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+0")) {
+                            document.getElementById("btncloseTicket+0").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+4")) {
+                            document.getElementById("btncloseTicket+4").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+5")) {
+                            document.getElementById("btncloseTicket+5").disabled = true;
+                        }
+                        text = $("#ddlOperatorComments3").val();
+                        $("textarea[id=txtSelectedComment3]").val(text);
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments4")) {
+
+                    if ($("#ddlOperatorComments4").val() != "--Select--") {
+                        if (document.getElementById("btncloseTicket+1")) {
+                            document.getElementById("btncloseTicket+1").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+2")) {
+                            document.getElementById("btncloseTicket+2").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+3")) {
+                            document.getElementById("btncloseTicket+3").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+0")) {
+                            document.getElementById("btncloseTicket+0").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+5")) {
+                            document.getElementById("btncloseTicket+5").disabled = true;
+                        }
+                        text = $("#ddlOperatorComments4").val();
+                        $("textarea[id=txtSelectedComment4]").val(text);
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments5")) {
+
+                    if ($("#ddlOperatorComments5").val() != "--Select--") {
+                        if (document.getElementById("btncloseTicket+1")) {
+                            document.getElementById("btncloseTicket+1").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+2")) {
+                            document.getElementById("btncloseTicket+2").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+3")) {
+                            document.getElementById("btncloseTicket+3").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+4")) {
+                            document.getElementById("btncloseTicket+4").disabled = true;
+                        }
+
+                        if (document.getElementById("btncloseTicket+0")) {
+                            document.getElementById("btncloseTicket+0").disabled = true;
+                        }
+                        text = $("#ddlOperatorComments5").val();
+                        $("textarea[id=txtSelectedComment5]").val(text);
+                    }
+                }
+                if ($("#ddlOperatorComments0").val() == "--Select--" && text == "" && DropDownName=="ddl0") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                if ($("#ddlOperatorComments1").val() == "--Select--" && text == "" && DropDownName == "ddl1") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                if ($("#ddlOperatorComments2").val() == "--Select--" && text == "" && DropDownName == "ddl2") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea5txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                if ($("#ddlOperatorComments3").val() == "--Select--" && text == "" && DropDownName == "ddl3") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                if ($("#ddlOperatorComments4").val() == "--Select--" && text == "" && DropDownName == "ddl4") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                if ($("#ddlOperatorComments5").val() == "--Select--" && text == "" && DropDownName == "ddl5") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                }
+                //else {
+                //    $("textarea[name=txtSelectedComment]").val("");
+                //    //$("textarea[name=txtSelectedComment1]").val("");
+                //    //$("textarea[name=txtSelectedComment2]").val("");
+                //    //$("textarea[name=txtSelectedComment3]").val("");
+                //    //$("textarea[name=txtSelectedComment4]").val("");
+                //    //$("textarea[name=txtSelectedComment5]").val("");
+
+                //    $("textarea[name=txtSelectedComment]").val(" ");
+                //    //$("textarea[name=txtSelectedComment1]").val(" ");
+                //    //$("textarea[name=txtSelectedComment2]").val(" ");
+                //    //$("textarea[name=txtSelectedComment3]").val(" ");
+                //    //$("textarea[name=txtSelectedComment4]").val(" ");
+                //    //$("textarea[name=txtSelectedComment5]").val(" ");
+                //    alert("Please Select the Comment.");
+                //    loadView();
+                //    return false;
+                //}
+            }
+            else {
+
+                if (document.getElementById("ddlOperatorComments0")) {
+
+                    if ($("#ddlOperatorComments0").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments0").val();
+                        $("textarea[id=txtSelectedComment0]").val(text);
+                        return false;
+                    }
+                }
+
+                if (document.getElementById("ddlOperatorComments1")) {
+
+                    if ($("#ddlOperatorComments1").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments1").val();
+                        $("textarea[id=txtSelectedComment1]").val(text);
+                        return false;
+                    }
+                }
+
+                if (document.getElementById("ddlOperatorComments2")) {
+                    if ($("#ddlOperatorComments2").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments2").val();
+                        $("textarea[id=txtSelectedComment2]").val(text);
+                        return false;
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments3")) {
+                    if ($("#ddlOperatorComments3").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments3").val();
+                        $("textarea[id=txtSelectedComment3]").val(text);
+                        return false;
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments4")) {
+                    if ($("#ddlOperatorComments4").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments4").val();
+                        $("textarea[id=txtSelectedComment4]").val(text);
+                        return false;
+                    }
+                }
+                if (document.getElementById("ddlOperatorComments5")) {
+                    if ($("#ddlOperatorComments5").val() != "--Select--") {
+                        text = text + '\n' + $("#ddlOperatorComments5").val();
+                        $("textarea[id=txtSelectedComment5]").val(text);
+                        return false;
+                    }
+                }
+                if ($("#ddlOperatorComments0").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                if ($("#ddlOperatorComments1").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                if ($("#ddlOperatorComments2").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                if ($("#ddlOperatorComments3").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                if ($("#ddlOperatorComments4").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                if ($("#ddlOperatorComments5").val() == "--Select--" && text == "") {
+                    $("textarea[name=txtSelectedComment]").val("");
+                    //$("textarea[name=txtSelectedComment1]").val("");
+                    //$("textarea[name=txtSelectedComment2]").val("");
+                    //$("textarea[name=txtSelectedComment3]").val("");
+                    //$("textarea[name=txtSelectedComment4]").val("");
+                    //$("textarea[name=txtSelectedComment5]").val("");
+                    alert("Please Select the Comment.");
+                    loadView();
+                    return false;
+                }
+                return false;
+            }
+            return false;
+        };
+
+        function ClearInterval(){
+            debugger;
+            clearInterval(auto_refresh);
+
+
+        };
+        $("#ddlOperatorComments").change(function () {
+            //debugger;
+            clearInterval(auto_refresh);
+            var text = "";
+            if (text == "") {
+                text = $(this).val();
+            }
+            else {
+                text = text + '\n' + $(this).val();
+            }
+            $("textarea[name=txtSelectedComment]").val(text);
+            return false;
+        });
+
+        function AutoADClose() {
+            debugger;
+            if ($('#rbtTicketAction').val() != "" || $('#rbtTicketAction').val() != null) {
+                var Flag = true;
+                var comment = "";
+                var listItem;
+
+                if ($('#txtSelectedComment0').val() != "" && ($('#txtSelectedComment1').val() == "" || typeof ($('#txtSelectedComment1')) != 'undefined') && ($('#txtSelectedComment2').val() == "" || typeof ($('#txtSelectedComment2')) != 'undefined') && ($('#txtSelectedComment3').val() == "" || typeof ($('#txtSelectedComment3')) != 'undefined') && ($('#txtSelectedComment4').val() == "" || typeof ($('#txtSelectedComment4')) != 'undefined') && ($('#txtSelectedComment5').val() == "" || typeof ($('#txtSelectedComment5')) != 'undefined')) {
+                    comment = $('#txtSelectedComment0').val();
+                    listItem = 0;
+                }
+                if ($('#txtSelectedComment0').val() == "" && $('#txtSelectedComment1').val() != "" && ($('#txtSelectedComment2').val() == "" || typeof ($('#txtSelectedComment2')) != 'undefined') && ($('#txtSelectedComment3').val() == "" || typeof ($('#txtSelectedComment3')) != 'undefined') && ($('#txtSelectedComment4').val() == "" || typeof ($('#txtSelectedComment4')) != 'undefined') && ($('#txtSelectedComment5').val() == "" || typeof ($('#txtSelectedComment5')) != 'undefined')) {
+                    comment = $('#txtSelectedComment1').val();
+                    listItem = 1;
+                }
+                if ($('#txtSelectedComment0').val() == "" && $('#txtSelectedComment1').val() == "" && $('#txtSelectedComment2').val() != "" && ($('#txtSelectedComment3').val() == "" || typeof ($('#txtSelectedComment3')) != 'undefined') && ($('#txtSelectedComment4').val() == "" || typeof ($('#txtSelectedComment4')) != 'undefined') && ($('#txtSelectedComment5').val() == "" || typeof ($('#txtSelectedComment5')) != 'undefined')) {
+                    comment = $('#txtSelectedComment2').val();
+                    listItem = 2;
+                }
+                if ($('#txtSelectedComment0').val() == "" && $('#txtSelectedComment1').val() == "" && $('#txtSelectedComment2').val() == "" && $('#txtSelectedComment3').val() != "" && ($('#txtSelectedComment4').val() == "" || typeof ($('#txtSelectedComment4')) != 'undefined') && ($('#txtSelectedComment5').val() == "" || typeof ($('#txtSelectedComment5')) != 'undefined')) {
+                    comment = $('#txtSelectedComment3').val();
+                    listItem = 3;
+                }
+                if ($('#txtSelectedComment0').val() == "" && $('#txtSelectedComment1').val() == "" && $('#txtSelectedComment2').val() == "" && $('#txtSelectedComment3').val() == "" && $('#txtSelectedComment4').val() != "" && ($('#txtSelectedComment5').val() == "" || typeof ($('#txtSelectedComment5')) != 'undefined')) {
+                    comment = $('#txtSelectedComment4').val();
+                    listItem = 4;
+                }
+                if ($('#txtSelectedComment0').val() == "" && $('#txtSelectedComment1').val() == "" && $('#txtSelectedComment2').val() == "" && $('#txtSelectedComment3').val() == "" && $('#txtSelectedComment4').val() == "" && $('#txtSelectedComment5').val() != "") {
+                    comment = $('#txtSelectedComment5').val();
+                    listItem = 5;
+                }
+                if (comment == "" || comment.trim() == "" || comment == 'undefined') {
+                    debugger;
+                    alert("Ticket Closure Comment cannot be Blank");
+                    return false;
+                    Flag = false;
+                }
+
+                debugger;
+                var TicketAction;
+                if ($('#rbtClose').val() == "Close" && $('input[id=rbtClose]:checked').length > 0) {
+                    TicketAction = "Close";
+                }
+                else if ($('#rbtOnHold').val() == "OnHold" && $('input[id=rbtOnHold]:checked').length > 0) {
+                    TicketAction = "OnHold";
+                }
+                else {
+                    alert("Please Select Ticket Closure Action");
+                    return false;
+                }
+
+                if (Flag == true) {
+                    debugger;
+                    jQuery.ajax({
+                        url: '@Url.Action("AutoADTicketCloser")',
+                        type: 'POST',
+                        data: {
+                            sUserComment: comment,
+                            TicketCloseListNo: listItem,
+                            TicketAction: TicketAction,
+                        },
+                        success: function (response) {
+                            window.location.href = '@Url.Action("AUTOAD", "AUTOAD", new { Controller = "AUTOAD", Action = "AUTOAD", OperatorID = @ViewBag.LoginId })';
+                          }
+                    });
+                      }
+                  }
+              };
+
+              function GetDetailImages(TicketID, ActivityID) {
+                  debugger;
+                  clearInterval(auto_refresh);
+
+                @*  var strValue = TicketID +"_"+ActivityID;
+                  var url = "@Url.Action("GetAllCameraImages", new { Action = "GetAllCameraImages" })/" + strValue;
+
+
+                  var url = '@Url.Action("GetAllCameraImages", new { Action = "GetAllCameraImages" })';
+
+                  myWindow = window.open(url, '', '');
+                  //myWindow = window.open(url, '', 'width=800,height=200,scrollbars=1');
+                  myWindow.focus();*@
+                 
+                 $.ajax({
+                      type: "POST",
+                      traditional: true,
+                      url: '@Url.Action("GetAllADImages", new { Action = "GetAllADImages" })',
+                    data: {
+                        TicketID: TicketID,
+                        ActivityID: ActivityID,
+                    },
+                   
+                    type: "GET",
+                    dataType: "html",
+                    success: function (data) {
+                        debugger;
+                        // var result = $('<div />').append(data).find('#partialView1').html();
+                        $('#partialView1').attr("style", "display: block");
+                        $('#partialView1').html(data);
+                    },
+                    error: function (xhr, status) {
+                        debugger;
+                        alert("Sorry, there was a problem!");
+                    },
+                    complete: function (xhr, status) {
+                        debugger;
+                        //$('#showresults').slideDown('slow')
+                    }
+                });
+            };
+
+    </script>
+
+    <script>
+        var count = '@Model.Count()';
+        var ActionName = '@ViewBag.ActionName';
+    </script>
+    <meta name="viewport" content="width=device-width" />
+    @* <title>AutoAD</title>*@
+</head>
+<body>
+
+    <div class="clearfix">@{int i = 0;}</div>
+    <div class="modal-header">
+        <h4 class="modal-title">Auto AD</h4>
+    </div>
+
+    <div class="modal-body">
+
+        
+            <div id="txtTicketPending" class="alert alert-danger col-md-3" style="display:none">
+
+                 
+               @* <label id="txtTicketPending" title="sdfcsd">Start Date*</label>*@
+               @* @Html.Label("txtTicketPending", null, new { @class ="form-control" @style="visible:false" })*@
+
+                @* @Html.Label("txtTicketPending","No. of Total Images : " + ViewBag.AllADImageCount as string)*@
+
+            </div>
+
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 ad-cam">
+                <div class="well">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div id="divimage">
+                                @*<img class="img-responsive" src="AutoAD/GetImage/@item.SrNo" id="ADImage" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>*@
+                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                            </div>
+                            <br />
+                            <div class="row">
+
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        @Html.DropDownListFor(modelItem => item.OperatorCommentList, new SelectList(ViewBag.CommentList as System.Collections.IEnumerable, "Value", "Text"), new { @class = "form-control required", @id = "ddlOperatorComments" + @i, @onchange = "SelectedOperatorComment()" })
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        @Html.TextArea("txtSelectedComment", null, new { @class = "form-control", placeholder = "Comments", @id = "txtSelectedComment"+@i , @onfocus="ClearInterval()"})
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <table id="AD_Details" class="table table-bordered table-striped">
+                                <colgroup>
+                                    <col width="50%" />
+                                    <col width="50%" />
+                                </colgroup>
+                                <tr>
+                                    <td>Ticket NO : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TicketID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Activity ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ActivityID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Alarm : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SensorType)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Zone No : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ZoneNo)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Camera : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Camra)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ticket Open Time : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Ticket_Open_Time)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Panel ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PanelID)
+                                    </td>
+                                </tr>
+                            </table>
+                            <div>
+                                <div class="form-group pull-left">
+                                    @Html.RadioButton("rbtTicketAction", "Close", false, new { @id = "rbtClose" }) @Html.Label("Close")
+                                    @Html.RadioButton("rbtTicketAction", "OnHold", false, new { @id = "rbtOnHold" }) @Html.Label("Hold") &nbsp;  &nbsp; &nbsp;
+                                <button id="btncloseTicket+@i" type="button" class="btn btn-danger" onclick="AutoADClose()">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            i++;
+        }
+        <div class="clearfix"></div>
+
+
+        @*To Display Overlay of Images*@
+        <div id="partialView1" style="display: none">
+           
+        </div>
+    </div>
+</body>
+</html>
+ @if (Model.Count() == 0 )
+    {
+        <script type="text/javascript">
+            //  debugger;
+            $('#txtTicketPending').attr("style", "display:block");
+                document.getElementById('txtTicketPending').innerHTML = "No Tickets to display!";
+                //$('#txtTicketPending').attr("style", "background-color: #4dffa6;");
+        </script>
+    }
+else {
+ <script type="text/javascript">
+     //  debugger;
+     //document.getElementById('txtTicketPending').innerHTML = "No Tickets to display!";
+     $('#txtTicketPending').attr("style","display:none");
+        </script>
+}

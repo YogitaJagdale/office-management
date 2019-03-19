@@ -1,0 +1,115 @@
+﻿@model SECU_CAMSPlus_DEV.Models.UserInfo
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>LogIn</title>
+  
+    <script src="../Scripts/jquery-1.9.1.js"></script>
+    <link href="../Content/themes/bootstrap.min.css" rel="stylesheet" />
+    <link href="../Content/Logincss/bootstrap-reset.css" rel="stylesheet" />
+    <link href="~/Content/Logincss/style-responsive.css" rel="stylesheet" />
+    <link href="../Content/Logincss/style.css" rel="stylesheet" />
+
+</head>
+<body class="login-body">
+
+    <div class="container">
+        @using (Html.BeginForm("LogIn", "Login", FormMethod.Post, new { @class = "form-signin " }))
+        {
+            //this  is for create form tag
+            @Html.AntiForgeryToken()          // this is for prevent CSRF attack
+            //  @Html.ValidationSummary(true)
+
+
+            <h2 class="form-signin-heading">sign in now</h2>
+            <div class="login-wrap">
+                <table width="100%">
+                   <tr>
+
+                        <td>
+                            @Html.TextBoxFor(a => a.LoginID, new { @class = "form-control", @placeholder = "LoginID" })
+
+                            @Html.ValidationMessageFor(a => a.LoginID)
+                        </td>
+                    </tr>       
+
+                    <tr>
+
+                        <td>
+                            @Html.PasswordFor(a => a.UserPassword, new { @class = "form-control", @placeholder = "Password" })
+
+                            @Html.ValidationMessageFor(a => a.UserPassword)
+                        </td>
+
+                    </tr>
+                    <tr>
+
+                        <td>Shift&nbsp;:&nbsp;&nbsp;&nbsp;
+                            @Html.DisplayFor(o => o.lblShiftID, new { @CssClass = "SuccessMessage" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                           
+
+                            @*@Html.ActionLink("Forgot Password","ForgotPassword","Login",null,new {@class="pull-right",@id="SomeID"})*@
+                            <div class="pull-right col-lg-6">
+                                <a data-modal="" href="/ForgotPassword/ForgotPassword" id="a_forgot">
+                                   Forgot Password
+                                </a>
+                            </div>
+                          
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" value="Login" class="btn btn-lg btn-login btn-block" />
+                        </td>
+                    </tr>
+                    <tr>
+
+                        <td>
+                            @Html.DisplayFor(a => a.lblMessage, new { @CssClass = "SuccessMessage" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </table>
+                <div id='myModal' class='modal fade in'>
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div id='myModalContent'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        }
+    </div>
+
+    @*forgot password *@
+
+
+
+
+    <script src="../Scripts/bootstrap.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+    
+
+    @section scripts{
+        @Scripts.Render("~/scripts/Popup.js")
+    }
+
+</body>
+
+</html>

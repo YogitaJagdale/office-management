@@ -1,0 +1,81 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.AlertPanel>
+
+@{
+    ViewBag.Title = "AlertPanel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+  
+<!DOCTYPE html>
+
+<html>
+<head><title></title></head>
+
+
+
+
+<body>
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>AlertPanel</h2>
+                    </div>
+                     
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true)
+
+                        var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+                        <div class="row">
+
+
+                            <div>
+                                Non Allocated Panels to Circles:
+                            </div>
+                            <br />
+                            <div class="table-responsive">
+                                 <div class="pull-right">Total no. records found : @grid.TotalRowCount</div> 
+                                @grid.GetHtml(tableStyle: "table table-hover table-striped", selectedRowStyle: "#CCC", footerStyle: "tfoot dataTables_paginate", alternatingRowStyle: "webgrid-alternating-row", headerStyle: "grid-header", columns:
+                grid.Columns
+                (
+                        grid.Column("PanelNo", "PanelNo"),
+                          grid.Column("PanelName", "Panel Name"),
+                          grid.Column("ClientName", "Client Name"),
+                           grid.Column("City", "City"),
+                          grid.Column("Location", "Location"),
+                          grid.Column("Subscription", "Subscription")
+
+     ), mode: WebGridPagerModes.Numeric)
+
+                            </div>
+                            <div>
+                                @Html.ActionLink("Ok", "Index", new { Controller = "Circle" }, new { @class = "btn btn-success" })
+                                @Html.ActionLink("Ignore", "Index", new { Controller = "Home" }, new { @class = "btn btn-danger" })
+
+
+                                @*     <span class="input-group-btn">
+                      
+                          <a class="btn btn-success"  id="btnCreate"  data-modal="" href="Ignore">
+                     <span class="glyphicon glyphicon-plus"></span>   </a> 
+                              </span>
+                     *@
+
+                            </div>
+
+                        </div>
+        
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

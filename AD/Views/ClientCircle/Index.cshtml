@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+        $('#btnCreate').click(function () {
+            window.location.href = 'Create';
+            return false;
+        });
+    </script>
+}
+
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-11 col-md-11">
+                    <h2>@if (TempData["ClientCircleName"] != null)
+                        {
+                        @TempData["ClientCircleName"];
+                        }  </h2>
+                </div>
+
+                <div class="col-xs-12 col-sm-1 col-md-1">
+
+                    <a class="btn btn-success pull-right" data-modal="" title="Add New Circle" href="Create" id="btnCreate"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add     
+                    </a>
+                </div>
+
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+
+        @using (Html.BeginForm("Index", null, FormMethod.Get))
+        {
+
+            var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);           
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <div class="pull-right">Total no. records found : @grid.TotalRowCount</div>
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                // grid.Column("ClientID", "Client circle ID"),
+                        grid.Column("ClientCircleName", "Client Circle"),
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+
+                    @Html.Raw("<a data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.ClientID + "' id='" + item.ClientID + "' > </a>")
+
+                    </text>),
+
+ grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.ClientID },
+    new { onclick = "return confirm('Do you want to Delete this Client Circle?'); ", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" }))
+    
+     ), mode: WebGridPagerModes.Numeric)
+                    <script type="text/javascript">
+                        function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                        }
+                    </script>
+
+                </div>
+            </div>
+       
+            <div class="panel-footer text-center">
+
+                <input type="button" data-dismiss="modal" class="btn btn-warning btn-sm"  value="Back" onclick="@("window.location.href='" + @Url.Action("index", "ClientList") + "'")    ;" />
+            </div>
+
+        }
+
+    </div>
+</div>
+
+
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

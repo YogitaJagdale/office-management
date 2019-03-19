@@ -1,0 +1,222 @@
+﻿@model IList<SECU_CAMSPlus_DEV.Models.Project>
+
+@{
+ 
+    ViewBag.Title = "Project";
+}
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            //  $("#divSuccess").show();
+            var msg = "@TempData["Error"]";
+            alert(msg);
+        });
+
+    </script>
+}
+<script>
+    $(document).ready(function () {
+        history.pushState(null, null, location.href);
+        window.onpopstate = function (event) {
+            history.go(1);
+        };
+        $("#btnadd").on("click", function () {
+            var status = true;
+            var errors = "";
+            $('.table >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+                    console.log(index);
+                    var id = $(this)[0].id;
+                    console.log(id);
+                    if ($("#ddlsenmfg" + id).val() == "0") {
+                        // alert("Please select valid details.");
+                        errors = "Please select valid sensor manufacturer.";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('method', 'post')
+                $("form").attr('action', 'NewSensorDetailsStep2')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+        });
+        $("#btnaddnewsensor").on("click", function () {
+            debugger;
+            var status = true;
+            var errors = "";
+            $('.table >  tbody  > tr').each(function (index) {
+                if (index != 0) {
+                    console.log(index);
+                    var id = $(this)[0].id;
+                    console.log(id);
+                    if ($("#ddlsenmfg" + id).val() == "0") {
+                        // alert("Please select valid details.");
+                        errors = "Please select valid sensor manufacturer.";
+                        status = false;
+                        return false;
+                    }
+                }
+            });
+            if (status == true) {
+                $("form").attr('method', 'post')
+                $("form").attr('action', 'NewCameraDetails')
+                $("form")[0].submit();
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+        });
+
+        $("#btnCancel").on("click", function () {
+            //var url = "DiscardSensors";
+
+            //$.ajax({
+            //    type: "POST",
+            //    dataType: "json",
+            //    url: url
+
+            //});
+            $("form").attr('method', 'post')
+            $("form").attr('action', 'DiscardSensors')
+            $("form")[0].submit();
+
+        });
+        $("#btnapplytoall").on("click", function () {
+            var firstSelected = $("select[name='[0].SensorMfgID']").val();
+            if (firstSelected == "0")
+            { alert('Please select at least one sensor manufacturer.'); }
+
+            else {
+                $('.table >  tbody  > tr').each(function (index) {
+                    if (index != 0) {
+
+                        var id = $(this)[0].id;
+                        $('.senmfg option[value="' + firstSelected + '"]').attr('selected', true)
+                        $('.senmfg option[value!="' + firstSelected + '"]').attr('selected', false)
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+            
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>View Project</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="note note-info margin-top0 ">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 class="box-heading">@Html.Label("lblprojectname", Convert.ToString(Session["ProjectName"]), new { @class = "ProjectLabel" })</h3>
+                                    <p>Sensor List - Configure the Manufacturers of sensors</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+
+                <div id="divval" class="valiation"></div>
+                <div class="clearfix"></div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tr>
+                            <th>ZoneNo
+                            </th>
+                            <th>SensorType
+                            </th>
+                            <th>Sensor Manufacturer
+                            </th>
+                            <th>
+                                <input class="btn btn-success" type="button" value="Apply All" id="btnapplytoall" />
+                            </th>
+                        </tr>
+
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr id=@Model[i].ProjectID  style="border-top: 1px solid #ddd;">
+                                <td>
+                                    @Html.DisplayFor(m => m[i].ZoneNo, new { @class = "form-control required " })
+                                    @Html.HiddenFor(m => m[i].ZoneNo)
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(m => m[i].SensorType, new { @class = "form-control required " })
+                                    @Html.HiddenFor(m => m[i].SensorType)
+                                </td>
+                                <td>
+                                    @if (Request.QueryString["rebind"] == "yes")
+                                    {
+                                        @Html.DropDownListFor(x => x[i].SensorMfgID, new SelectList(ViewBag.SensorMfgList, "Value", "Text", Model[i].SensorMfgID), new { @class = "senmfg form-control required", @id = "ddlsenmfg" + @Model[i].ProjectID })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x[i].SensorMfgID, new SelectList(ViewBag.SensorMfgList, "Value", "Text"), new { @class = "senmfg form-control required", @id = "ddlsenmfg" + @Model[i].ProjectID })
+                                    }
+                                </td>
+
+                                <td></td>
+                                @Html.HiddenFor(m => m[i].ProjectID)
+                                @Html.HiddenFor(m => m[i].ProjectName)
+                            </tr>
+                        }
+
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel-footer text-center">
+                @if (Convert.ToString(Session["ZoneNotInProject"]) == "Yes")
+                {
+                    <input class="btn btn-success" type="button" value="Next" id="btnaddnewsensor" />   
+                    <input class="btn btn-warning" type="button" onclick="return confirm('If you exit now, the new senors will not be added. Do you want to cancel setup ?')" value="Cancel" id="btnCancel" />   
+                                    
+
+                }
+                else
+                {
+                    <input class="btn btn-success" type="button" value="Next" id="btnadd" />
+    
+                    @Html.ActionLink(
+                "Cancel",
+                "DiscardChnages",
+                "Project",
+                new { onclick = "return confirm('If you exit now, the project will not be created. You may run setup again. Do you want to cancel setup ?')", @class = "btn btn-warning" })
+                }
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+           
+}
+

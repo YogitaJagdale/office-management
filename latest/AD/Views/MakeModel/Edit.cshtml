@@ -1,0 +1,223 @@
+﻿@model SECU_CAMSPlus_DEV.Models.MakeModel
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+
+
+@*<h2>EditCity</h2>*@
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+
+        $("#divSuccess").show();
+        $("#btnsubmit").attr('disabled', true);
+
+    </script>// this script to show failed alerts
+}
+
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt)
+    {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 9) || (ascii >= 48 && ascii <= 57))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    }
+
+    function IsValidGenericName() {
+        $("#errorIsValidGenericName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtGenericName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtGenericName").after('<span id="errorIsValidGenericName" class="mandatory">Enter Valid Generic Name</span>');
+            $("#btnsubmit").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidGenericName").html('');
+            $("#btnsubmit").attr('disabled', false);
+        }
+    }
+    function IsValidModelName() {
+        $("#errorIsValidModelName").html('');
+        var pwdreg = /^[a-zA-Z0-9 ]+$/;//Allow to add the space btn Alphabets//
+        var pwdval = $("#txtModelName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtModelName").after('<span id="errorIsValidModelName" class="mandatory">Enter Valid Model Name</span>');
+            $("#btnsubmit").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidModelName").html('');
+            $("#btnsubmit").attr('disabled', false);
+        }
+    }
+    function IsValidDeviceVersion() {
+        $("#errorIsValidModelName").html('');
+        var pwdreg = /^[a-zA-Z0-9 ]+$/;
+        var pwdval = $("#txtDeviceVersion").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtDeviceVersion").after('<span id="errorIsValidDeviceVersion" class="mandatory">Enter Valid Device Version</span>');
+            $("#btnsubmit").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidDeviceVersion").html('');
+            $("#btnsubmit").attr('disabled', false);
+        }
+    }
+    function IsselectedCompanyName() {
+        $("#errorIsValidCompanyName").html('');
+        var ddlCompanyName = $("#ddlCompanyName");
+        if (ddlCompanyName.val() == "") {
+            $("#ddlCompanyName").after('<span id="errorIsValidCompanyName" class="mandatory">Please Select Manufacturer Name</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidCompanyName").html('');
+            $("#btnsubmit").attr('disabled', false);
+
+        }
+    }
+
+    function setValue() {
+        $("#error").remove();
+        $("errorIsValidGenericName").remove();
+        $("#errorIsValidModelName").remove();
+        $("#errorIsselectedCompanyName").remove();
+        $("#errorIsValidDeviceVersion").remove();
+        $("#errorIsValidDeviceTypeName").remove();
+        $("#errorIsValidCompanyName").remove();
+        $("#btnsubmit").attr('disabled', false);
+    }
+
+
+</script>
+
+
+<div class="modal-header">
+     <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+
+@using (Html.BeginForm("Edit", "MakeModel", FormMethod.Post, new { @id = "FormMakeModelMasterEdit" }))
+{ 
+
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.GenericName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.GenericName, null, new { id= "txtGenericName",@onblur="IsValidGenericName()",
+                   @class = "form-control required",@onkeypress = "return charonly(event)"})
+                   @Html.ValidationMessageFor(m => m.GenericName,null,new { @class = "valiation",id="errorIsValidGenericName" })
+                </div>
+
+                <div class="form-group">
+                                 
+                     @Html.LabelFor(model => Model.CompanyName, new { @class = "control-label" })
+                    @Html.DropDownList("CompanyName", null, "---Select---", new { @onclick="IsselectedCompanyName()", 
+                   @class = "form-control required", id = "ddlCompanyName" })
+                    @Html.ValidationMessageFor(m => m.CompanyName,null,new { @class = "valiation",id="errorIsValidCompanyName" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ModelName, new { @class = "control-label" })
+                   @Html.TextBoxFor(model => model.ModelName, new { id="txtModelName",@onblur="IsValidModelName()",maxlength = 50,
+                   @class = "form-control required", @onkeypress = "return varcharonly(event)"})
+                     @Html.ValidationMessageFor(m => m.ModelName,null,new { @class = "valiation",id="errorIsValidModelName" })
+                </div>
+                <div id="divDeviceVersion" class="form-group">
+                    @Html.LabelFor(m => Model.DeviceVersion, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.DeviceVersion, null, new { id="txtDeviceVersion",maxlength = 50, 
+                   @class = "form-control required", @onkeypress = "return varcharonly(event)" })
+                   @Html.ValidationMessageFor(m => m.DeviceVersion,null,new { @class = "valiation",id="errorIsValidDeviceVersion" })
+                </div>
+                <div id="divDeviceValue" class="form-group">
+                    @Html.LabelFor(m => Model.DeviceValue, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.DeviceValue, null, new { id="txtDeviceValue",maxlength = 10, @class = "form-control required",
+                   @onkeypress = "return varcharonly(event)" })
+                   @Html.ValidationMessageFor(m => m.DeviceValue,null,new { @class = "valiation",id="errorIsValidDeviceValue" })
+                </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>
+               
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" id="btnsubmit" value="Update"
+                 onclick=" if ($(FormMakeModelMasterEdit).valid() && $('#ddlCompanyName').val() != '')
+                    { return confirm('Do you want to Update this Make Model Details?') };" />
+            <input type="button"  class="btn btn-warning" id="btnClose" value="Close" onclick="@("window.location.href='" + @Url.Action("Index", "MakeModel") + "'")    ;" />
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $("#ddlCompanyName").click(function () {
+        if ($("#ddlCompanyName").val() != '') {
+            $("#errorIsValidCompanyName").remove();
+        }
+    });
+
+</script>

@@ -1,0 +1,165 @@
+﻿@model SECU_CAMSPlus_DEV.Models.BrandHygieneChecklist
+
+@{
+    Layout = null;
+}
+
+@if (TempData["checklistinvalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["checklistnotice"] != null)
+{
+    <script> //$("#divSuccess").show();
+        $("#ItemName").val("");
+        //window.location.href = "/BrandHygieneChecklist/Index";
+
+        var url = '@Url.Action("Index", "BrandHygieneChecklist")';
+        window.location = url;
+    </script>// this script to show failed alerts
+}
+<div class="modal-header">
+   @* <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>*@
+    <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Brand Hygiene Checklist :: Add</h3>
+</div>
+@*<style type="text/css">
+ .select-dropdown{
+    position:relative;
+    height:50px;
+}
+.select-dropdown select {
+    position:absolute;
+}
+.select-dropdown select option:hover {
+    background-color: #2c94fb;
+    color: #ffffff;
+}
+</style>*@
+
+    
+@using (Html.BeginForm("Create", "BrandHygieneChecklist", FormMethod.Post))
+{   
+ 
+    @Html.AntiForgeryToken() 
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group select-dropdown">
+                    @Html.LabelFor(model => model.CameraLocation, htmlAttributes: new { @class = "control-label" })
+                    @*  @Html.DropDownListFor(model => model.StateID, new SelectList(ViewBag.StateList, "Value", "Text"), "---Select---", new { @class = "form-control required"})*@
+                    @if (Model.CameraLocationID != null)
+                    {
+                        @Html.DropDownListFor(model => model.CameraLocation, new SelectList(Model.Locations, "Value", "Text",  Model.CameraLocationID), "---Select---", new { @onclick="IsselectedCameraLocation()", @class = "form-control required",  @id = "CameraLoc"})  
+                    }
+                    else
+                    {   
+                        @Html.DropDownListFor(model => model.CameraLocation, new SelectList(Model.Locations, "Value", "Text"), "---Select---", new {@onclick="IsselectedCameraLocation()", @class = "form-control required",  @id = "CameraLoc" })
+                    }
+                     @Html.ValidationMessageFor(model => model.CameraLocation,null,new { @class = "valiation",id="errorIsValidCameraLocation" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemName, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.ItemName, htmlAttributes: new
+               {
+                   @class = "form-control",
+                   @onkeypress = "return charonly()" ,
+                   @id = "CheckListItem"
+               })
+                     @Html.ValidationMessageFor(model => model.ItemName,null,new { @class = "valiation",id="errorIsValidItemName" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["checklistinvalidmsg"] != null)
+            {      @TempData["checklistinvalidmsg"]
+
+            }
+        </div>
+        
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["checklistnotice"] != null)
+            {      @TempData["checklistnotice"]
+            }
+        </div>
+        @*<span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wait" />
+            Wait..
+        </span>*@
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddchecklist"   />
+            <a class="btn btn-warning" href="Index">Cancel</a>
+            @*<button class="btn btn-warning" data-dismiss="modal">Cancel</button>*@
+        </div>
+    </div>
+}
+
+<script>
+  
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38) || (ascii == 44) || (ascii == 46) || (ascii > 47 && ascii < 58)) {
+            $("#errorIsValidItemName").html('');
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function IsselectedCameraLocation() {        
+        var ddlCamraLoc = $("#CameraLoc");
+        if (ddlCamraLoc.val() == "") {           
+            return false;
+        }
+        else {
+            $("#errorIsValidCameraLocation").html('');            
+        }
+    }
+
+    function Redirect() {
+        debugger;
+        //alert(TempData["checklistnotice"]);
+        @*@if (TempData["checklistnotice"] != null) {
+            @window.location.href = "/BrandHygieneChecklist/Index";            
+            
+        }*@
+        var message = $("#divSuccess").html().trim();
+        if (message != "") {
+            window.location.href = "/BrandHygieneChecklist/Index";
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    //$('#btnaddchecklist').click(function () {
+    //    debugger;
+    //    if ($('#CameraLoc').val() != "" && $('#CheckListItem').val() != "") {
+    //        var retVal = confirm('Do you want to add this checklist item?');
+    //        if (retVal == true) {
+    //            return true;
+    //        }
+    //        else {
+    //            return false;
+    //        }
+    //    }
+
+        
+
+    //});
+   
+</script>@*<script> $(document).ready(function () {
+     $('#CameraLoc').change(function () {
+         debugger;
+         $('#CameraLoc').attr("onfocus", "this.size=10;");
+     });
+
+     });
+
+         </script>*@

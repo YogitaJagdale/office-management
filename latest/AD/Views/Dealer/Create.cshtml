@@ -1,0 +1,153 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Dealer
+
+@{
+    ViewBag.Title = "Dealer :: CAMSPlus";
+    Layout = null;
+}
+
+
+@if (TempData["DealerCreateFailure"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["DealerCreateSuccess"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show success alerts
+}
+
+
+@using (Html.BeginForm("Create", "Dealer", FormMethod.Post))
+{
+   
+    @Html.AntiForgeryToken()
+    
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DealerName, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DealerName, htmlAttributes: new { @class = "form-control required" ,maxlength = 50})
+                    @Html.ValidationMessageFor(m => m.DealerName, null, new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DealerAddress, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextAreaFor(model => model.DealerAddress, htmlAttributes: new { @class = "form-control required", style = "height:34px" ,maxlength = 200 })
+                    @Html.ValidationMessageFor(m => m.DealerAddress, null, new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StateName, htmlAttributes: new { @class = "control-label", valign = "center" })
+                    @Html.DropDownListFor(model => model.StateName, new SelectList(Model.States, "Value", "Text", Model.StateName), "---Select---", new { @class = "form-control required", @id = "State" })
+                    @Html.ValidationMessageFor(m => m.StateName, null, new { @class = "valiation" })
+
+                </div>
+            </div>
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CityName, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.CityName, new SelectList(Model.City, "Value", "Text", Model.CityName), "---Select---", new { @class = "form-control required", @id = "City" })
+                    @Html.ValidationMessageFor(m => m.CityName, null, new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Pincode, htmlAttributes: new { @class = "control-label", style = "top: 5%" })
+                    @Html.TextBoxFor(model => model.Pincode, htmlAttributes: new { @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.Pincode, null, new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ContactPerson, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.ContactPerson, htmlAttributes: new { @class = "form-control required" ,maxlength = 50})
+                    @Html.ValidationMessageFor(m => m.ContactPerson, null, new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DealerPhone, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DealerPhone, htmlAttributes: new { @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.DealerPhone, null, new { @class = "valiation" })
+                </div>
+            </div>
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DealerMobile, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DealerMobile, htmlAttributes: new { @class = "form-control required",maxlength = 12 })
+                    @Html.ValidationMessageFor(m => m.DealerMobile, null, new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DealerEmail, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.DealerEmail, htmlAttributes: new { @class = "form-control required" ,maxlength = 100})
+                    @Html.ValidationMessageFor(m => m.DealerEmail, null, new { @class = "valiation" })
+                </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+    </div>
+    
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["DealerCreateFailure"] != null)
+            {      @TempData["DealerCreateFailure"]
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["DealerCreateSuccess"] != null)
+            {      @TempData["DealerCreateSuccess"]
+            }
+        </div>
+
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="Wait" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnadd" onclick="return confirm('Are you sure you wish to add Dealer?');" />
+            <input type="button" class="btn btn-warning"  data-dismiss="modal" value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "Dealer") + "'")    ;" />
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $("#State").change(function () {
+
+        var url = "GetSelectedCity";
+        var ddlsource = "#State";
+        var ddltarget = "#City";
+        $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+
+            $(ddltarget).empty();
+            var markup = "<option value='0'>---Select---</option>";
+            $(ddltarget).append(markup);
+            $.each(data, function (index, optionData) {
+                $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+            });
+
+        });
+    });
+
+</script>

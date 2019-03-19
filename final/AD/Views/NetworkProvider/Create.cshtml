@@ -1,0 +1,130 @@
+﻿@model SECU_CAMSPlus_DEV.Models.NetworkProvider
+@{
+    ViewBag.Title = "Create";
+    Layout = null;
+}
+
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $('#btnaddNetworkProvider').attr('disabled', true);
+    </script>
+}
+
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt)
+    {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+
+    function IsValidAgencyName() {
+        $("#errorIsValidAgencyName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtAgencyName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtAgencyName").after('<span id="errorIsValidAgencyName" class="mandatory">Enter Valid Agency Name</span>');
+            $('#btnaddNetworkProvider').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidAgencyName").html('');
+            $('#btnaddNetworkProvider').attr('disabled', false);
+        }
+    }
+
+</script>
+
+<div class="modal-header">
+     <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Add</h3>
+</div>
+
+@using (Html.BeginForm("Create", "NetworkProvider", FormMethod.Post, new { @id = "formNetworkProviderCreate" }))
+{
+     @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.AgencyName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.AgencyName, new {id = "txtAgencyName", @onblur = "IsValidAgencyName()",
+                   maxlength = 50, @class = "form-control required", @onkeypress = "return charonly(event)" })
+                    @Html.ValidationMessageFor(m => m.AgencyName,null,new { @class = "valiation", id="errorIsValidAgencyName"})
+                </div>                
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>
+      
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddNetworkProvider" 
+               onclick="if ($(formNetworkProviderCreate).valid() && $('#txtAgencyName').val() != '') { return confirm('Are you sure to Add New Network Provider?') };" />
+
+            <input type="button" data-dismiss="modal" class="btn btn-warning"  value="Cancel" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "NetworkProvider") + "'");" />
+        </div>
+    </div>
+}
+

@@ -1,0 +1,1909 @@
+﻿@model SECU_CAMSPlus_DEV.Models.PanelStatus
+
+@{
+    ViewBag.Title = "BindZoneGrid :: CAMSPlus";
+}
+
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+@*<h2>PanelDetails</h2>*@
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#btnBack").on("click", function (event) {
+            event.preventDefault();
+            history.back(1);
+        });
+
+        var SensorNo = "";
+        var access = $('#hdnaccessbit').val();
+        var accessPanelcontrol = $('#hdnaccessbitPanelControl').val();
+
+        var accessbitArm = access.substr(2, 1);
+        var accessbitFire = access.substr(3, 1);
+
+        var accessbitReset = accessPanelcontrol.substr(0, 1);
+        var accessbitSiren = accessPanelcontrol.substr(1, 1);
+        var accessbitBypass = accessPanelcontrol.substr(2, 1);
+        var accessbitCheckStatus = accessPanelcontrol.substr(3, 1);
+
+        if (accessbitArm == 0) {
+
+            $('#btnArmPanel').prop('disabled', true);
+            $('#btnArmPanel').attr("title", "No Rights");
+        }
+        if (accessbitFire == 0) {
+
+            $('#btnFireReset').prop('disabled', true);
+            $('#btnFireReset').attr("title", "No Rights");
+        }
+
+        if (accessbitReset == 0) {
+
+            $('#btnResetPanel').prop('disabled', true);
+            $('#btnResetPanel').attr("title", "No Rights");
+        }
+        if (accessbitSiren == 0) {
+
+            $('#btnSiren').prop('disabled', true);
+            $('#btnSiren').attr("title", "No Rights");
+        }
+        if (accessbitBypass == 0) {
+
+            $('#btnBypassSensor').prop('disabled', true);
+            $('#btnBypassSensor').attr("title", "No Rights");
+        }
+        if (accessbitCheckStatus == 0) {
+
+            $('#btnCheckStatus').prop('disabled', true);
+            $('#btnCheckStatus').attr("title", "No Rights");
+        }
+
+        $("#btnDualAuthOk").on("click", function () {
+            debugger;
+            $('#divDualAuthPopUp').hide();
+            $('#divDualAuthOverlay').hide();
+            var cmd = "";
+
+            if ($('#btnBypassName').text().trim() == 'Bypass') {
+                cmd = 'byp';
+                cmd = cmd + '|' + SensorNo;
+
+            }
+            else {
+                cmd = 'uby';//unbypass                                                             
+                cmd = cmd + "|" + SensorNo;
+
+            }
+
+            var url = '@Url.Action("DualAuth")';
+            jQuery.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+
+                    Login: $('#LoginID').val(),
+                    password: $('#Password').val(),
+                    Comments: $('#Comments').val()
+
+                },
+                success: function (data) {
+
+                    if (data.Success) {
+
+                        if (data.ResultRes == "Successs") {
+                            jQuery.ajax({
+                                url: '@Url.Action("BypassUnBypass")',
+                                type: 'POST',
+                                data: {
+
+                                    loginid: $('#LoginID').val(),
+                                    password: $('#Password').val(),
+                                    cmd: cmd,
+                                    ClientId: $("#hdnClientId").val(),
+                                    PanelId: $("#hdnPanelId").val()
+
+                                },
+                                success: function (data) { $('#lblPControlErrorBypassRequest').html(data.Text); }
+                            });
+                        }
+                        else {
+                            $('#AuthResult').show();
+                            $('#AuthResult').html(data.ResultRes);
+                            $('#divDualAuthPopUp').show();
+                            $('#divDualAuthOverlay').show();
+                        }
+                    }
+                }
+            });
+        });
+
+
+        $("#btnCancel").on("click", function () {
+            $('#divDualAuthPopUp').hide();
+            $('#divDualAuthOverlay').hide();
+            $('#AuthResult').hide();
+        });
+
+
+        $("#btnBypassSensor").on("click", function () {
+            debugger;
+           
+            if ($('#btnBypassName').text().trim() == 'Bypass') {
+                
+                $('#divDualAuthPopUp').show();
+                $('#divDualAuthOverlay').show();//authentication needed
+                $('#AuthResult').hide();
+                $('#Comments').val = "";
+            }
+            else {
+
+                $('#divUnbypassOverlay').show();
+                $('#divUnbypassPopUp').show();//No authentication needed --only conformation for unbypass
+                $('#AuthResult').hide();
+                //$('#txtComments').val = "";
+                $('#Comments').val = "";
+             
+            }
+
+        });
+
+        $("#btnUnbypassOk").on("click", function () { //Confirmation for unbypass
+
+            $('#divUnbypassOverlay').hide();
+            $('#divUnbypassPopUp').hide();
+            var cmd = "";
+            cmd = 'uby';//unbypass                                                             
+            cmd = cmd + "|" + SensorNo;
+
+            jQuery.ajax({
+                url: '@Url.Action("BypassUnBypass")',
+                    type: 'POST',
+                    data: {
+
+                        loginid: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        cmd: cmd,
+                        ClientId: $("#hdnClientId").val(),
+                        PanelId: $("#hdnPanelId").val()
+
+                    },
+                    success: function (data) { $('#lblPControlErrorBypassRequest').html(data.Text); }
+            });
+
+        });
+
+        $("#btnUnbypassCancel").on("click", function () {
+            $('#divUnbypassOverlay').hide();
+            $('#divUnbypassPopUp').hide();
+        });
+
+
+        $("#ZoneDetailsDataTable tr ").click(function () {
+
+            $("#ZoneDetailsDataTable tbody tr").removeClass('row_selected');
+
+            $(this).addClass('row_selected');
+
+            var SensorType = $(this).children().eq(1).text().trim();
+            var SensorStatus = $(this).children().eq(5).text().trim();
+            SensorNo = $(this).children().eq(0).text().trim();
+
+
+            if (SensorType.indexOf('Fire') > -1) {
+                if (accessbitFire != 0) {
+                    $("#btnFireReset").show();
+                }
+                else {
+                    $("#btnFireReset").show();
+                    $('#btnFireReset').prop('disabled', true);
+                    $('#btnFireReset').attr("title", "No Rights");
+                }
+            }
+
+            else { $("#btnFireReset").hide(); }
+
+
+            if (accessbitBypass != 0) {
+
+
+                if (SensorStatus.indexOf('Bypassed') > -1) {
+
+                    $("#btnBypassSensor").show();
+                    $('#btnBypassName').text('Unbypass');
+                    $('#btnBypassSensor').prop('title', 'Unbypass Sensor');
+                    $("#SensorNo").text(SensorNo);
+                    $("#lblSensorNo").show();
+                    $("#SensorNo").show();
+
+                }
+                else {
+                    $("#btnBypassSensor").show();
+                    $('#btnBypassName').text('Bypass');
+                    $('#btnBypassSensor').prop('title', 'bypass Sensor');
+                    $("#lblSensorNo").show();
+                    $("#SensorNo").text(SensorNo);
+                    $("#SensorNo").show();
+
+                }
+
+                if (SensorStatus.indexOf('Uninstalled') > -1) {
+
+                    $("#btnBypassSensor").hide();
+                    $("#lblSensorNo").hide();
+                    $("#SensorNo").hide();
+                }
+            }
+            else {
+                $("#btnBypassSensor").show();
+                $('#btnBypassSensor').prop('disabled', true);
+                $('#btnBypassSensor').attr("title", "No Rights");
+            }
+
+        });
+
+        var armStatus = $('#lblPnlArmsStatus').val();
+
+        //if (armStatus == "Armed") {
+        //    $('#btnArmName').text('DissArm');
+        //    $('#btnArmPanel').prop('title', 'DissArm Panel');
+
+        //}else
+         if (armStatus == "Disconnected") {
+            $('#btnArmName').text('Arm Panel');
+            $('#lblPnlArmsStatus').val('Disarmed');
+         }
+
+         if (armStatus == "Armed") {
+             //$('#btnArmName').attr("style", "display:none");
+             //$('#btnArmPanel').attr("style", "display:none");
+             //$('#lblPnlArmsStatus').attr("style", "display:none");
+
+             $('#btnArmName').attr("disabled", true);
+             $('#btnArmPanel').attr("disabled", true);
+             $('#lblPnlArmsStatus').attr("disabled", true);
+         }
+
+         if (armStatus == "Diarmed") {
+             $('#btnArmName').text('Arm Panel');
+             //$('#btnArmPanel').attr("style", "display:block");
+             //$('#lblPnlArmsStatus').attr("style", "display:block");
+
+             //$('#btnArmName').attr("disabled", true);
+             $('#btnArmPanel').attr("disabled", false);
+             $('#lblPnlArmsStatus').attr("disabled", false);
+
+         }
+        else { $('#btnArmName').text('Arm Panel'); }
+
+        $('#ZoneDetailsDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+           
+                count = $('#ZoneDetailsDataTable tr').size();
+                switch (aData[5]) {
+                    case 'Normal':
+                        nRow.childNodes[1].bgColor = '#C5FF8A';//Fire Alarm---Red
+                        nRow.childNodes[1].Color = 'White';
+                        break;
+                    case 'Alarmed':
+                        nRow.childNodes[1].bgColor = '#FFBB55';//Intrusion Alarm---Orange
+                        nRow.childNodes[1].Color = 'White';
+                        break;
+                    case 'Faulted':
+                        nRow.childNodes[1].bgColor = 'Yellow';//System Fault--khaki
+                        break;
+                    case 'Fault-Alarmed':
+                        nRow.childNodes[1].bgColor = '#FFFFCC';//Zone Fault--BlanchedAlmond
+                        break;
+                    case 'Bypassed':
+                        nRow.childNodes[1].bgColor = '#99CCFF';//System Events
+                        break;
+                    case 'Uninstalled':
+                        nRow.childNodes[1].bgColor = '#DBECDC';//Arming Disarming
+                        break;
+                }
+
+            },
+            "columnDefs": [
+              {
+                  "visible": false,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+              }
+            ],
+            'order': [1, 'asc']
+        });
+
+
+        $('#BankDetailsDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "columnDefs": [
+              {
+                  "visible": false,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+              }
+
+            ],
+            'order': [1, 'asc']
+        });
+
+        $('#MSPDetailsDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "columnDefs": [
+              {
+                  "visible": false,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+              }
+            ],
+            'order': [1, 'asc']
+        });
+
+        $('#QRTDetailsDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "columnDefs": [
+              {
+                  "visible": false,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+              }
+            ],
+            'order': [1, 'asc']
+        });
+
+        $('#PublicDetailsDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "columnDefs": [
+              {
+                  "visible": false,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+              }
+            ],
+            'order': [1, 'asc']
+        });
+
+        function visiblefalsePanelReset() {
+            $('#btnResetPanel').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnResetPanel').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+
+        }
+
+        function visiblefalsePanelNewReset() {
+            $('#btnNewResetPanel').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnNewResetPanel').attr('disabled', false);
+                debugger;
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalseSilence() {
+
+            $('#btnSilence').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnSilence').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalseSiren() {
+
+            $('#btnSiren').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnSiren').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalseCheckStatus() {
+
+            $('#btnCheckStatus').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnCheckStatus').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalseFireReset() {
+
+            $('#btnFireReset').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnFireReset').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalsePanelPing() {
+
+            $('#btnPanelPing').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnPanelPing').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function visiblefalseArm() {
+
+            $('#btnArmPanel').attr('disabled', true);
+
+            setTimeout(function () {
+                $('#btnArmPanel').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function BlinkBox() {
+            if ($('#lblPanelResetRequest').html() != "") {
+
+                var MID = $('#lblPanelResetRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+
+                        if (data.Success) {
+                            $('#lblPControlErrorResetRequest').html(data.ResultRes);
+                            $('#lblPanelResetRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+            }
+            if ($('#lblPanelNewResetRequest').html() != "") {
+
+                var MID = $('#lblPanelNewResetRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+
+                        if (data.Success) {
+                            $('#lblPControlErrorNewResetRequest').html(data.ResultRes);
+                            $('#lblPanelNewResetRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+            }
+            if ($('#lblPanelArmRequest').html() != "") {
+
+                var MID = $('#lblPanelArmRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+
+                        if (data.Success) {
+                            $('#lblPControlErrorArmRequest').html(data.ResultRes);
+                            $('#lblPanelArmRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+
+            }
+            if ($('#lblSilenceRequest').html() != "") {
+
+                var MID = $('#lblSilenceRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblPControlErrorSilenceRequest').html(data.ResultRes);
+                            $('#lblSilenceRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+
+            if ($('#lblPanelSirenRequest').html() != "") {
+
+                var MID = $('#lblPanelSirenRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblPControlErrorSirenRequest').html(data.ResultRes);
+                            $('#lblPanelSirenRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+
+            if ($('#lblPanelCheckStatusRequest').html() != "") {
+
+                var MID = $('#lblPanelCheckStatusRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblPControlErrorCheckStatusRequest').html(data.ResultRes);
+                            $('#lblPanelCheckStatusRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+
+
+            if ($('#lblPanelFireResetRequest').html() != "") {
+
+                var MID = $('#lblPanelFireResetRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblPControlErrorFireResetRequest').html(data.ResultRes);
+                            $('#lblPanelFireResetRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+
+            if ($('#lblPanelPingRequest').html() != "") {
+
+                var MID = $('#lblPanelPingRequest').text();
+                $.ajax({
+                    url: "ProcessRequest/",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblPControlErrorPingRequest').html(data.ResultRes);
+                            $('#lblPanelPingRequest').html("");
+                        }
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+        }
+
+        $("#btnResetPanel").on("click", function () {
+
+            visiblefalsePanelReset();
+            $.ajax({
+                url: "PanelReset/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#lblPControlErrorResetRequest').html(data.Text);
+                        $('#lblPanelResetRequest').html(data.REQID);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnNewResetPanel").on("click", function () {
+
+            visiblefalsePanelNewReset();
+            $.ajax({
+                url: "NewPanelReset/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    if (data.Success) {
+                        $('#lblPControlErrorNewResetRequest').html(data.Text);
+                        $('#lblPanelNewResetRequest').html(data.REQID);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnSilence").on("click", function () {
+            visiblefalseSilence();
+            $.ajax({
+                url: "Silence/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    if (data.Success) {
+                        $('#lblPControlErrorSilenceRequest').html(data.Text);
+                        $('#lblSilenceRequest').html(data.REQID);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnSiren").on("click", function () {
+            visiblefalseSiren();
+            $.ajax({
+                url: "SirenStart/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    if (data.Success) {
+                        $('#lblPControlErrorSirenRequest').html(data.Text);
+                        $('#lblPanelSirenRequest').html(data.REQID);
+
+                    }
+
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+
+            BlinkBox();
+        });
+
+        $("#btnCheckStatus").on("click", function () {
+
+            visiblefalseCheckStatus();
+            $.ajax({
+                url: "CheckStatus/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#lblPControlErrorCheckStatusRequest').html(data.Text);
+                        $('#lblPanelCheckStatusRequest').html(data.REQID);
+
+                    }
+
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnFireReset").on("click", function () {
+
+            visiblefalseFireReset();
+            $.ajax({
+                url: "FireReset/",
+                data: { ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#lblPControlErrorFireResetRequest').html(data.Text);
+                        $('#lblPanelFireResetRequest').html(data.REQID);
+
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+
+            BlinkBox();
+        });
+
+        $("#btnPanelPing").on("click", function () {
+
+            visiblefalsePanelPing();
+            $.ajax({
+                url: "PanelPing/",
+                data: { PanelIP: $("#hdnPanelIP").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    if (data.Success) {
+                        $('#lblPControlErrorPingRequest').html(data.Text);
+                        $('#lblPanelPingRequest').html(data.REQID);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnArmPanel").on("click", function () {
+
+            visiblefalseArm();
+            $.ajax({
+                url: "ArmPanel/",
+                data: { status: $('#lblPnlArmsStatus').val(), ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#lblPControlErrorArmRequest').html(data.Text);
+                        $('#lblPanelArmRequest').html(data.REQID);
+
+                    }
+
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+            BlinkBox();
+        });
+
+        $("#btnPHistoryNewRecords").on("click", function () {
+
+            $("#btnPHistoryNewRecords").attr("disabled", "disabled");
+            $("#btnPHistoryOldRecords").removeAttr("disabled");
+            $.ajax({
+                url: "NewPanelHistoryRecord/",
+                data: {},
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#PanelHistory').html(data.Text);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+        $("#btnPHistoryOldRecords").on("click", function () {
+
+            $("#btnPHistoryOldRecords").attr("disabled", "disabled");
+            $("#btnPHistoryNewRecords").removeAttr("disabled");
+            $.ajax({
+                url: "OldPanelHistoryRecord/",
+                data: {},
+                cache: false,
+                type: "POST",
+                success: function (data) {
+
+                    if (data.Success) {
+                        $('#PanelHistory').html(data.Text);
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+         $("#ddlSensorNo").change(function (e) {
+
+            $("#divSensorDetails").show();
+            e.preventDefault();
+            var url = '@Url.Action("SensorDetails")';
+            $.get(url, { SensorNo: $(this).val(), ClientId: $("#hdnClientId").val(), PanelId: $("#hdnPanelId").val() }, function (result)
+            {
+                $('#divSensorDetails').html(result);
+            });
+        });
+    });
+
+
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("hdnaccessbit", Session["BinaryAccessBit"], new { @id = "hdnaccessbit" })
+    @Html.Hidden("hdnaccessbitPanelControl", Session["BinaryAccessBitPanelControl"], new { @id = "hdnaccessbitPanelControl" })
+
+    @Html.ValidationSummary(true)
+
+
+    
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>
+                            <label>Client Name : &nbsp;</label>
+                            @Html.LabelFor(m => m.Client_Name, Model.Client_Name)  &nbsp;  &nbsp;  &nbsp;<label>Panel Id :  &nbsp;</label>
+                            @Html.LabelFor(m => m.PanelID, Model.PanelID)</h2>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <ul class="list-inline PanelStatus">
+                    <li><span class="green"></span>Normal</li>
+                    <li><span class="orange"></span>Alarmed</li>
+                    <li><span class="darkYellow"></span>Faulted</li>
+                    <li><span class="yellow"></span>Fault-Alarmed	</li>
+                    <li><span class="blue"></span>Bypassed</li>
+                    <li><span class="lightGreen"></span>Uninstalled</li>
+                </ul>
+            </div>
+            <div class="clearfix"></div>
+            <div class="panel-body">
+                <div class="table-responsive" id="zonegrid">
+                    <table id="ZoneDetailsDataTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Zone No
+                                </th>
+                                <th>Sensor Type
+                                </th>
+                                <th>Location
+                                </th>
+                                <th>Zone Details
+                                </th>
+                                <th>Camera No
+                                </th>
+                                <th>Sensor Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (System.Data.DataRow dr in (ViewData["PanelZoneDetails"] as System.Data.DataTable).Rows)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["ZoneNo"])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["SensorType"])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["Location"])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["ZoneDescription"])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["CameraNo"])
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["Sensor_Status"])
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="responsive-tabs-container accordion-xs accordion-sm">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#TabPanelInfo" aria-controls="TabPanelInfo" role="tab" data-toggle="tab">Panel Info</a></li>
+                                <li role="presentation"><a href="#TabPanelEscllations" aria-controls="TabPanelEscllations" role="tab" data-toggle="tab">Escalations</a></li>
+                                <li role="presentation"><a href="#TabPanelScheduler" aria-controls="TabPanelScheduler" role="tab" data-toggle="tab">Scheduler</a></li>
+                                <li role="presentation"><a href="#TabPanelSensorSchedule" aria-controls="TabPanelSensorSchedule" role="tab" data-toggle="tab">Sensor Scheduler</a></li>
+                                <li role="presentation"><a href="#TabPanelPanelHistory" aria-controls="TabPanelPanelHistory" role="tab" data-toggle="tab">Panel History</a></li>
+                                <li role="presentation"><a href="#TabPanelPanelControl" aria-controls="TabPanelPanelControl" role="tab" data-toggle="tab">Panel Control</a></li>
+                                <li role="presentation"><a href="#TabPanelAgencies" aria-controls="TabPanelAgencies" role="tab" data-toggle="tab">Agencies</a></li>
+                                <li role="presentation"><a href="#TabPanelSite" aria-controls="TabPanelSite" role="tab" data-toggle="tab">ATM Site</a></li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="TabPanelInfo">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <table class="table table-striped table-hover">
+                                                <colgroup>
+                                                    <col width="27%" />
+                                                    <col width="73%" />
+                                                </colgroup>
+                                                <tr>
+                                                    <th>City :</th>
+                                                    <td>@Html.DisplayFor(m => m.CityName, Model.CityName)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>State :</th>
+                                                    <td>@Html.DisplayFor(m => m.PnlState, Model.PnlState)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Address : </th>
+                                                    <td>@Html.Raw(Model.Panel_Address) </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Active :</th>
+                                                    <td>@Html.DisplayFor(m => m.PnlActive, Model.PnlActive)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Client Circle : </th>
+                                                    <td>@Html.DisplayFor(m => m.PnlCircle, Model.PnlCircle)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Project Coordinator :</th>
+                                                    <td>@Html.DisplayFor(m => m.PnlCoordinator, Model.PnlCoordinator)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Project Manager : </th>
+                                                    <td>@Html.DisplayFor(m => m.PnlManager, Model.PnlManager)</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-striped table-hover">
+                                                <colgroup>
+                                                    <col width="27%" />
+                                                    <col width="73%" />
+                                                </colgroup>
+                                                <tr>
+                                                    <th><b>Panel IP :</b></th>
+                                                    <td>@Html.DisplayFor(m => m.Panel_IP, Model.Panel_IP)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><strong>Panel ID :</strong></th>
+                                                    <td>@Html.DisplayFor(m => m.PanelID, Model.PanelID)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>MDN Number : </b></th>
+                                                    <td>@Html.DisplayFor(m => m.PnlMDNno, Model.PnlMDNno)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>Panel Current Version :</b></th>
+                                                    <td>@Html.DisplayFor(m => m.PanelCurrentVersion, Model.PanelCurrentVersion)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>Panel Last Version :</b></th>
+                                                    <td>@Html.DisplayFor(m => m.PanelLatestVersion, Model.PanelLatestVersion)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>SOL ID :</b></th>
+                                                    <td>@Html.DisplayFor(m => m.SOLID, Model.SOLID)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>Project Lead :</b></th>
+                                                    <td>@Html.DisplayFor(m => m.ProjectLead, Model.ProjectLead) </td>
+                                                </tr>
+                                                <tr>
+                                                    <th><b>Panel Type:</b></th>
+                                                    <td>@Html.DisplayFor(m => m.PanelType, Model.PanelType)</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelEscllations">
+
+                                    <ul id="myTabs" class="nav nav-tabs nav-default" role="tablist">
+                                        <li role="presentation" class="active"><a href="#bank" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">Bank</a></li>
+                                        <li role="presentation" class=""><a href="#MSP" role="tab" id="MSP-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">MSP</a></li>
+                                        <li role="presentation" class=""><a href="#QRT" role="tab" id="QRT-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">QRT</a></li>
+                                        <li role="presentation" class=""><a href="#Public" role="tab" id="Public-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Public</a></li>
+                                    </ul>
+                                    <div id="myTabContent" class="tab-content">
+                                        <div role="tabpanel" class="tab-pane fade active in" id="bank" aria-labelledby="home-tab">
+                                            <table id="BankDetailsDataTable" class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name
+                                                        </th>
+                                                        <th>Designation
+                                                        </th>
+                                                        <th>Telephone No
+                                                        </th>
+                                                        <th>Mobile No
+                                                        </th>
+                                                        <th>Email ID
+                                                        </th>
+                                                        <th>Priority
+                                                        </th>
+                                                        <th>Interval
+                                                        </th>
+                                                        <th>Repeat Interval (min.)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+
+                                                @for (int i = 0; i < Model.escBANKlist.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Contact_Person)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Contact_Designation)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Tel_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Cell_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].EmailID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Priority)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].Interval)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escBANKlist[i].RepeatInterval)
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="MSP" aria-labelledby="profile-tab">
+                                            <table id="MSPDetailsDataTable" class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name
+                                                        </th>
+                                                        <th>Designation
+                                                        </th>
+                                                        <th>Telephone No
+                                                        </th>
+                                                        <th>Mobile No
+                                                        </th>
+                                                        <th>Email ID
+                                                        </th>
+                                                        <th>Priority
+                                                        </th>
+                                                        <th>Interval
+                                                        </th>
+                                                        <th>Repeat Interval (min.)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+
+                                                @for (int i = 0; i < Model.escMSPlist.Count; i++)
+                                                {       
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Contact_Person)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Contact_Designation)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Tel_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Cell_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].EmailID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Priority)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].Interval)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escMSPlist[i].RepeatInterval)
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="QRT" aria-labelledby="profile-tab">
+                                            <table id="QRTDetailsDataTable" class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name
+                                                        </th>
+                                                        <th>Designation
+                                                        </th>
+                                                        <th>Telephone No
+                                                        </th>
+                                                        <th>Mobile No
+                                                        </th>
+                                                        <th>Email ID
+                                                        </th>
+                                                        <th>Priority
+                                                        </th>
+                                                        <th>Interval
+                                                        </th>
+                                                        <th>Repeat Interval (min.)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+
+                                                @for (int i = 0; i < Model.escQRTlist.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Contact_Person)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Contact_Designation)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Tel_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Cell_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].EmailID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Priority)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].Interval)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escQRTlist[i].RepeatInterval)
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="Public" aria-labelledby="profile-tab">
+                                            <table id="PublicDetailsDataTable" class="table table-striped table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name
+                                                        </th>
+                                                        <th>Designation
+                                                        </th>
+                                                        <th>Telephone No
+                                                        </th>
+                                                        <th>Mobile No
+                                                        </th>
+                                                        <th>Email ID
+                                                        </th>
+                                                        <th>Priority
+                                                        </th>
+                                                        <th>Interval
+                                                        </th>
+                                                        <th>Repeat Interval (min.)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+
+                                                @for (int i = 0; i < Model.escPubliclist.Count; i++)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Contact_Person)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Contact_Designation)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Tel_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Cell_No)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].EmailID)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Priority)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].Interval)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(m => Model.escPubliclist[i].RepeatInterval)
+                                                        </td>
+                                                    </tr>                                       
+                                                }
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelScheduler">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Day
+                                                </th>
+                                                <th>Open Time
+                                                </th>
+                                                <th>Early Open Time
+                                                </th>
+                                                <th>Late Open Time
+                                                </th>
+                                                <th>Close Time
+                                                </th>
+                                                <th>Early Close Time
+                                                </th>
+                                                <th>Late Close Time
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        @for (int i = 0; i < Model.Schedulerlist.Count; i++)
+                                        {       
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchDay)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchOpenTime)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchEarlyOpenTime)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchLateOpenTime)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchCloseTime)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchEarlyCloseTime)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => Model.Schedulerlist[i].SchLateCloseTime)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelSensorSchedule">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label">Sensor No : </label>
+                                                @Html.DropDownListFor(model => model.PnlSensorNo, new SelectList(Model.SensorNoList, "Value", "Text"), new { @id = "ddlSensorNo", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive" id="divSensorDetails">
+
+                                      @*  @if (Session["SensorData"] == "Data")
+                                        {
+                                            @Html.Partial("SensorDetails");
+                                        }*@
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelPanelHistory">
+
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                @Html.TextAreaFor(m => m.PanelHistory, 10, 30, new { id = "PanelHistory", @class = "form-control", @readonly = "readonly" })
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                               <input class="btn btn-default" type="button" value="New Records" name="Command" id="btnPHistoryNewRecords">
+                                                            <input class="btn btn-default" type="button" value="Old Records" name="Command" id="btnPHistoryOldRecords">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                   
+                                </div>
+
+                                <div id="divDualAuthOverlay" hidden="hidden" class="OverlayMsgBox">
+                                    <div id="divDualAuthPopUp" hidden="hidden" class="PopUpMsgBox">
+                                        Dual Authentication
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LoginID, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-8">
+                                @Html.TextBoxFor(model => model.LoginID, new { @class = "form-control", @Required = "Required" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password, new { @class = "col-sm-3 control-label" })
+                            <div class="col-sm-8">
+                                @Html.PasswordFor(model => model.Password, new { @class = "form-control", @Required = "Required" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Comments, htmlAttributes: new { @class = "control-label col-sm-3" })
+                            <div class="col-sm-8">
+                                @Html.TextBoxFor(model => model.Comments, htmlAttributes: new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                    </div>
+                                        <div class="modal-footer">
+                                            <span id="progress" class="text-center" style="display: none;">
+                                                <img src="/images/ajax-loader.gif" alt="Wait" />
+                                                Wait..
+                                            </span>
+                                            <label id="AuthResult" style="color:red"></label>
+                                            <a class="btn btn-success" id="btnDualAuthOk" hidden="hidden">
+                                                <span>Ok</span>
+                                            </a>
+
+                                            <a class="btn btn-warning" id="btnCancel">
+                                                <span>Cancel</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                      <div id="divUnbypassOverlay" hidden="hidden" class="OverlayMsgBox">
+                                    <div id="divUnbypassPopUp" hidden="hidden" class="PopUpMsgBox">
+                                        Unbypass Sensor
+                    <div class="form-horizontal">
+                        <label id="" style="color:red">Unbypass this Sensor?</label>
+
+                    </div>
+                                        <div class="modal-footer">
+                                            <span id="progress" class="text-center" style="display: none;">
+                                                <img src="/images/ajax-loader.gif" alt="Wait" />
+                                                Wait..
+                                            </span>
+                                           
+                                            <a class="btn btn-success" id="btnUnbypassOk" hidden="hidden">
+                                                <span>Ok</span>
+                                            </a>
+
+                                            <a class="btn btn-warning" id="btnUnbypassCancel">
+                                                <span>Cancel</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane margin-top" id="TabPanelPanelControl">
+
+                                    @Html.Hidden("hdnPanelId", Request.Params["PanelID"])
+                                    @Html.Hidden("hdnClientId", Request.Params["ClientID"])
+                                    @Html.Hidden("hdnPanelIP", Request.Params["PanelIP"])
+
+                                    <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Reset Panel" name="Command" id="btnResetPanel">
+                                        <i class="fa fa-refresh fa-2x"></i>
+                                        <p>Reset Panel</p>
+                                    </button>
+                                  @*  <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="New Reset Panel" name="Command" id="btnNewResetPanel">
+                                        <i class="fa fa-retweet fa-2x"></i>
+                                        <p>New Reset Panel</p>
+                                    </button>*@
+                                    <button class="btn btn-default" type="button" value="Silence " name="Command"  data-toggle="tooltip" title="Silence" id="btnSilence">
+                                        <i class="fa fa-volume-off fa-2x"></i>
+                                        <p>Silence</p>
+                                    </button>
+                                    <button class="btn btn-default" type="button" value="Start Siren" name="Command" data-toggle="tooltip" title="Start Siren" id="btnSiren">
+                                        <img src="~/Images/Siren-icon.png" /><p>Start Siren</p>
+                                    </button>
+                                    @*<button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Check Status" name="Command" id="btnCheckStatus">
+                                        <i class="fa fa-check-square-o fa-2x"></i>
+                                        <p>Check Status</p>
+                                    </button>*@
+                                    <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Panel Ping" name="Command" id="btnPanelPing">
+                                        <i class="fa fa-bullseye fa-2x"></i>
+                                        <p>Panel Ping</p>
+                                    </button>
+                                   @* <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Fire Reset" name="Command" id="btnFireReset" style="display: none">
+                                        <i class="fa fa-fire fa-2x"></i>
+                                        <p>Fire Reset</p>
+                                    </button>*@
+
+                                  @if (Convert.ToString(Session["PanelType"]) == "Commercial")
+                                  {
+                                      <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Arm Panel" name="Command" id="btnArmPanel" >
+                                        <i class="fa fa-power-off fa-2x"></i>
+                                        <p id="btnArmName">Arm Panel</p>
+                                    </button> 
+                                  }
+
+                                    <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="" name="Command" id="btnBypassSensor" style="display: none">
+                                        <i class="fa fa-dot-circle-o fa-2x"></i>
+                                        <p id="btnBypassName">Bypass Sensor</p>
+                                    </button>
+
+                                    <label id="lblSensorNo" style="display: none">Sensor No :</label>
+                                    <label id="SensorNo" style="display: none"></label>
+
+                                    <div class="col-md-12 request-btn">
+                                        <div id=""></div>
+
+                                        <label id="lblPanelResetRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorResetRequest" style="color:red"></label>
+
+                                        <label id="lblPanelNewResetRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorNewResetRequest" style="color:red"></label>
+
+                                        <label id="lblSilenceRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorSilenceRequest" style="color:red"></label>
+
+                                        <label id="lblPanelSirenRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorSirenRequest" style="color:red"></label>
+
+                                        <label id="lblPanelCheckStatusRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorCheckStatusRequest" style="color:red"></label>
+
+                                        <label id="lblPanelFireResetRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorFireResetRequest" style="color:red"></label>
+
+                                        <label id="lblPanelPingRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorPingRequest" style="color:red"></label>
+
+                                        <label id="lblPanelArmRequest" style="color:red"></label>
+                                        <label id="lblPControlErrorArmRequest" style="color:red"></label>
+
+                                        <label id="lblPControlErrorBypassRequest" style="color:red"></label>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelAgencies">
+                                    <div class="responsive-tabs-container accordion-xs accordion-sm">
+                                        <ul id="myAgenciesTabs" class="nav nav-tabs nav-default" role="tablist">
+                                            <li role="presentation" class="active"><a href="#HKA" id="HKA-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">HKA</a></li>
+                                            <li role="presentation" class=""><a href="#CRA" role="tab" id="CRA-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">CRA</a></li>
+                                            <li role="presentation" class=""><a href="#MFG" role="tab" id="MFG-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Panel Manufacturer</a></li>
+                                            <li role="presentation" class=""><a href="#INS" role="tab" id="INS-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Installation partner</a></li>
+                                            @* <li role="presentation" class=""><a href="#SRV" role="tab" id="SRV-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Service partner</a></li>*@
+                                            <li role="presentation" class=""><a href="#NTW" role="tab" id="NTW-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">Network Provider</a></li>
+                                        </ul>
+
+                                        <div id="myTabContent2" class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade active in" id="HKA" aria-labelledby="home-tab">
+                                                <table class="table table-striped table-hover" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name
+                                                            </th>
+                                                            <th>Designation
+                                                            </th>
+                                                            <th>Telephone No
+                                                            </th>
+                                                            <th>Mobile No
+                                                            </th>
+                                                            <th>Email ID
+                                                            </th>
+                                                            <th>Priority
+                                                            </th>
+                                                            <th>Interval
+                                                            </th>
+                                                            <th>Repeat Interval (min.)
+                                                            </th>
+
+                                                        </tr>
+                                                    </thead>
+
+                                                    @for (int i = 0; i < Model.AgnHKAlist.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Contact_Person)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Contact_Designation)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Tel_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Cell_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].EmailID)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Priority)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].Interval)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnHKAlist[i].RepeatInterval)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="CRA" aria-labelledby="profile-tab">
+                                                <table class="table table-striped table-hover" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+
+                                                            <th>Name
+                                                            </th>
+                                                            <th>Designation
+                                                            </th>
+                                                            <th>Telephone No
+                                                            </th>
+                                                            <th>Mobile No
+                                                            </th>
+                                                            <th>Email ID
+                                                            </th>
+                                                            <th>Priority
+                                                            </th>
+                                                            <th>Interval
+                                                            </th>
+                                                            <th>Repeat Interval (min.)
+                                                            </th>
+
+                                                        </tr>
+                                                    </thead>
+
+                                                    @for (int i = 0; i < Model.AgnCRAlist.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Contact_Person)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Contact_Designation)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Tel_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Cell_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].EmailID)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Priority)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].Interval)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnCRAlist[i].RepeatInterval)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="MFG" aria-labelledby="profile-tab">
+                                                <table class="table table-striped table-hover" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name
+                                                            </th>
+                                                            <th>Designation
+                                                            </th>
+                                                            <th>Telephone No
+                                                            </th>
+                                                            <th>Mobile No
+                                                            </th>
+                                                            <th>Email ID
+                                                            </th>
+                                                            <th>Priority
+                                                            </th>
+                                                            <th>Interval
+                                                            </th>
+                                                            <th>Repeat Interval (min.)
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    @for (int i = 0; i < Model.AgnMFGlist.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Contact_Person)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Contact_Designation)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Tel_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Cell_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].EmailID)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Priority)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].Interval)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnMFGlist[i].RepeatInterval)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="INS" aria-labelledby="profile-tab">
+                                                <table class="table table-striped table-hover" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name
+                                                            </th>
+                                                            <th>Designation
+                                                            </th>
+                                                            <th>Telephone No
+                                                            </th>
+                                                            <th>Mobile No
+                                                            </th>
+                                                            <th>Email ID
+                                                            </th>
+                                                            <th>Priority
+                                                            </th>
+                                                            <th>Interval
+                                                            </th>
+                                                            <th>Repeat Interval (min.)
+                                                            </th>
+
+                                                        </tr>
+                                                    </thead>
+
+                                                    @for (int i = 0; i < Model.AgnINSlist.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Contact_Person)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Contact_Designation)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Tel_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Cell_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].EmailID)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Priority)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].Interval)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnINSlist[i].RepeatInterval)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </div>
+                     
+                                            <div role="tabpanel" class="tab-pane fade" id="NTW" aria-labelledby="profile-tab">
+                                                <table class="table table-striped table-hover" style="width: 100%;">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name
+                                                            </th>
+                                                            <th>Designation
+                                                            </th>
+                                                            <th>Telephone No
+                                                            </th>
+                                                            <th>Mobile No
+                                                            </th>
+                                                            <th>Email ID
+                                                            </th>
+                                                            <th>Priority
+                                                            </th>
+                                                            <th>Interval
+                                                            </th>
+                                                            <th>Repeat Interval (min.)
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    @for (int i = 0; i < Model.AgnNTWlist.Count; i++)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Contact_Person)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Contact_Designation)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Tel_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Cell_No)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].EmailID)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Priority)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].Interval)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(m => Model.AgnNTWlist[i].RepeatInterval)
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel" class="tab-pane" id="TabPanelSite">
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="note note-info">
+                                                <h4 class="box-heading">Sol ID/Site ID :<strong>@Html.DisplayFor(m => m.ATMSiteSolID)</strong></h4>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="note note-info pad-lft15">
+                                                ATM ID:
+                                            <strong>@Html.DisplayFor(m => m.ATMSiteATM1_ID)</strong>
+                                                <strong>@Html.DisplayFor(m => m.ATMSiteATM2_ID)</strong>
+                                                <strong>@Html.DisplayFor(m => m.ATMSiteATM3_ID)</strong>
+                                                <strong>@Html.DisplayFor(m => m.ATMSiteATM4_ID)</strong>
+                                                <strong>@Html.DisplayFor(m => m.ATMSiteATM5_ID)</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <table class="table table-striped table-hover">
+                                                <colgroup>
+                                                    <col width="20%">
+                                                    <col width="80%">
+                                                </colgroup>
+                                                <tbody>
+                                                    <tr>
+                                                        <th>MSP Vendor :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteCompanyName)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Company Name :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteCompanyName)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Contact Person :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteContactPerson)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Company Address :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteCompanyAddress)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>City :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteCityName)</td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-striped table-hover">
+                                                <colgroup>
+                                                    <col width="20%">
+                                                    <col width="80%">
+                                                </colgroup>
+                                                <tbody>
+                                                    <tr>
+                                                        <th>State :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteStateName)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Pincode :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSitePincode)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Phone No :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSitePhoneNo)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Mobile No :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteMobileNo)</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>E-Mail :</th>
+                                                        <td>@Html.DisplayFor(m => m.ATMSiteEmailID)</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                @Html.HiddenFor(m => m.PnlArmStatus, new { @Id = "lblPnlArmsStatus" })
+
+                                <div class="form-froup">
+
+                                    <button id="btnBack" class="btn btn-primary glyphicon glyphicon-arrow-left pull-right" data-toggle="tooltip" data-original-title="Go back to panel status search page"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+
+    
+}

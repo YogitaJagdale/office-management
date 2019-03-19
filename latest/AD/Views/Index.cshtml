@@ -1,0 +1,102 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Project
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+<div class="well">
+    @using (Html.BeginForm("Index", "Project", FormMethod.Post))
+    {
+
+        <div class="row">
+            <div class="col-lg-3">
+                @Html.DropDownListFor(model => model.PanelType, new SelectList(Model.PanelTypeList, "Value", "Text"), "---Select---", new { @id = "ddlPanelType", @class = "form-control required" })
+
+
+            </div>
+            <div class="col-lg-3">
+                @Html.DropDownListFor(model => model.ClientID, new SelectList(Model.ClientList, "Value", "Text"), "---Select---", new { @id = "ddlClientID", @class = "form-control required" })
+            </div>
+            <div class="col-lg-3">
+                <select id="ddlProjectID" name="State" class="form-control required">
+                    <option value="0">---Select---</option>
+                </select>
+               @*  @Html.DropDownListFor(model => model.ProjectName, null, "---Select---",new {@id="ddlProjectID", @class = "form-control" })*@
+            </div>
+            <div class="col-lg-3">
+            @*    <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" value="Index">Go</button>
+                </span>*@
+
+                 <a class="btn btn-success" data-modal="" href="Project/showproject" id="btnView">
+                     <span class="glyphicon glyphicon-plus"></span>      
+                </a>
+               
+            </div>
+
+        </div>
+        
+        <div class="row">
+
+
+       
+        </div>
+    }
+</div>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+<script lang="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $('#ddlClientID').change(function () {
+            var url = "/Project/GetProjectID/";
+            $.ajax({
+                url: url,
+                data: { Paneltype: $('#ddlPanelType').val(), clientid: $('#ddlClientID').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                 
+                    $("#ddlProjectID").html(markup).show();
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+
+
+        $('#ddlProjectID').change(function () {
+            // $('#ddlState').empty();
+            var url = "/Project/selectedProjectID/";
+            var selected = $(this).val(); // get current dropdown element selected value
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: url,
+                data: { Id: selected, Paneltype: $('#ddlPanelType').val(), clientid: $('#ddlClientID').val() },
+        });
+     });
+    });
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".chk").on("change", function (a) { console.log($(this).parent().find("#showscheduler").toggle()) });
+    });
+    </script>

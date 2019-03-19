@@ -1,0 +1,74 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Circle
+
+@{
+    ViewBag.Title = "Circle :: CAMSPlus";
+    Layout = null;
+}
+
+@if (TempData["CircleEditSuccess"] != null)
+{
+    <script> $("#divSuccess").show();</script>// this script to show successslerts
+}
+
+@if (TempData["CircleEditFailure"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+@using(Html.BeginForm())
+{
+       <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                  
+                    @Html.LabelFor(m => Model.CircleName, new { @class = "control-label col-sm-3" })
+                <div class="col-sm-9"> 
+                      @Html.TextBoxFor(model => model.CircleName, htmlAttributes: new { @class = "form-control" , @readonly = "readonly"})
+                   
+
+                </div>
+            </div>
+            <div class="form-group">
+                   
+                 @Html.Label("New Circle", new { @class = "control-label col-sm-3" })
+                <div class="col-sm-9">
+                        @Html.TextBoxFor(model => model.CircleNameEdit, htmlAttributes: new { @class = "form-control" })
+                   
+                </div>
+            </div>
+        
+        </div>
+    </div>
+    
+    
+    <div class="modal-footer">
+
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["CircleEditFailure"] != null)
+            {      @TempData["CircleEditFailure"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["CircleEditSuccess"] != null)
+            {      @TempData["CircleEditSuccess"]
+
+            }
+        </div>
+
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="Wait" />
+            Wait..
+        </span>
+        <input class="btn btn-primary" type="submit" value="Update" onclick="return confirm('Are you sure you wish to update this circle name?');" />
+       
+        <input type="button"  class="btn btn-warning"  value="Close" onclick="@("window.location.href='" + @Url.Action("Index", "Circle") + "'")    ;" />
+    </div>
+    
+}

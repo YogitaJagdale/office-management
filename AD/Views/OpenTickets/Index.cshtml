@@ -1,0 +1,148 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Tickets
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-lg-12 animated fadeIn">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            Index
+        </div>
+        @using (Html.BeginForm("Index", "OpenTickets", FormMethod.Post))
+        {
+    
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+            <div class="panel-body">
+
+                <table class="table table-hover table-striped">
+                    <tr>
+                        <th>Ticket No
+                        </th>
+                        <th>Client Name
+                        </th>
+                        <th>State
+                        </th>
+                        <th>City
+                        </th>
+                        <th>Ticket Open Time
+                        </th>
+                        <th>Sensor No
+                        </th>
+                        <th>Panel ID
+                        </th>
+                        <th>Min Left
+                        </th>
+                        <th>Actual Alert Time
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (System.Data.DataRow dr in (ViewData["pending"] as System.Data.DataTable).Rows)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["TicketNo"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Client_Name"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["StateName"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["CityName"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["ZoneNo"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["PanelID"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["timeLeft"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Actual_Alert_Time"])
+                            </td>
+
+
+                        </tr>
+                    }
+
+
+                </table>
+
+            </div>
+    
+            <div class="panel-body">
+
+                 <table class="table table-hover table-striped">
+                    <tr>
+                        <th>Ticket No
+                        </th>
+                        <th>Client Name
+                        </th>
+                        <th>State
+                        </th>
+                        <th>City
+                        </th>
+                        <th>Ticket Open Time
+                        </th>
+                        <th>Sensor No
+                        </th>
+                        <th>Panel ID
+                        </th>
+                        <th>Min Left
+                        </th>
+                        <th>Actual Alert Time
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (System.Data.DataRow dr in (ViewData["onHold"] as System.Data.DataTable).Rows)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["TicketNo"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Client_Name"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["StateName"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["CityName"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["ZoneNo"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["PanelID"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["timeLeft"])
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => dr["Actual_Alert_Time"])
+                            </td>
+
+
+                        </tr>
+                    }
+
+
+                </table>
+
+            </div>
+        }
+    </div>
+</div>

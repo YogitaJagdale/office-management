@@ -1,0 +1,212 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Admin>
+@{
+    ViewBag.Title = "User :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["AdminAlert"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["AdminAlert"]');
+        TempData["AdminAlert"] = null;
+      
+        $('#btnCreate').click(function () {
+            window.location.href = '~/Admin/Create';
+            return false;
+        });
+
+
+
+    </script>
+}
+
+<style>
+
+    .user-input {
+    vertical-align: sub;
+}
+</style>
+
+@using (Html.BeginForm("Index", null, FormMethod.Get))
+{
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);       
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>User</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        @ViewBag.RbtActiveClient
+                        @{Html.RenderAction("RbtDetails", "Admin"); }
+                    </div>
+                    <div class="col-xs-12 col-md-5">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline"
+                                     placeholder="Search by User Name or Address" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Create">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-1" id="divnewadd">
+                        <a class="btn btn-success pull-right" href="~/Admin/Create" id="btnCreate">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Add
+                        </a>
+                                <button class="btn btn-success btn-sm pull-right margin" id="btnDummyaddui" style="display:none">ADD</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="list-inline PanelStatus">
+                            <li><span class="orange"></span>Online Users</li>
+                            <li><span class="green"></span>Offline Users</li>
+                       </ul>
+                    </div>
+                 </div>
+
+                <hr />
+
+                @if (Model != null)
+                {
+                    if (Model.Count() > 0)
+                    {
+          
+                    <div class="table-responsive">
+                        @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (                        
+                        grid.Column("ULoginID", "Login ID"),
+                        grid.Column("UserName", "User"),
+                        grid.Column("UserType", "User Type"),
+                        grid.Column("CellNumber", "Mobile No"),
+                        grid.Column("Address", "Address"),
+                        grid.Column("Email", "Email Id"),
+                        grid.Column("LoginStatus","", null, "DisplayNone"),
+                        grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+
+                        @Html.Raw("<a name='Edit' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.ULoginID + "'> </a>")
+                           @Html.Raw("<button name='EditNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to edit' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></button>")           
+                        </text>),
+
+                    grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.ULoginID },
+                    new
+                    {
+                        onclick = "return confirm('Are you sure you wish to delete this user details?');  ",
+                        @Name = "Delete",
+                        @class = "glyphicon glyphicon-trash btn btn-danger btn-xs"
+                    })),
+                          grid.Column(header: "", canSort: false, style: "action",
+                 format: @<text>@Html.Raw("<button name='DeleteNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to delete' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs'></button>")
+                 </text>)
+                    
+                    )
+                    
+                    , mode: WebGridPagerModes.Numeric)
+                        <script type="text/javascript">
+                            function updateGrid() {
+                            @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                        }
+                        </script>
+
+                    </div>
+
+                    }
+                    else
+                    {
+                    <div>No records found</div>
+                    }
+                }
+
+            </div>
+
+        </div>
+    </div>
+    <div class="clearfix"></div>            
+
+}
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        debugger;
+        var UserTypes = '@ViewData["rbtnUserTypes"]';
+        if (UserTypes != null) {
+            $('input[value="' + UserTypes + '"]:radio').attr('checked', true);
+
+
+        }
+        else if (UserTypes == 'Admin') {
+            $('input[value="Admin"]:radio').attr('checked', true);
+        }
+        var Active = '@ViewData["Active"]';
+        if (Active != null) {
+            $('input[value="' + Active + '"]:radio').attr('checked', true);
+        }
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var res = '@ViewBag.NewAdd';
+        if (res == "False" || res == "false") {
+            $('#btnCreate').hide();
+            $('#btnDummyaddui').show();
+            $('#btnDummyaddui').attr("title", "No Rights To Add");
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false") {
+            $('[name=Edit]').hide();
+            $('[name=EditNew]').show();
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false") {
+            $('[name=Delete]').hide();
+            $('[name=DeleteNew]').show();
+        }
+
+
+        //////color of gride code//////////
+        $('tr').each(function (index) { //iterate over all table rows
+            if (index > 0) {     //skip header
+                if ($(this).children('td').eq(6).text().trim() == 'Online')  //look for the 10th td in each row. thats where your ArmStatus is.
+                {
+                    $(this).children('td').eq(0).css("background-color", "#FFBB55");
+                }
+                if ($(this).children('td').eq(6).text().trim() == 'Offline') {
+                    $(this).children('td').eq(0).css("background-color", "#C5FF8A");
+                }
+               
+            }
+        });
+
+
+        //////////////
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

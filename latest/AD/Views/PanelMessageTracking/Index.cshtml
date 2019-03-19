@@ -1,0 +1,21 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ZoneMaster
+@{
+    ViewBag.Title = "Panel Message Tracking :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ <script type="text/javascript">
+        $(document).ready(function () {
+            $(".dropdown").hover(
+                function () {
+                    $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeIn("400");
+                    $(this).toggleClass('open');
+                },
+                function () {
+                    $('.dropdown-menu', this).not('.in .dropdown-menu').stop(true, true).fadeOut("400");
+                    $(this).toggleClass('open');
+                }
+            );
+        });
+    </script>
+
+<iframe src="~/PanelTracking.aspx" width="1350" height="600" style="overflow: hidden; margin-top: 0px; background-color: white; border: 1px solid #ccc" />

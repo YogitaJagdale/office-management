@@ -1,0 +1,454 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Tickets
+<link href="~/Content/jquery.loader.css" rel="stylesheet" />
+
+
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/jquery.loader.js"></script>
+
+@{
+    ViewBag.Title = "Search Ticket :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@if (TempData["SearchError"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSearchDate").show();
+        });
+    </script>
+    
+}
+
+<script type="text/javascript">
+    (function ($) {
+        "use strict";
+
+        $(function () { // short document ready
+
+            $('.btn-group')
+
+            .on('click', '#btnSearch', function () {
+                if ($('body').hasClass('loading')) {
+                    $('body').removeClass('loading')
+                    .loader('hide');
+                } else {
+                    $('body').addClass('loading')
+                    .loader('show', {
+                        overlay: true
+                    });
+                }
+            });
+
+        });
+    }(jQuery));
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        var ChkPendingArray = new Array();
+        var i = 0;
+        var table = $('#myPendingDataTable').DataTable({
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "pageLength": 10,
+            "columnDefs": [
+              {
+                  "targets": [0],
+                  "visible": true,
+                  'searchable': false,
+                  'orderable': false,
+                  'className': 'dt-body-center',
+                  'render': function (data, type, full, meta) {
+                      return '<input type="checkbox" id="chkPending' + (i++) + '" name="checkPendingName" value="' + $('<div/>').text(data).html() + '">';
+                  }
+              }
+            ],
+            //'order': [1, 'asc']
+        });
+
+
+        function fnShowHide1(iCol) {
+            /* Get the DataTables object again - this is not a recreation, just a get of the object */
+            var oTable = $('#myPendingDataTable').dataTable();
+            var bVis = oTable.fnSettings().aoColumns[iCol].bVisible;
+            if (bVis == false) {
+                oTable.fnSetColumnVis(iCol, bVis ? false : true);
+            }
+
+        }
+
+        var cntPending = 0;
+        $('#myPendingDataTable tbody').on('change', 'input[type="checkbox"]', function () {
+
+            //Pending Datatable
+            ChkPendingArray[cntPending] = $(this).parent().next().children().text();
+            cntPending++;
+
+            // If checkbox is not checked
+            if (!this.checked) {
+                var delPendingchk = $(this).parent().next().children().text();
+                ChkPendingArray = jQuery.grep(ChkPendingArray, function (value) {
+                    return value != delPendingchk;
+                });
+                var el = $('#example-select-all').get(0);
+
+                if (el && el.checked && ('indeterminate' in el)) {
+
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        $('#example-select-all').click(function (e) {
+
+            var chk = $(this).prop('checked');
+            var currentRows = $('#myPendingDataTable tbody tr');
+            $.each(currentRows, function () {
+                $(this).find(':checkbox[name=checkPendingName]').each(function () {
+                    $(this).prop('checked', chk);
+                });
+            });
+        });
+
+
+        $("#imgbtnAssign").on("click", function () {
+            debugger;
+            var status = true;
+            if ($('#SupervisorLoginId').val() == '' || $('#SupervisorLoginId').val() == "---Select---") {
+                alert("Please select Supervisor");
+                status = false;
+            }
+            if (status == true) {
+                var Supervisor = $('#SupervisorLoginId').val();
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: '@Url.Action("assigntickets")',
+                    data: { ChkPendingArray: ChkPendingArray, SupervisorName: Supervisor },
+                    success: function (data) {
+                        alert(data.Text);
+                        location.reload();
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve panels.' + ex);
+                    }
+                });
+            }
+            else {
+            }
+        });
+
+    });
+
+</script>
+
+
+
+
+@using (Html.BeginForm("Index", "SearchTickets", new { id = "Search" }))
+{
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Search Tickets</h2>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+            <div class="container">
+
+
+                @*<div class="btn-group">
+            <button class="btn btn-danger" type="button">loader</button>
+        </div>*@
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Ticket No</label>
+                            @Html.TextBoxFor(model => model.TicketNo, new { @class = "form-control", @id = "txtTicketNo" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Ticket Status</label>
+                            @Html.DropDownListFor(model => model.TicketStatus, new SelectList(Model.lstTicketStatus, "Value", "Text", Model.TicketStatus), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Assigned To</label>
+                            @Html.DropDownListFor(model => model.AssignedTo, new SelectList(Model.lstAssignedTo, "Value", "Text", Model.AssignedTo), new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Client Name</label>
+                           @if (HttpContext.Current.Session["ClientID"] != "")
+                           {
+                               @Html.DropDownList("clientlist", null, "---Select---", new { @class = "form-control",@id = "clientlist" ,@disabled = "disabled"})
+
+                           }
+                            else
+                            {
+                            @Html.DropDownListFor(model => model.ClientName, new SelectList(Model.lstClients, "Value", "Text", Model.ClientName), new { @class = "form-control", @id = "clientlist" })
+                           }
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Client Circle</label>
+                            @Html.DropDownListFor(model => model.CircleName, new SelectList(Model.lstclientCircle, "Value", "Text", Model.CircleName), new { @class = "form-control", @id = "clientCircle" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Panel ID</label>
+                            @Html.TextBoxFor(model => model.PanelID, new { @class = "form-control", @id = "PanelID" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Panel Mode</label>
+                            @Html.DropDownListFor(model => model.PanelMode, new SelectList(Model.lstPanelModes, "Value", "Text", Model.PanelMode), new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Site ID</label>
+                            @Html.TextBoxFor(model => model.SiteID, new { @class = "form-control", @id = "SiteID" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            @*datepicker*@
+                            @Html.TextBoxFor(model => model.TimeFrom, "{0:yyyy-MM-dd}", new { type = "date", @id = "timeFrom", @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>End Date</label>
+                            @*datepicker*@
+                            @Html.TextBoxFor(model => model.TimeTo, "{0:yyyy-MM-dd}", new { type = "date", @id = "timeTo", @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Subscription</label>
+                            @Html.DropDownListFor(model => model.SubName, new SelectList(Model.lstsubscription, "Value", "Text", Model.SubName), new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="form-group">
+                            <label>Ticket Type</label>
+                            @Html.DropDownListFor(model => model.alarm, new SelectList(Model.lstAlarmType, "Value", "Text", Model.alarm), new { @class = "form-control dropdown-option" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <input class="btn btn-success btn-group" type="submit" id="btnSearch" value="Search" name="Command" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 animated fadeIn">
+        <div class="panel panel-default">
+            <div class="panel-body" style="padding: 0px;">
+                @if (Convert.ToString(Session["cheackDiv"]) == "Search")
+                {
+                    if (ViewData["Tickets"] != null)
+                    {  
+                    <div class="pageheader" id="divAssignTosupervisor">
+                        <div class="request-btn">
+                            <div class="pull-left form-inline">
+
+                                <div class="form-group">
+                                    <label>Assign To Supervisor</label>
+                                    @Html.DropDownListFor(model => model.supervisorName, new SelectList(Model.lstSupervisor, "Value", "Text"), new { @id = "SupervisorLoginId", @width = "150px", @class = "form-control" })
+
+                                    <input class="btn btn-primary btn-sm" type="button" value="Assign To Supervisor" name="Command" id="imgbtnAssign">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    }
+                }
+
+
+                @if (Convert.ToString(Session["cheackDiv"]) == "Search")
+                {
+                    <div class="col-sm-12">
+                        <div class="table-responsive">
+                             <div class="pull-right">Total no. records found : @ViewBag.TotalRowCount</div> 
+                            @if (ViewData["Tickets"] != null)
+                            {  
+                                <table id="myPendingDataTable" class="table table-hover table-bordered">
+
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" name="select_all" value="1" id="example-select-all"></th>
+                                            <th>Ticket No
+                                            </th>
+                                            <th>Client Name
+                                            </th>
+                                            <th>Panel Location
+                                            </th>
+                                            <th>Sensor Type
+                                            </th>
+                                            <th>Ticket Open Time
+                                            </th>
+                                            <th>Ticket Close Time
+                                            </th>
+                                            <th>Assigned To
+                                            </th>
+                                            <th>Status
+                                            </th>
+                                            <th>PanelID
+                                            </th>
+                                            <th style="display: none">Message Class
+                                                </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (System.Data.DataRow dr in (ViewData["Tickets"] as System.Data.DataTable).Rows)
+                                        {
+                                            <tr>
+                                                <td></td>
+                                                <td>
+
+                                                    @Html.Raw(Html.ActionLink(Convert.ToString(dr["TicketNo"]), "CurrentState", "OpenTicket", routeValues: new { sTicketNo = dr["TicketNo"], sPanelid = dr["PanelID"], sClientId = dr["ClientID"], sZoneNo = dr["ZoneNo"], sMessageType = dr["MessageType"], sMessageClass = dr["MessageClass"], sCircleID = dr["O_CircleID"], sMessageDescription = dr["MessageDescription"], sMessage = dr["SMessage"], sCamera = dr["Camera"], sCategoryName = dr["CategoryName"], sTicket_Open_Time = dr["Ticket_Open_Time"], sTicketStatus = dr["Ticket_Status"],sFromPage="Search",sPending="No",sAssignTo= dr["AssignedTo"]}, htmlAttributes: null))
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Client_Name"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Location"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["SensorType"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Ticket_Close_Time"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["AssignedTo"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Ticket_Status"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["PanelID"])
+                                                </td>
+                                                <td style="display: none">
+                                                    @Html.DisplayFor(modelItem => dr["MessageClass"])
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+                            }
+                        </div>
+                    </div>
+
+                }
+            </div>
+        </div>
+        <div class="col-lg-12 modal-footer">
+            <div class="alert alert-danger" role="alert" id="divSearchDate" style="display: none" align="Left">
+                @if (TempData["SearchError"] != null)
+                {      @TempData["SearchError"]
+
+                }
+            </div>
+
+        </div>
+    </div>
+             
+}
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#clientlist").change(function () {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("BindClientCircles")', // we are calling json method
+                dataType: 'json',
+                data: { id: $("#clientlist").val() },
+                async: false,
+                // here we are get value of selected client and passing same value
+                success: function (clientCircle) {
+                    $("#clientCircle").empty();
+                    $.each(clientCircle, function (i, clientCircle) {
+                        $("#clientCircle").append('<option value="' + clientCircle.Value + '">' +
+                             clientCircle.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    alert('Failed to retrieve circles.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var search = '@ViewBag.Search';
+        if (search == "false" || search == "False") {
+            //$("#btnSearch").attr("disabled",true);           
+            //$('#btnSearch').attr("title", "No Rights To Search");
+            $("#btnSearch").hide();
+        }
+        else if (search == "true" || search == "True") {
+            //$("#btnSearch").attr("disabled",false);
+            //$('#btnSearch').attr("title", "Search Tickets");
+            $("#btnSearch").show();
+        }
+
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(function () {
+        $(document).bind('contextmenu', function (e) {
+            e.preventDefault();
+            alert('Due to security reason, Right Click is not allowed.');
+        });
+    });
+
+    $(document).mousedown(function (e) {
+        if (e.which === 2) {
+            alert("Due to security reason, Middle Click is not allowed.")
+            e.preventDefault();
+            return false; 
+        }
+    });
+</script>

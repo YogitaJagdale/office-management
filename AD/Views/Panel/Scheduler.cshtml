@@ -1,0 +1,167 @@
+﻿@model IList<SECU_CAMSPlus_DEV.Models.Panel>
+@{
+   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["SchedulerSuccessMsg"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>
+}
+@if (TempData["SchedulerFailMsg"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divInvalid").show();
+        });
+    </script>
+}
+
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        var access = $('#hdnaccessbitPanelScheduler').val();     
+        var accessbitUpdate = access.substr(0, 1);
+        if (accessbitUpdate == 0) {
+            $('#btnUpdateSchedule').prop('disabled', true);
+            $('#btnUpdateSchedule').attr("title", "No Rights To update");
+        }    
+    });
+</script>
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>View Sensor Configuration</h2>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="clo-lg-12">
+                <div class="responsive-tabs-container accordion-xs accordion-sm">
+                    <ul class="nav nav-tabs responsive-tabs">
+                        <li class="">
+                            @Html.ActionLink("Template Details", "BindPanelSensorTemplate", "Panel")
+                        </li>
+                        <li class="">@Html.ActionLink("Sensor Details", "BindSensorConfiglist", "Panel")</li>
+                        <li class="">@Html.ActionLink("Camera Details", "BindCameraDetails", "Panel")</li>
+                        <li class="">@Html.ActionLink("Asset Details", "AssetDetails", "Panel")</li>
+                        @if (Convert.ToString(Session["PanelType"]) == "Commercial")
+                        {
+                            <li class="active">@Html.ActionLink("Scheduler Details", "Scheduler", "Panel")</li>
+                        }
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home1">
+                            @using (Html.BeginForm("Scheduler", "Panel", FormMethod.Post))
+                            {  
+                           @Html.Hidden("hdnaccessbitPanelScheduler", Session["BinaryAccessBitPanelScheduler"], new { @id = "hdnaccessbitPanelScheduler" })   
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="note note-info">
+                                            <h3 class="box-heading">@Html.Label("lblprojectname","PanelID :"+ Convert.ToString(Session["PanelPanelID"]), new { @class = "ProjectLabel" })</h3>
+                                        </div>
+                                    </div>
+                                </div>                               
+                                <div class="clo-lg-12">
+                                    <div class="text-center mbot30">
+                                    </div>
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th></th>
+                                            <th>Day
+                                            </th>
+                                            <th>Day Type
+                                            </th>
+                                            <th>Open Time
+                                            </th>
+                                            <th>Early Open Time
+                                            </th>
+                                            <th>Late Open Time
+                                            </th>
+                                            <th>Close Time
+                                            </th>
+                                            <th>Early Close Time
+                                            </th>
+                                            <th>Late Close Time
+                                            </th>
+                                        </tr>
+                                        @for (int i = 0; i < Model.Count; i++)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.HiddenFor(m => m[i].ScheduleID)
+                                                </td>
+                                                <td>
+                                                      @Html.DisplayFor(m => m[i].DayName, new { @class = "form-control required " })
+                                   
+                                                </td>
+                                                <td>
+                                                    @Html.CheckBoxFor(x => x[i].HolidayBool, new { @class = "chk" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].OpenTime, "{0:HH:mm:ss}", new { step="1", type = "time", @class = "form-control required ", @Value = Model[i].OpenTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].EarlyOpenTime, "{0:HH:mm:ss}", new { step="1", type = "time", @class = "form-control required ", @Value = Model[i].EarlyOpenTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].LateOpenTime, "{0:HH:mm:ss}", new {  step="1",type = "time", @class = "form-control required ", @Value = Model[i].LateOpenTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].CloseTime, "{0:HH:mm:ss}", new { step="1", type = "time", @class = "form-control required ", @Value = Model[i].CloseTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].EarlyCloseTime, "{0:HH:mm:ss}", new { step="1", type = "time", @class = "form-control required ", @Value = Model[i].EarlyCloseTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(m => m[i].LateCloseTime, "{0:HH:mm:ss}", new { step="1", type = "time", @class = "form-control required ", @Value = Model[i].LateCloseTime.ToString("HH:mm:ss"), @style = "width:140px" })
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                @Html.HiddenFor(m => m[i].DayName)
+                                                @Html.HiddenFor(m => m[i].ProjectName)
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>                 
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="alert alert-danger" id="divInvalid" role="alert" style="display: none" align="Left">
+                                            @if (TempData["SchedulerFailMsg"] != null)
+                                            {      @TempData["SchedulerFailMsg"]
+                                            }
+                                        </div>
+                                        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                                            @if (TempData["SchedulerSuccessMsg"] != null)
+                                            {      @TempData["SchedulerSuccessMsg"]
+                                            }
+                                        </div>
+                                        <span id="progress" class="text-center" style="display: none;">
+                                            <img src="/images/ajax-loader.gif" alt="wiat" />
+                                            Wait..
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="panel-footer text-center">
+                                    <input class="btn btn-success btn-sm" type="submit" value="Update" id="btnUpdateSchedule" onclick="return confirm('Are you sure you want to update ?')" />
+                                    <input type="button"  class="btn btn-warning btn-sm"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Edit", "Panel",new {PanelID=Session["PanelPanelID"],ClientID=Session["PanelClientID"]}) + "'")    ;" />
+                                </div>                                
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+

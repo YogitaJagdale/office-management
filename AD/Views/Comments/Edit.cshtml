@@ -1,0 +1,130 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Comments
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt)
+    {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function IsValidValidUserComments() {
+        $("#errorInValidUserComments").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  
+        var pwdval = $("#txtUserComments").val();
+        if (!pwdreg.test(pwdval) && $("#txtUserComments").val() != '')
+        {
+            $("#txtUserComments").after('<span id="errorInValidUserComments" class="mandatory">Enter Valid User Comments</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else
+        {
+            $("#errorInValidUserComments").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function setValue() {
+        $("#errorInValidUserComments").remove();
+        $('#btnaddComment').attr('disabled', true);
+    }
+</script>
+
+
+@if (TempData["Failnotice"] != null)
+{
+    <script> $("#divinvalid").show(); </script>
+}
+@if (TempData["Successnotice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $('#btnUpdate').attr('disabled', true);
+    </script>
+}
+
+<div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+         onclick="@("window.location.href='" + @Url.Action("Index", "Comments", new { name = @ViewBag.CommentType }) + "'")">x</button>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+
+
+@using (Html.BeginForm("Edit", "Comments", FormMethod.Post, new { @id = "formCommentsMasterEdit" }))
+
+{
+ 
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    <input type="hidden"  value="@ViewBag.EditCommentsValue" id="hdnfilename" />
+                    <input type="hidden" value="@ViewBag.selectesID" id="hdnId" />
+                </div>
+            
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.UserComments, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.UserComments, new { id="txtUserComments",@onblur="IsValidValidUserComments()", maxlength = 250,
+                   @class = "form-control required", required = "required" })
+                   @Html.ValidationMessageFor(m => m.UserComments,null,new { @class = "valiation",id="errorInValidUserComments"})
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-success" id="divSuccess" role="alert" style="display: none" align="Left">
+            @if (TempData["Successnotice"] != null)
+            {      @TempData["Successnotice"]
+
+            }
+        </div>
+
+        <div class="alert alert-danger" role="alert" id="divinvalid" style="display: none" align="Left">
+            @if (TempData["Failnotice"] != null)
+            {      @TempData["Failnotice"]
+            }
+        </div>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" id="btnUpdate" value="Update"
+                onclick="if ($(formCommentsMasterEdit).valid() && $('#txtUserComments').val() != '')
+                    { return confirm('Do you want to Update this Comments?') };" />           
+           <input type="button" class="btn btn-warning"  data-dismiss="modal" value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "Comments", new { name = @ViewBag.CommentType }) + "'")" />
+        </div>
+    </div>
+}
+

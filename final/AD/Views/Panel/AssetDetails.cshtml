@@ -1,0 +1,398 @@
+﻿@model SECU_CAMSPlus_DEV.Models.PanelAsset
+@{
+    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["SuccessAssetsMsg"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>
+}
+
+@if (TempData["InvalidAssetsMsg"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divInvalid").show();
+        });
+    </script>
+}
+<script>
+    $(document).ready(function ()
+    {
+        debugger;
+        var access = $('#hdnaccessbitPanelAssetDetails').val();
+        console.log(access);
+        var accessbitUpdate = access.substr(0, 1);
+        if (accessbitUpdate == 0) {
+            $('#btnUpdateAssetDetails').prop('disabled', true);
+            $('#btnUpdateAssetDetails').attr("title", "No Rights To Update");
+        }
+    });
+
+</script>
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>View Sensor Configuration</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="row">
+                <div class="responsive-tabs-container accordion-xs accordion-sm">
+                    <ul class="nav nav-tabs responsive-tabs">
+                        <li class="">
+                            @Html.ActionLink("Template Details", "BindPanelSensorTemplate", "Panel")
+                        </li>
+                        <li class="">@Html.ActionLink("Sensor Details", "BindSensorConfiglist", "Panel")</li>
+                        <li class="">@Html.ActionLink("Camera Details", "BindCameraDetails", "Panel")</li>
+                        <li class="active">@Html.ActionLink("Asset Details", "AssetDetails", "Panel")</li>
+                        @if (Convert.ToString(Session["PanelType"]) == "Commercial")
+                        {
+                            <li class="">@Html.ActionLink("Scheduler Details", "Scheduler", "Panel")</li>
+                        }
+                    </ul>
+                    <div class="tab-content">                   
+                        <div class="tab-pane active" id="home1">
+                            @using (Html.BeginForm("AssetDetails", "Panel", FormMethod.Post))
+                            {   
+                                @Html.Hidden("hdnaccessbitPanelAssetDetails", Session["BinaryAccessBitPanelAssetDetails"], new { @id = "hdnaccessbitPanelAssetDetails" })                             
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="note note-info">
+                                            <h3 class="box-heading">
+                                                @Html.Label("lblprojectname","PanelID :"+ Convert.ToString(Session["PanelPanelID"]), new { @class = "ProjectLabel" })
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                                             
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            <div class="panel panel-default AssetDetails">
+                                                <div class="panel-heading">
+                                                    DVR
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div class="form-group">
+                                                        <label>Manufacturer</label>
+                                                        @Html.DropDownListFor(m => m.DVRMfgID, new SelectList(ViewBag.DvrMfgList, "Value", "Text", Model.DVRMfgID), new { @class = "form-control required col-sm-2", @id = "ddldvrmfg" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Model</label>
+                                                        @Html.DropDownListFor(m => m.DVRModelID, new SelectList(ViewBag.DvrModelList, "Value", "Text", Model.DVRModelID), new { @class = "form-control required", @id = "ddldvrModel" })
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label>Version</label>
+                                                           @Html.TextBoxFor(m => m.DVRVersion, new { @class = "form-control required", @id = "txtdvrversion" })
+                                                    @*    @Html.TextBoxFor(m => m.DVRVersion, new { @class = "form-control required", @required = "Required" })*@
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Serial No</label>
+                                                      @*  @Html.TextBoxFor(m => m.DVRSerialNo, new { @class = "form-control required", @required = "Required" })*@
+                                                        @Html.TextBoxFor(m => m.DVRSerialNo, new { @class = "form-control required", @id = "txtDVRSerialNo" })
+                                                    </div>
+                                                    <div class="form-group">
+                                               
+                                                        @Html.ValidationMessageFor(m => m.DVRVersion, null, new { @class = "valiation" })
+                                                        <br />
+                                                        @Html.ValidationMessageFor(m => m.DVRSerialNo, null, new { @class = "valiation" })
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="panel panel-default AssetDetails">
+                                                <div class="panel-heading">
+                                                    Router
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div class="form-group">
+                                                        <label>Manufacturer</label>
+                                                        @Html.DropDownListFor(m => m.RouterMfgID, new SelectList(ViewBag.RouterMfgList, "Value", "Text", Model.RouterMfgID), new { @class = "form-control required", @id = "ddlRoutermfg" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Model</label>
+                                                        @Html.DropDownListFor(m => m.RouterModelID, new SelectList(ViewBag.RouterModelList, "Value", "Text", Model.RouterModelID), new { @class = "form-control required", @id = "ddlRouterModel" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Version</label>
+                                                          @Html.TextBoxFor(m => m.RouterVersion, new { @class = "form-control required", @id = "txtRouterVersion" })
+                                                      @*  @Html.TextBoxFor(m => m.RouterVersion, new { @class = "form-control required" })*@
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Serial No</label>
+                                                          @Html.TextBoxFor(m => m.RouterSerialNo, new { @class = "form-control required", @id = "txtRouterSerialNo" })
+                                                         @*  @Html.TextBoxFor(m => m.RouterSerialNo, new { @class = "form-control required" })*@
+                                                    </div>
+                                                    <div class="form-group">
+                                                        @Html.ValidationMessageFor(m => m.RouterVersion, null, new { @class = "valiation" })
+                                                        <br />
+                                                        @Html.ValidationMessageFor(m => m.RouterSerialNo, null, new { @class = "valiation" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="panel panel-default AssetDetails">
+                                                <div class="panel-heading">
+                                                    HDD
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div class="form-group">
+                                                        <label>Manufacturer</label>
+                                                        @Html.DropDownListFor(m => m.HDDMfgId, new SelectList(ViewBag.HDDMfgList, "Value", "Text", Model.HDDMfgId), new { @class = "form-control required", @id = "ddlHDDmfg" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Model</label>
+                                                        @Html.DropDownListFor(m => m.HDDModelId, new SelectList(ViewBag.HDDModelList, "Value", "Text", Model.HDDModelId), new { @class = "form-control required", @id = "ddlHDDModel" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Version</label>
+                                                           @Html.TextBoxFor(m => m.HDDCapacity, new { @class = "form-control required", @id = "txtHDDCapacity" })
+                                                  @*      @Html.TextBoxFor(m => m.HDDCapacity, new { @class = "form-control required" })*@
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Serial No</label>
+                                                     @*   @Html.TextBoxFor(m => m.HDDSerialNo, new { @class = "form-control required" })*@
+                                                       @Html.TextBoxFor(m => m.HDDSerialNo, new { @class = "form-control required", @id = "txtHDDSerialNo" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        @Html.ValidationMessageFor(m => m.HDDCapacity, null, new { @class = "valiation" })
+                                                        <br />
+                                                        @Html.ValidationMessageFor(m => m.HDDSerialNo, null, new { @class = "valiation" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="panel panel-default AssetDetails">
+                                                <div class="panel-heading">
+                                                    Network
+                                                </div>
+                                                <div class="panel-body">
+                                                    <div class="form-group">
+                                                        <label>Provider</label>
+                                                        @Html.DropDownListFor(m => m.NetworkProviderID, new SelectList(ViewBag.NetProviderList, "Value", "Text", Model.NetworkProviderID), new { @class = "form-control required", @id = "ddlNtwProvider" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Type</label>
+                                                        @Html.DropDownListFor(m => m.NetworkType, new SelectList(ViewBag.NetTypeList, "Value", "Text", Model.NetworkType), new { @class = "form-control required", @id = "ddlNtwType" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        @Html.HiddenFor(m => m.ProjectName)
+                                                    </div>
+                                                    <div class="form-group">                                           
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>     
+                                
+                                 <div id="divval" class="valiation"></div>         
+                                <div class="modal-footer">
+                                    <div class="alert alert-danger" id="divInvalid" role="alert" style="display: none" align="Left">
+                                        @if (TempData["InvalidAssetsMsg"] != null)
+                                        {      @TempData["InvalidAssetsMsg"]
+
+                                        }
+                                    </div>
+                                    <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                                        @if (TempData["SuccessAssetsMsg"] != null)
+                                        {      @TempData["SuccessAssetsMsg"]
+
+                                        }
+                                    </div>
+                                    <span id="progress" class="text-center" style="display: none;">
+                                        <img src="/images/ajax-loader.gif" alt="wiat" />
+                                        Wait..
+                                    </span>
+
+                                </div>                       
+                                <div class="panel-footer text-center">
+                                        <input class="btn btn-success btn-sm" type="button" value="Update" id="btnUpdateAssetDetails" />
+                                        <input type="button"  class="btn btn-warning btn-sm"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Edit", "Panel", new { PanelID = Session["PanelPanelID"], ClientID = Session["PanelClientID"] }) + "'")    ;" />
+                               </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+             </div>
+           </div>
+        </div>     
+    </div>
+</div>
+<div class="clearfix"></div>
+    <div>  
+    </div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#btnUpdateAssetDetails").on("click", function () {
+            var checkconfirm = confirm('Are you sure you want to update ?')
+            var status = true;
+            var errors = "";
+            if ($('#divSuccess').text().trim() != "") {
+                $("#divSuccess").hide();
+            }
+
+            if ($('#divInvalid').text().trim() != "") {
+                $("#divInvalid").hide();
+            }
+            if (checkconfirm == true) {
+                if ($("#ddldvrmfg").val() == "0") {
+                    errors += "Please select valid dvr manufacturer. <br/> ";
+                    status = false;
+                }
+                if ($("#ddldvrModel").val() == "0") {
+                    errors += "Please select valid dvr model. <br/>";
+                    status = false;
+                }
+                if ($("#ddlRoutermfg").val() == "0") {
+                    errors += "Please select valid router manufacturer. <br/>";
+                    status = false;
+                }
+                if ($("#ddlRouterModel").val() == "0") {
+                    errors += "Please select valid router model.<br/>";
+                    status = false;
+                }
+                if ($("#ddlHDDmfg").val() == "0") {
+                    errors += "Please select valid HDD manufacturer. <br/>";
+                    status = false;
+                }
+                if ($("#ddlHDDModel").val() == "0") {
+                    errors += "Please select valid HDD model.  <br/>";
+                    status = false;
+                }
+                if ($("#ddlNtwProvider").val() == "0") {
+                    errors += "Please select valid network provider. <br/>";
+                    status = false;
+                }
+                if ($("#ddlNtwType").val() == "0") {
+                    errors += "Please select valid network type. <br/>";
+                    status = false;
+                }
+                if ($("#txtdvrversion").val() == "") {
+                    errors += "Please insert DVR version. <br/>";
+                    status = false;
+                } if ($("#txtDVRSerialNo").val() == "") {
+                    errors += "Please insert DVR Serial No. <br/>";
+                    status = false;
+                } if ($("#txtRouterVersion").val() == "") {
+                    errors += "Please insert router Version. <br/>";
+                    status = false;
+                } if ($("#txtRouterSerialNo").val() == "") {
+                    errors += "Please insert router Serial No. <br/>";
+                    status = false;
+                }
+
+                if ($("#txtHDDCapacity").val() == "") {
+                    errors += "Please insert hdd capacity. <br/>";
+                    status = false;
+                }
+                if ($("#txtHDDSerialNo").val() == "") {
+                    errors += "Please insert hdd serial no. <br/>";
+                    status = false;
+                }
+
+                if (status == false) {
+                    $('#divval').html(errors);
+                }
+                else {
+                    $("form").attr('action', 'AssetDetails')
+                    $("form")[0].submit();
+                }
+            }
+        });
+    });
+
+</script>
+
+
+
+
+@*    <script>
+        $(document).ready(function () {
+            debugger;
+            $("#btnUpdateAssetDetails").on("click", function () {
+                if ($("#ddldvrmfg").val() == "0" || $("#ddldvrModel").val() == "0" || $("#ddldvrmfg").val() == "0" || $("#ddlRoutermfg").val() == "0" || $("#ddlRouterModel").val() == "0" || $("#ddlHDDmfg").val() == "0" || $("#ddlNtwProvider").val() == "0" || $("#ddlNtwType").val() == "0") {
+                    TempData["InvalidAssetsMsg"] = "Please select valid details.";
+                    alert("Please select valid details.");
+                } else {
+                    $("form").submit();
+                }
+            });
+        });
+    </script>*@
+
+    <script>
+        $(document).ready(function () {
+            $("#ddldvrmfg").change(function () {
+                var url = '@Url.Content("~/")' + "Panel/DVRModel_SelectedState";
+                var ddlsource = "#ddldvrmfg";
+                var ddltarget = "#ddldvrModel";
+                $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+                    $(ddltarget).empty();
+                    var markup = "<option value='0'>---Select---</option>";
+                    $(ddltarget).append(markup);
+                    $.each(data, function (index, optionData) {
+                        $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+                    });
+                });
+            });
+            //this script is for seleced index of drop down Router manufacturer
+            $("#ddlRoutermfg").change(function () {
+                var url = '@Url.Content("~/")' + "Panel/RouterModel_SelectedState";
+                var ddlsource = "#ddlRoutermfg";
+                var ddltarget = "#ddlRouterModel";
+                $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+                    $(ddltarget).empty();
+                    var markup = "<option value='0'>---Select---</option>";
+                    $(ddltarget).append(markup);
+                    $.each(data, function (index, optionData) {
+                        $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+                    });
+                });
+            });
+
+            //this script is for seleced index of drop down HDD manufacturer
+            $("#ddlHDDmfg").change(function () {
+                var url = '@Url.Content("~/")' + "Panel/HDDModel_SelectedState";
+                var ddlsource = "#ddlHDDmfg";
+                var ddltarget = "#ddlHDDModel";
+                $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+                    $(ddltarget).empty();
+                    var markup = "<option value='0'>---Select---</option>";
+                    $(ddltarget).append(markup);
+                    $.each(data, function (index, optionData) {
+                        $(ddltarget).append("<option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+                    });
+                });
+            });
+
+            $("#ddlNtwProvider").change(function () {
+                var url = '@Url.Content("~/")' + "Panel/NtwProvider_SelectedState";
+                var ddlsource = "#ddlNtwProvider";
+                var ddltarget = "#ddlNtwType";
+                $.getJSON(url, function (data) {
+                    $(ddltarget).empty();
+                    $.each(data, function (index, optionData) {
+                        $(ddltarget).append(" <option value='" + optionData.Value + "'>" + optionData.Text + "</option>");
+                    });
+                });
+            });
+        });
+    </script>

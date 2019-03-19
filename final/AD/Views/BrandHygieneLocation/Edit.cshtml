@@ -1,0 +1,139 @@
+﻿@model SECU_CAMSPlus_DEV.Models.BrandHygieneLocation
+
+@{
+    ViewBag.Title = "Update Camera Location :: CAMSPlus";
+    Layout = null;
+}
+
+@if (TempData["noticeEdit"] != null)
+{
+@*<script> $("#divSuccess").show();*@
+@*@Url.Action("Index","BrandHygieneLocation",new{Controller="BrandHygieneLocation", Action="Index"})*@
+    <script>
+
+        var url = '@Url.Action("Index", "BrandHygieneLocation")';
+        window.location = url;
+
+        //window.location.href = "/BrandHygieneLocation/Index";
+        //$("#divSuccess").show();
+    </script>// this script to show successslerts
+
+}
+
+@if (TempData["notice"] != null)
+{
+@*<script> $("#divSuccess").show();*@
+    
+    <script>
+        //window.location.href = "/BrandHygieneLocation/Index";
+        var url = '@Url.Action("Index", "BrandHygieneLocation")';
+        window.location = url;
+
+        $("#divSuccess").show();
+    </script>// this script to show successslerts
+
+}
+
+@if (TempData["invalidmsg"] != null)
+{
+@*<script> $("#divSuccess").show();*@
+    
+    <script>
+        //window.location.href = "/BrandHygieneLocation/Index";
+        var url = '@Url.Action("Index", "BrandHygieneLocation")';
+        window.location = url;
+        $("#divinvalid").show();
+    </script>// this script to show successslerts
+
+}
+
+@if (TempData["invalidmsgEdit"] != null)
+{ 
+    
+    <script> $("#divinvalid").show();
+        @*var url = '@Url.Action("Index", "BrandHygieneLocation")';
+        window.location = url;*@
+        //window.location.href = "/BrandHygieneLocation/Index";
+    </script>// this script to show failed alerts
+}
+
+<div class="modal-header">
+    <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit Camera Location</h3>
+</div>
+
+
+@using (Html.BeginForm())
+{ 
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Location, htmlAttributes: new { @class = "form-control", @id = "txtCameraLocation", @onkeypress = "return charandnumbers()" })
+                    @Html.ValidationMessageFor(Model => Model.Location, null, htmlAttributes: new { @class = "valiation", @id = "errorIsValidLocation" })
+                     @Html.HiddenFor(m => m.CameraLocationID)
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsgEdit"] != null)
+            {     
+                @TempData["invalidmsgEdit"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["noticeEdit"] != null)
+            {      
+                @TempData["noticeEdit"]
+            }
+        </div>
+        @*<span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>*@
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" />
+            <input type="button"  class="btn btn-warning"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Index", "BrandHygieneLocation") + "'")    ;" />
+        </div>
+    </div>
+}
+<script>
+    function charonly() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+
+    function charandnumbers() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii > 47 && ascii < 58)) {
+            $("#errorIsValidLocation").html('');
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function CloseEdit() {
+        debugger;
+        this.close();
+    }
+
+</script>
+
+

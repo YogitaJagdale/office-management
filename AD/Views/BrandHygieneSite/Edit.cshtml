@@ -1,0 +1,386 @@
+﻿@model SECU_CAMSPlus_DEV.Models.BrandHygieneSite
+
+@{
+    ViewBag.Title = "Update Site Details :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["noticeEdit"] != null)
+{
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            // debugger;
+            $('#divSuccess').attr("style", "display:block");
+            $("#divSuccess").show();
+        });
+    </script>*@// this script to show successslerts
+              
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["noticeEdit"]
+        </div>
+    </div>
+}
+
+@if (TempData["invalidmsgEdit"] != null)
+{
+@*<script> $("#divinvalid").show(); </script>*@// this script to show failed alerts
+                                                  
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-danger alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["invalidmsgEdit"]
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm("Edit", "BrandHygieneSite", FormMethod.Post, new { SiteID = Model.SiteID, ClientID = Model.ClientID }))
+{ 
+    @Html.AntiForgeryToken()
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>Edit Site Details</h2>
+                    </div>
+
+                    <div class="pull-right col-md-6">
+                        <a class="btn btn-success btn-md pull-right margin" id="btnaddui" href="Create">
+                            <i class="fa fa-plus"></i>ADD  
+                        </a>
+                        <a class="btn btn-success btn-md pull-right margin" id="btnlistui" href="Index">
+                            <i class="fa fa-list"></i>Back to List  
+                        </a>
+
+
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div id="divval" class="valiation"></div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Client Name *</label>
+                            @Html.DropDownListFor(m => m.ClientID, Model.ClientList, new { @class = "form-control required", @id = "ddlClientID", @disabled = "disabled" })
+                            @Html.ValidationMessageFor(m => m.ClientID, null, new { @class = "valiation" })
+                            @Html.HiddenFor(m => m.ClientID)
+                            @Html.HiddenFor(m => m.ClientName)
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Site ID *</label>
+                            @Html.TextBoxFor(m => m.SiteID, new { @class = "form-control required", @id = "txtSiteID", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.SiteID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>State *</label>
+                            @Html.DropDownListFor(m => m.StateID, new SelectList(Model.StateList as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required", @id = "ddlstate" })
+                            @Html.ValidationMessageFor(m => m.StateID, null, new { @class = "valiation" })
+                            @Html.HiddenFor(m => m.StateName)
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.CityID, htmlAttributes: new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.CityID, new SelectList(Model.CityList as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required", @id = "ddlcity" })
+                            @Html.ValidationMessageFor(m => m.CityID, null, new { @class = "valiation" })
+                            @Html.HiddenFor(m => m.CityName)
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Pincode *</label>
+                            @Html.TextBoxFor(m => m.Pincode, new { @class = "form-control required", @maxlength = "6", @onkeypress = "return numbersonly()" })
+                            @Html.ValidationMessageFor(m => m.Pincode, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Site Address*</label>
+                            @Html.TextAreaFor(m => m.SiteAddress, new { @class = "form-control required", @maxlength = "250", @onkeypress = "return address()" })
+                            @Html.ValidationMessageFor(m => m.SiteAddress, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Site Location *</label>
+                            @Html.TextAreaFor(m => m.SiteLandmark, new { @class = "form-control required", @maxlength = "250", @onkeypress = "return address()" })
+                            @Html.ValidationMessageFor(m => m.SiteLandmark, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Site Name *</label>
+                            @Html.TextAreaFor(m => m.SiteName, new { @class = "form-control required", @maxlength = "100", @onkeypress = "return charonly()" })
+                            @Html.ValidationMessageFor(m => m.SiteName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>HK Agency *</label>
+                            @Html.DropDownListFor(m => m.HKAgencyID, new SelectList(Model.HKList as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required", @id = "ddlHKAgencyID" })
+                            @Html.ValidationMessageFor(m => m.HKAgencyID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>MDN No *</label>
+                            @Html.TextBoxFor(m => m.MDNNo, new { @class = "form-control required", @maxlength = "10", @onkeypress = "return numbersonly()" })
+                            @Html.ValidationMessageFor(m => m.MDNNo, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Antenna *</label>
+                            @Html.DropDownListFor(m => m.Antenna, new SelectList(Model.AntennaList as System.Collections.IEnumerable, "Value", "Text"), new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(m => m.Antenna, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR Type *</label>
+                            @Html.DropDownListFor(m => m.DVRType, new SelectList(Model.Dvrtypelist as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(m => m.DVRType, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR IP *</label>
+                            @Html.TextBoxFor(m => m.DVRIP, new { @class = "form-control required" })
+                            @Html.ValidationMessageFor(m => m.DVRIP, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR User ID *</label>
+                            @Html.TextBoxFor(m => m.DVRUserID, new { @class = "form-control required", @maxlength = "12" })
+                            @Html.ValidationMessageFor(m => m.DVRUserID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR Password *</label>
+                            @Html.TextBoxFor(m => m.DVRPassword, new { @class = "form-control required", @maxlength = "12" })
+                            @Html.ValidationMessageFor(m => m.DVRPassword, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR Port *</label>
+                            @Html.TextBoxFor(m => m.DVRPort, new { @class = "form-control", @maxlength = "5", @onkeypress = "return numbersonly()" })
+                            @Html.ValidationMessageFor(m => m.DVRPort, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>DVR Channels *</label>
+                            @Html.DropDownListFor(m => m.DVRChannel, new SelectList(Model.DvrChannelList as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required", @id = "ddldvrchannel" })
+                            @Html.ValidationMessageFor(m => m.DVRChannel, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>HDD 1 Total Space *</label>
+                            @Html.TextBoxFor(m => m.HDD1, new { @class = "form-control required", @onkeypress = "return numbersonly()" })
+                            @Html.ValidationMessageFor(m => m.HDD1, null, new { @type = "number", @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>HDD 2 Total Space</label>
+                            @Html.TextBoxFor(m => m.HDD2, new { @class = "form-control", @onkeypress = "return numbersonly()" })
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Escalation Configuration </label>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Email ID *</label>
+                            @Html.TextBoxFor(m => m.EmailID, new { @type = "email", @class = "form-control required" })
+
+                            @Html.ValidationMessageFor(m => m.EmailID, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Contact Name *</label>
+                            @Html.TextBoxFor(m => m.ContactName, new { @type = "text", @maxlength = "100", @class = "form-control required", @onkeypress = "return charonly()" })
+                            @Html.ValidationMessageFor(m => m.ContactName, null, new { @class = "valiation" })
+                        </div>
+                    </div>
+                    @*<div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            <label>Mobile Number *</label>
+                            @Html.TextBoxFor(m => m.ContactPhoneNo,new { @class = "form-control required" , @maxlength = "12" ,@onkeypress = "return numbersonly()"})
+                            @Html.ValidationMessageFor(m => m.ContactPhoneNo, null, new { @class = "valiation" })
+                        </div>
+                    </div>*@
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <label>Mobile no *</label>
+                    </div>
+                    <div class="col-sm-3 col-md-4">
+                        <div class="form-group">
+
+                            <div class="col-xs-12 col-sm-3 col-md-1 textboxcountrycode">
+                                @Html.TextBoxFor(m => m.CountryCode, new { @class = "form-control textboxmobileno", @disabled = "disabled" })
+                            </div>
+                            <div class="col-xs-12 col-sm-3 col-md-8">
+                                @Html.TextBoxFor(m => m.ContactPhoneNo, new { @class = "form-control", @maxlength = "10", @onkeypress = "return numbersonly()" })
+                            </div>
+                            <div class="col-xs-12 col-sm-3 col-md-8 textboxcountrycode">
+                                @Html.ValidationMessageFor(m => m.ContactPhoneNo, null, new { @class = "valiation" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                    @if (TempData["invalidmsgEdit"] != null)
+                    {     
+                        @TempData["invalidmsgEdit"]
+
+                    }
+                </div>
+
+                <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                    @if (TempData["noticeEdit"] != null)
+                    {      
+                        @TempData["noticeEdit"]
+                    }
+                </div>
+                <span id="progress" class="text-center" style="display: none;">
+                    <img src="/images/ajax-loader.gif" alt="wiat" />
+                    Wait..
+                </span>
+
+                <div class="text-center">
+                    <input class="btn btn-success" id="btnupdate" type="submit" value="Update" />@*  ?: '' *@
+                    @Html.ActionLink("Delete", "Delete", new { SiteID = Model.SiteID }, htmlAttributes: new { @class = "btn btn-danger", @Id = "btndelete", @onclick = "return confirm('Are you sure you wish to delete this site?');" })
+                    @Html.ActionLink("Image Scheduler", "IndexScheduler",null, htmlAttributes: new { @class = "btn btn-info", @Id = "btnImageScheduler"})
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var status = true;
+        var errors = "";
+        $('#ddlstate').change(function () {
+            debugger;
+
+
+
+            if ($('#ddlstate').val() != "") {
+                $.ajax({
+                    url: "bindCityList",
+                    data: { stateid: $('#ddlstate').val() },
+                    cache: false,
+                    type: "POST",
+                    success: function (data) {
+                        $("#ddlcity").empty();
+                        var markup = "<option value='0'>---select---</option>";
+                        for (var x = 0; x < data.length; x++) {
+                            markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                        }
+
+                        $("#ddlcity").html(markup).show();
+                    },
+                    error: function (reponse) {
+                        alert("error : " + reponse);
+                    }
+                });
+            }
+            else {
+                $("#ddlcity").empty();
+                var markup = "<option value='' selected='selected'>---select---</option>";
+                $("#ddlcity").html(markup).show();
+            }
+        });
+    });
+</script>
+
+<script>
+    function charonly() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function charandnumbers() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii > 47 && ascii < 58)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function address() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii > 47 && ascii < 58) || (ascii == 40 || ascii == 41)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function numbersonly() {
+        debugger;
+        var ascii = event.keyCode
+        if (ascii > 47 && ascii < 58) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        window.setTimeout(function () {
+            $(".AutoHide").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+    });
+</script>

@@ -1,0 +1,310 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.SetPanelCategory>
+@{
+    ViewBag.Title = "Panel Category";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["alertMessage"] != null)
+{
+    <script>
+        debugger;
+        alert('@TempData["alertMessage"]');
+    </script>
+}
+
+@*@using (Html.BeginForm("Index", "SetPanelCategory", FormMethod.Get))
+{*@
+    @if(@Model != null)
+    {
+        var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);     
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <h2>Panel Category</h2>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <label>Panel Category *</label>
+                        @{
+        var checkedItemName = ViewBag.CheckedItemName;
+                        }
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel1" value="1" checked="@((checkedItemName == "1"))"/>
+                        <label for="General">General</label>
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel2" value="2" checked="@((checkedItemName == "2"))"/>
+                        <label for="VIP">VIP</label>
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel3" value="3" checked="@((checkedItemName == "3"))"/>
+                        <label for="VVIP">VVIP</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" 
+                                    style="display: inline" placeholder="Search by Panel Id & Client Name" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" id="btnSearch" type="submit" name="Command" value="btnsearch">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                
+                <div id="divchangeCatshow">
+                    <hr />
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p class="pull-right">Total no. records found : @ViewBag.RecordFound</p>
+                        </div>
+                        
+                        <div class="col-xs-12 col-md-12">
+                            <div class="table-responsive PanelCategory">
+                                @grid.GetHtml(tableStyle: "table table-hover table-bordered table-striped", htmlAttributes:
+                        new { id = "chkchangePanleGrid" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+                        grid.Column(format: @<text><input class="check-box"  id="assignChkBx"name="assignChkBx" type="checkbox" value="@item.PanelId"/>
+                                </text>, header: "{checkall}"),
+                        grid.Column("PanelId", "Panel Id"),
+                        grid.Column("SOLID", "SOL Id/Site Id"),
+                        grid.Column("Clientname", "Client Name"),
+                        grid.Column("DealerName", "Dealer Name"),
+                        grid.Column("CityName", "City"),
+                        grid.Column("PanelAddress", "Panel Address"),
+                        grid.Column("PanelLocation", "Location ")
+
+                 ), mode: WebGridPagerModes.Numeric)
+                                <script type="text/javascript">
+                                    function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                            }
+                                </script>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row m-top20" id="divchangeCat">
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <label>Select Panel Category To Change *</label>
+
+                            @{
+        var ChangePanelcatName = ViewBag.ChangePanelcatName;
+                            }
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat1" value="1" checked="@((ChangePanelcatName == "1"))"/>
+                            <label for="General">General</label>
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat2" value="2" checked="@((ChangePanelcatName == "2"))"/>
+                            <label for="VIP">VIP</label>
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat3" value="3" checked="@((ChangePanelcatName == "3"))"/>
+                            <label for="VVIP">VVIP</label>
+
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3">
+                            <input class="btn btn-danger" type="submit" value="Change Panel Category" id="btnchangeCat1"
+                                onclick="if ($('#assignChkBx').is(':checked') != false)
+{ return confirm('Are you sure you want to change Panel Category?') };" />
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+    }
+
+    else
+    {
+        var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10); 
+        <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-12">
+                        <h2>Panel Category</h2>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <label>Panel Category *</label>
+                        @{
+        var checkedItemName = ViewBag.CheckedItemName;
+                        }
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel4" value="1" checked="@((checkedItemName == "1"))"/>
+                        <label for="General">General</label>
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel5" value="2" checked="@((checkedItemName == "2"))"/>
+                        <label for="VIP">VIP</label>
+                        <input type="radio" name="rbtPanelCat" id="rbtPanel6" value="3" checked="@((checkedItemName == "3"))"/>
+                        <label for="VVIP">VVIP</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" 
+                                    style="display: inline" placeholder="Search by Panel Id & Client Name" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" id="btnSearch1" type="submit" name="Command" value="btnsearch">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                
+                <div id="divchangeCatshow1">
+                    <hr />
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p class="pull-right">Total no. records found : @ViewBag.RecordFound</p>
+                        </div>
+                        
+                        <div class="col-xs-12 col-md-12">
+                            <div class="table-responsive PanelCategory">
+                                @grid.GetHtml(tableStyle: "table table-hover table-bordered table-striped", htmlAttributes:
+                        new { id = "chkchangePanleGrid" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                        grid.Column("PanelId", "Panel Id"),
+                        grid.Column("SOLID", "SOL Id/Site Id"),
+                        grid.Column("Clientname", "Client Name"),
+                        grid.Column("DealerName", "Dealer Name"),
+                        grid.Column("CityName", "City"),
+                        grid.Column("PanelAddress", "Panel Address"),
+                        grid.Column("PanelLocation", "Location ")
+
+                 ), mode: WebGridPagerModes.Numeric)
+                                <script type="text/javascript">
+                                    function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                                    }
+                                </script>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row m-top20" id="divchangeCat">
+                        <div class="col-xs-12 col-sm-6 col-md-6">
+                            <label>Select Panel Category To Change *</label>
+
+                            @{
+        var ChangePanelcatName = ViewBag.ChangePanelcatName;
+                            }
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat1" value="1" checked="@((ChangePanelcatName == "1"))"/>
+                            <label for="General">General</label>
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat2" value="2" checked="@((ChangePanelcatName == "2"))"/>
+                            <label for="VIP">VIP</label>
+                            <input type="radio" name="rbtchangeCat" id="rbtchangeCat3" value="3" checked="@((ChangePanelcatName == "3"))"/>
+                            <label for="VVIP">VVIP</label>
+
+                        </div>
+                        <div class="col-xs-12 col-sm-3 col-md-3">
+                            <input class="btn btn-danger" type="submit" value="Change Panel Category" id="btnchangeCat1"
+                                onclick="if ($('#assignChkBx').is(':checked') != false)
+{ return confirm('Are you sure you want to change Panel Category?') };" />
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }          
+@*}*@
+
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+<script>
+    function Postsubmit() {
+        var result = confirm("Are you sure you want to change Panel Category?");
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+</script>
+
+<script>
+    var showcount = "0";
+    $(document).ready(function () {
+        $('#divchangeCatshow').hide();
+        var field = 'rbtPanelCat';
+        var url = window.location.href;
+        if (url.indexOf('?' + field + '=') != -1) {
+            $('#divchangeCatshow').show();
+        }
+        else if (url.indexOf('&' + field + '=') != "rbtPanelCat") {
+            $('#divchangeCatshow').hide();
+        }
+
+        $("#chkchangePanleGrid th").each(function () {
+            if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                $(this).text('');
+                $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+            }
+        });
+
+        $("#cbSelectAll").on("click", function () {
+            var ischecked = this.checked;
+            $('#chkchangePanleGrid').find("input:checkbox").each(function () {
+                this.checked = ischecked;
+            });
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+           
+        $(function ()
+        {
+            $('#btnchangeCat1').click(function ()
+            {
+                var status = $('input[id="assignChkBx"]:checked').length > 0;
+                if (status == false) {
+                alert("Please select atleast one panel.")
+            }
+          })
+       });
+        var changeCat = '@ViewBag.changeCat';
+        var Search = '@ViewBag.btnSearch';
+        if (changeCat == "False" || changeCat == "false") {
+            ///// $('#divchangeCat').css("display", "none");
+            $('#btnchangeCat1').attr('disabled', true);
+            $('#btnchangeCat1').attr("title", "No Rights to Update");
+        }
+        if (Search == "False" || Search == "false") {
+            $('#divchangeCatshow').hide();
+            $('#btnSearch').attr('disabled', true);
+            $('#btnSearch').attr("title", "No Rights To View Panels");
+            $('#btnchangeCat1').attr('disabled', true);
+            $('#btnchangeCat1').attr("title", "No Rights to Update");
+        }
+    });
+</script>
+
+
+

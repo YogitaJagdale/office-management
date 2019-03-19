@@ -1,0 +1,141 @@
+﻿@model SECU_CAMSPlus_DEV.Models.MasterTemplate
+
+
+@{
+    ViewBag.Title = "Escalation";
+}
+@if (TempData["AddEscalation"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>
+}
+
+@if (TempData["DeleteEscalation"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show();
+        });
+    </script>
+}
+<style>
+footer#colophon {position: relative!important;}
+</style>
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Escalation Details</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <div class="responsive-tabs-container accordion-xs accordion-sm">
+                <ul class="nav nav-tabs responsive-tabs">
+                    <li class="">
+                        @Html.ActionLink("Template Details", "ATMTemplate", "MasterTemplate")
+                    </li>
+
+                    <li class="active">@Html.ActionLink("Escalation Details", "Escalation", "MasterTemplate")</li>
+
+                    @if (Convert.ToString(Session["MasterTPanelType"]) == "Commercial")
+                    {
+                        <li class="">@Html.ActionLink("Scheduler Details", "Scheduler", "MasterTemplate")</li>
+                    }
+                </ul>
+                <div class="tab-content">
+                    @using (Ajax.BeginForm("Escalation", "Project", new AjaxOptions { UpdateTargetId = "divgrid" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="clo-lg-12">
+                            <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                                @if (TempData["AddEscalation"] != null)
+                                {      @TempData["AddEscalation"]
+                                }
+                                @if (TempData["DeleteEscalation"] != null)
+                                {      @TempData["DeleteEscalation"]
+                                }
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="note note-info">
+                                        <p>Escalation Master</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <p>Template Name : </p>
+                                </div>
+                                <div class="col-sm-4">
+                                    @Html.DropDownList("lstESCTemplate", null, new { @class = "form-control required", @id = "ddlesctemplate" })
+                                </div>
+                            </div>
+                            <div class="row" id="divgrid">
+                                @if (Model.EscalationList != null)
+                                {
+                                    @Html.Partial("_EscalationGrid", Model.EscalationList);
+
+                                }
+                                
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#ddlesctemplate").change(function (e) {
+
+            $("#divgrid").show();
+            e.preventDefault();
+            var url = '@Url.Action("SearchTemplate")';
+            $.get(url, { TemplateName: $(this).val() }, function (result) {
+                $('#divgrid').html(result);
+            });
+        });
+    });
+</script>
+
+@if (TempData["ATMTemplate"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var msg = "ATMTemplate";
+            var url = '@Url.Action("SearchTemplate")';
+            $.get(url, { TemplateName: msg }, function (result) {
+               
+                $('#divgrid').html(result);
+            });
+        });
+    </script>// this script to show successslerts
+}
+
+@if (TempData["CommercialTemplate"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var msg = "CommercialTemplate";
+            var url = '@Url.Action("SearchTemplate")';
+            $.get(url, { TemplateName: msg }, function (result) {
+              
+                $('#divgrid').html(result);
+            });
+        });
+    </script>
+}

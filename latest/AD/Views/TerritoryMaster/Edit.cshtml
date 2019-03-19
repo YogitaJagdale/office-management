@@ -1,0 +1,220 @@
+﻿@model SECU_CAMSPlus_DEV.Models.TerritoryMaster
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+@if (TempData["Failnotice"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["Successnotice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $('#btnUpdateTerritoryMaster').attr('disabled', true);
+    </script>// this script to show failed alerts
+}
+
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt)
+    {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly()
+    {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber()
+    {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+    function IsValidTerritoryManager() {
+        $("#errorIsValidTerritoryManager").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  
+        var pwdval = $("#txtTerritoryManager").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtTerritoryManager").after('<span id="errorIsValidTerritoryManager" class="mandatory">Enter Valid Territory Manager Name</span>');
+            $("#btnUpdateTerritoryMaster").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidTerritoryManager").html('');
+            $("#btnUpdateTerritoryMaster").attr('disabled', false);
+        }
+    }
+
+    function IsValidMobileNo() {
+        $("#errorIsValidMobileNo").html('');
+        var pwdreg = /^91[0-9]{10,12}$/;
+        var pwdval = $("#txtMobileNo").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtMobileNo").after('<span id="errorIsValidMobileNo" class="mandatory">Enter Valid Mobile No start with 91</span>');
+            $("#btnUpdateTerritoryMaster").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidMobileNo").html('');
+            $("#btnUpdateTerritoryMaster").attr('disabled', false);
+        }
+    }
+
+    function IsValidEmailID() {
+        $("#errorIsValidEmailID").html('');
+        var pwdreg = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,6})?$/;
+        var pwdval = $("#txtEmailID").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtEmailID").after('<span id="errorIsValidEmailID" class="mandatory">Enter Valid Email ID</span>');
+            $("#btnUpdateTerritoryMaster").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidEmailID").html('');
+            $("#btnUpdateTerritoryMaster").attr('disabled', false);
+        }
+    }
+
+
+    function IsselectedTerritoryName() {
+        $("#errorIsValidTerritoryName").html('');
+        var ddlTerritoryName = $("#ddlTerritoryName");
+        if (ddlTerritoryName.val() == "") {
+            $("#ddlTerritoryName").after('<span id="errorIsValidTerritoryName" class="mandatory">Please Select Territory Name</span>');
+            $("#btnUpdateTerritoryMaster").attr('disabled', true);
+            return false;
+        }
+        else {
+            $("#errorIsValidTerritoryName").html('');
+            $("#btnUpdateTerritoryMaster").attr('disabled', false);
+        }
+    }
+    function setValue() {
+        $('#txtTerritoryManager').attr("value", "");
+        $('#txtMobileNo').attr("value", "");
+        $('#txtEmailID').attr("value", "");
+        $("#errorIsValidTerritoryManager").remove();
+        $("#errorIsValidMobileNo").remove();
+        $("#errorIsValidEmailID").remove();
+        $("#errorIsValidTerritoryName").remove();
+        $("#btnUpdateTerritoryMaster").attr('disabled', false);
+    }
+
+</script>
+
+
+
+<div class="modal-header">
+   <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+@using (Html.BeginForm("Edit", "TerritoryMaster", FormMethod.Post, new { @id = "FormTerritoryMasterEdit" }))
+{
+   
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.TerritoryName, new { @class = "control-label" })
+                    @Html.DropDownList("TerritoryName", null, "---Select---", new {@onclick="IsselectedTerritoryName()", @class = "form-control required",
+                    @id = "ddlTerritoryName"})
+                    @Html.ValidationMessageFor(m => m.TerritoryName,null,new { @class = "valiation",id="errorIsValidTerritoryName" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.TerritoryManager, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.TerritoryManager, new {id = "txtTerritoryManager", @onblur = "IsValidTerritoryManager()", 
+                    maxlength = 150, @class = "form-control required", @onkeypress = "return charonly(event)" })
+                   @Html.ValidationMessageFor(m => m.TerritoryManager,null,new { @class = "valiation",id="errorIsValidAgencyName" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.MobileNo, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.MobileNo, new {id = "txtMobileNo", @onblur = "IsValidMobileNo()", maxlength = 12, 
+                    @class = "form-control required", @onkeypress = "return validateNumber(event)" })
+                    @Html.ValidationMessageFor(m => m.MobileNo,null,new { @class = "valiation",id="errorIsValidMobileNo" })
+
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.EmailID, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.EmailID, new { id = "txtEmailID", @onblur = "IsValidEmailID()",maxlength = 50, @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.EmailID,null,new { @class = "valiation",id="errorIsValidEmailID" })
+                </div>
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["Failnotice"] != null)
+            {      @TempData["Failnotice"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["Successnotice"] != null)
+            {      @TempData["Successnotice"]
+            }
+        </div>
+      
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" id="btnUpdateTerritoryMaster" 
+                onclick="if ($(FormTerritoryMasterEdit).valid() && $('#ddlTerritoryName').val() != '')
+                { return confirm('Are you sure you want to Update this Vendor Territory Master ?') };" />
+            <input type="button"  class="btn btn-warning"  value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "TerritoryMaster") + "'") ;" />
+        </div>
+    </div>
+}
+<script type="text/javascript">
+
+    $("#TerritoryName").change(function ()
+    {
+        if ($("#TerritoryName").val() == "") {
+            $("#errorIsValidTerritoryName").html('');
+            $("#City").after('<span id="errorIsValidTerritoryName" class="mandatory">Please Select Territory Name</span>');
+
+        }
+    });
+    </script>
+
+

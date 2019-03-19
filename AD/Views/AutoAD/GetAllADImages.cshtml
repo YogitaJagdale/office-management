@@ -1,0 +1,299 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.ADinfo>
+
+@{
+   Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>GetAllADImages_Partial</title>
+
+       <style>
+        .modal-popup {
+            background: rgba(0, 0, 0, 0.20);
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            z-index: 999;
+        }
+
+        .modal-content {
+            /*background-color: #ebeaea;*/
+        }
+    </style>
+
+     <script>
+         var count = '@Model.Count()';
+    </script>
+
+    <script>
+
+        function FetchNextImage(id)
+        {
+            debugger;
+            $("#btnPrevious").attr("style", "display: block");
+                jQuery.ajax({
+                    url: '@Url.Action("GetNextADImage")',
+                    type: 'POST',
+                    data: {
+                        Srno: id
+                    },
+                    success: function (response) {
+                        debugger;
+                        if (id==response) {
+                            $("#btnNext").attr("style", "display: none");
+                        }
+                        else {
+                            $("#btnNext").attr("style", "display: block");
+                        }
+
+                        $("#AllADImage").attr('src', '')
+                        //$("#AllADImage").attr('src', '/AutoAD/GetImage/' + response)
+                        $("#AllADImage").attr('src', '@Url.Action("GetImage", "AutoAD", new {Controller="AutoAD", Action="GetImage" })/' + response)
+                    }
+                });
+        };
+
+        function FetchPreviousImage(id) {
+            debugger;
+            $("#btnNext").attr("style", "display: block");
+            jQuery.ajax({
+                url: '@Url.Action("GetPreviousADImage")',
+                type: 'POST',
+                data: {
+                    Srno: id
+                },
+                success: function (response) {
+                    debugger;
+
+                    if (response == 0) {
+                        $("#btnPrevious").attr("style", "display: none");
+                        $("#AllADImage").attr('src', '')
+                        $("#AllADImage").attr('src', '@Url.Action("GetImage", "AutoAD", new { Controller = "AutoAD", Action = "GetImage" })/' + id)
+                    }
+                    else {
+                        $("#btnPrevious").attr("style", "display: block");
+                        $("#AllADImage").attr('src', '')
+                        $("#AllADImage").attr('src', '@Url.Action("GetImage", "AutoAD", new { Controller = "AutoAD", Action = "GetImage" })/' + response)
+                    }
+                    //$("#AllADImage").attr('src', '/AutoAD/GetImage/' + response)
+                   
+                }
+            });
+        };
+
+
+        function StartAudio(ClientID, PanelID, TicketID, ActivityID) {
+            debugger;
+            //$("#btnNext").attr("style", "display: block");
+            jQuery.ajax({
+                url: '@Url.Action("StartAudio")',
+                type: 'POST',
+                data: {
+                    ClientID: ClientID,
+                    PanelID: PanelID,
+                    TicketID: TicketID,
+                    ActivityID: ActivityID,
+
+                },
+                    //success: function (data) {
+                    //    debugger;
+                    //    // var result = $('<div />').append(data).find('#partialView1').html();
+                    //    //$('#partialView1').attr("style", "display: block");
+                    //    //$('#partialView1').html(data);
+                    //    //$('#StartAudio').hide();
+                    //    //if (data == 1) {
+                    //    //    alert("Audio Verification already in Process!");
+                    //    //}
+                    //    //else if (data == 2) {
+                    //    //    alert("Audio Verification Started!");
+                    //    //}
+                    //    //else i    f (data == 0) {
+                    //    //    alert("Failed to start Audio Verification!");
+                    //    //}
+
+                    //    //else {
+                    //        alert("Audio verification started successfully!");
+                    //    //}
+                    //},
+                    error: function (xhr, status) {
+                        debugger;
+                        alert("Audio verification already in process!");
+                    }
+                    //complete: function (xhr, status) {
+                    //    debugger;
+                    //    alert("Complete, there was No problem during Audio Verification!");
+                //}
+
+                    //$("#AllADImage").attr('src', '/AutoAD/GetImage/' + response)
+
+                })
+        };
+
+      @*  function StopAudio(TicketID, ActivityID,ProcessID) {
+            debugger;
+            //$("#btnNext").attr("style", "display: block");
+            jQuery.ajax({
+                url: '@Url.Action("StopAudio")',
+                type: 'POST',
+                data: {
+                    TicketID: TicketID,
+                    ActivityID: ActivityID,
+                    ProcessID: ProcessID,
+                },
+                success: function (data) {
+                    debugger;
+                    // var result = $('<div />').append(data).find('#partialView1').html();
+                    $('#partialView1').attr("style", "display: block");
+                    $('#partialView1').html(data);
+                    $('#StartAudio').hide();
+                },
+                error: function (xhr, status) {
+                    debugger;
+                    alert("Sorry, there was a problem!");
+                },
+                complete: function (xhr, status) {
+                    debugger;
+                    //$('#showresults').slideDown('slow')
+                }
+                //$("#AllADImage").attr('src', '/AutoAD/GetImage/' + response)
+
+            })
+        };*@
+
+
+    </script>
+
+   
+
+</head>
+<body>
+    <div class="clearfix"></div>
+    <div id="partialView" class="modal-popup" >
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h4 class="modal-title">Active Deterrence</h4>
+                </div>
+
+                <div class="modal-body">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-6">
+                            <div id="divimage">
+                                @*<img class="img-responsive" src="/AutoAD/GetImage/@item.SrNo" id="AllADImage"/>*@
+                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller="AutoAD", Action="GetImage", id=@item.SrNo})" id="AllADImage"/> 
+                            </div>
+                            <br />
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <img class="img-responsive pull-left" src="~/Images/arrow_back.png" title="Previous Image" id="btnPrevious" onclick="FetchPreviousImage(@item.SrNo)"/>
+                                        <img class="img-responsive pull-left" src="~/Images/arrow_next.png" id="btnNext"  title="Next Image"  onclick="FetchNextImage(@item.SrNo)"/>
+                                        <br />
+                                        @Html.Label("lblImageFrameCount","Total number of Images : " + ViewBag.AllADImageCount as string)
+                                    </div>
+                                </div>
+
+                                <div>
+                                
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <table id="AD_Details" class="table table-bordered table-striped">
+                                <colgroup>
+                                    <col width="30%" />
+                                    <col width="70%" />
+                                </colgroup>
+                                <tr>
+                                    <td>Ticket No : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TicketID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Activity ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ActivityID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Alarm : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SensorType)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Zone No : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ZoneNo)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Camera : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Camra)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ticket Open Time : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Ticket_Open_Time)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>IP Address : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PanelIP)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Client : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ClientName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Panel ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PanelID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SOL ID/ Site ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SOLID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Panel Address : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Panel_Address)
+                                    </td>
+                                </tr>
+                            </table>
+                            <div>
+                                    <div class="form-group pull-left">
+                                         <button id="btnStartAudio" type="button" class="btn btn-success" value="Audio Verification" onclick="StartAudio('@item.ClientID','@item.PanelID','@item.TicketID','@item.ActivityID');">Audio Verification</button>
+                                         @*<button id="btnStopAudio" type="button" class="btn btn-danger" value="Start Audio" onclick="StopAudio('@item.TicketID','@item.ActivityID','@ViewBag.ProcessID');">Stop Audio</button>*@
+                                    </div>
+                                <div class="form-group pull-right">
+                                    <input type="button"  class="btn btn-warning"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("AutoAD", "AutoAD", new {Controller="AutoAD", Action="AutoAD", OperatorID = @ViewBag.LoginId }) + "'")    ;" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

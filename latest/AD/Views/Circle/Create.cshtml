@@ -1,0 +1,64 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Circle
+
+@{
+    ViewBag.Title = "Circle :: CAMSPlus";
+    Layout = null;
+}
+
+
+
+@if (TempData["CreateFailure"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["CreateSuccess"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show success alerts
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Add Circle</h3>
+</div>
+
+
+@using (Html.BeginForm("Create", "Circle", FormMethod.Post))
+{
+  
+    @Html.AntiForgeryToken()
+    
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CircleName, htmlAttributes: new { @class = "control-label col-sm-3" })
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(model => model.CircleName, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CircleName, null, new { @class = "valiation" })
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["CreateFailure"] != null)
+            {      @TempData["CreateFailure"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["CreateSuccess"] != null)
+            {      @TempData["CreateSuccess"]
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="Wait" />
+            Wait..
+        </span>
+        <input class="btn btn-primary" type="submit" value="Add" id="btnadd" onclick="return confirm('Are you sure you wish to add circle?');" />
+        <input type="button" class="btn btn-warning"  data-dismiss="modal" value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "Circle") + "'")    ;" />
+    </div>
+}
+

@@ -1,0 +1,187 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.ADinfo>
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>GetAllCameraImages</title>
+</head>
+<body>
+    <div class="clearfix">@{int i = 0;}</div>
+    <div id="partialView" class="modal-popup">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h4 class="modal-title">All Images</h4>
+                </div>
+                <div class="modal-body">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-md-4 ad-cam">
+                            <div class="well">
+                                <div class="row">
+
+                                    <div class="col-md-12">
+                                        @*<div id="divimage">
+                                            <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage1" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                        </div>*@
+                                        @*<br />*@
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage1" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage2" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage3" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage4" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage5" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage6" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage7" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage8" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage9" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage10" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage11" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage12" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage13" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage14" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage15" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <img class="img-responsive" src="@Url.Action("GetImage", "AutoAD", new { Controller = "AUTOAD", Action = "GetImage", id = @item.SrNo })" id="ADImage16" onclick="GetDetailImages('@item.TicketID','@item.ActivityID')"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="row">
+                                    <div class="col-md-6">
+                                        <table id="TicketDetails" class="table table-bordered table-striped">
+                                            <colgroup>
+                                                <col width="50%" />
+                                                <col width="50%" />
+                                            </colgroup>
+                                            <tr>
+                                                <td>Ticket NO : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.TicketID)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Activity ID : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ActivityID)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Alarm : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.SensorType)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Zone No : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.ZoneNo)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Camera : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Camra)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ticket Open Time : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Ticket_Open_Time)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Panel ID : </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.PanelID)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        @*<div>
+                                            <div class="form-group pull-left">
+                                                @Html.RadioButton("rbtTicketAction", "Close", false, new { @id = "rbtClose" }) @Html.Label("Close")
+                                                @Html.RadioButton("rbtTicketAction", "OnHold", false, new { @id = "rbtOnHold" }) @Html.Label("Hold") &nbsp;  &nbsp; &nbsp;
+                                <button id="btncloseTicket+@i" type="button" class="btn btn-danger" onclick="AutoADClose()">Submit</button>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        i++;
+                    }
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

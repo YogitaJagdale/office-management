@@ -1,0 +1,371 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Subscription
+@{
+    ViewBag.Title = "Create";
+    Layout = null;
+}
+
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); $("#btnRefresh").hide(); </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $("#btnRefresh").hide();
+        $('#btnaddSubscriptionDetails').attr('disabled', true);
+    </script>// this script to show failed alerts
+}
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function numvarcharonly() {
+        var ascii = event.keyCode
+        if ((ascii >= 48 && ascii <= 57) || (ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47 || ascii == 9)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+
+    function IsValidSubName() {
+        $("#errorIsValidSubName").html('');
+        var pwdreg = /^[a-zA-Z _ ]+$/;
+        var pwdval = $("#txtSubName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtSubName").after('<span id="errorIsValidSubName" class="mandatory">Please enter Valid Subscription Name</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidSubName").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+
+    function IsValidSMSCnt() {
+        $("#errorIsValidSMSCnt").html('');
+        var pwdreg = /^[0-9]{0,10}$/;
+        var pwdval = $("#txtSMSCnt").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtSMSCnt").after('<span id="errorIsValidSMSCnt" class="mandatory">Please enter SMS Count should be 0 - 10</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidSMSCnt").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+    function IsValidPhoneCnt() {
+        $("#errorIsValidPhoneCnt").html('');
+        var pwdreg = /^[0-9]{0,10}$/;
+        var pwdval = $("#txtPhoneCnt").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtPhoneCnt").after('<span id="errorIsValidPhoneCnt" class="mandatory">Please enter Phone Call Count should be 0 - 10</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidPhoneCnt").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+    function IsValidEmailCnt() {
+        $("#errorIsValidEmailCnt").html('');
+        var pwdreg = /^[0-9]{0,10}$/;
+        var pwdval = $("#txtEmailCnt").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtEmailCnt").after('<span id="errorIsValidEmailCnt" class="mandatory">Please enter Email Count between 0 - 10</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidEmailCnt").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+    function IsValidRepeatCnt() {
+        $("#errorIsValidRepeatCnt").html('');
+        var pwdreg = /^[0-9]{0,5}$/;
+        var pwdval = $("#txtRepeatCnt").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtRepeatCnt").after('<span id="errorIsValidRepeatCnt" class="mandatory">Please enter Repeat Count should be 0 - 5</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidRepeatCnt").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+
+    function IsValidVideoIntervalCnt() {
+        $("#errorIsValidVideoIntervalCnt").html('');
+        var pwdreg = /^[0-9]+$/;
+        var pwdval = $("#txtVideoIntervalCnt").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtVideoIntervalCnt").after('<span id="errorIsValidVideoIntervalCnt" class="mandatory">Please enter Enter Valid Video Interval Count</span>');
+            $('#btnaddSubscriptionDetails').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidVideoIntervalCnt").html('');
+            $('#btnaddSubscriptionDetails').attr('disabled', false);
+        }
+    }
+
+
+    function setValue() {
+        $("#errorIsValidSubName").remove();
+        $("#errorIsValidRepeatCnt").remove();
+        $("#errorIsValidSMSCnt").remove();
+        $("#errorIsValidPhoneCnt").remove();
+        $("#errorIsValidEmailCnt").remove();
+        $("#errorIsValidVideoIntervalCnt").remove();
+        $('#btnaddSubscriptionDetails').attr('disabled', false);
+    }
+
+</script>
+
+<div class="modal-header">
+      <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Add</h3>
+</div>
+
+@using (Html.BeginForm("Create", "Subscription", FormMethod.Post, new { id = "FormSubscriptionCreate" }))
+{
+  
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">
+                    Fields marked by (*) are mandatory
+                </p>
+            </div>
+            <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.SubName, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.SubName, new
+                      {
+                       id = "txtSubName",
+                       maxlength = 20,
+                       @class = "form-control required",
+                       @onkeypress = "return numvarcharonly()"
+                   })
+                        @Html.ValidationMessageFor(m => m.SubName, null, new { @class = "valiation", id = "errorIsValidSubName" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.SMS_Cnt, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.SMS_Cnt, new
+                     {
+                       id = "txtSMSCnt",
+                       @onblur = "IsValidSMSCnt()",
+                       maxlength = 2,
+                       @onkeypress = "return validateNumber(event)",
+                       @class = "form-control",
+                       @Value = (ViewBag.SMS_Cnt!=null) ? ViewBag.SMS_Cnt : "0",                      
+                       placeholder = "0",
+                       rule = "InputOnlyNum"
+                   })
+                    @Html.ValidationMessageFor(m => m.SMS_Cnt, null, new { @class = "valiation", id = "errorIsValidSMSCnt" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.Phone_Cnt, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Phone_Cnt, new
+                       {
+                       id = "txtPhoneCnt",
+                       @onblur = "IsValidPhoneCnt()",
+                       maxlength = 2,
+                       @onkeypress = "return validateNumber(event)",
+                       @class = "form-control",
+                       @Value = (ViewBag.Phone_Cnt!=null) ? ViewBag.Phone_Cnt : "0",
+                       placeholder = "0",
+                       rule = "InputOnlyNum"
+                   })
+
+                   @Html.ValidationMessageFor(m => m.Phone_Cnt, null, new { @class = "valiation", id = "errorIsValidPhoneCnt" })
+                    </div>
+                </div>
+                <div id="divDeviceVersion" class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.Email_Cnt, new { @class = "control-label " })
+                        @Html.TextBoxFor(m => m.Email_Cnt, new
+                      {
+                       id = "txtEmailCnt",
+                       @onblur = "IsValidEmailCnt()",
+                       maxlength = 2,
+                       @onkeypress = "return validateNumber(event)",
+                       @class = "form-control",
+                       @Value = (ViewBag.Email_Cnt!=null) ? ViewBag.Email_Cnt : "0",
+                       placeholder = "0",
+                       rule = "InputOnlyNum"
+                   })
+
+                        @Html.ValidationMessageFor(m => m.Email_Cnt, null, new { @class = "valiation", id = "errorIsValidEmailCnt" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.Repeat, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Repeat, new
+                      {
+                       id = "txtRepeatCnt",
+                       @onblur = "IsValidRepeatCnt()",
+                       maxlength =2,
+                       @onkeypress = "return validateNumber(event)",
+                       @class = "form-control",
+                       @Value = (ViewBag.Repeat!=null) ? ViewBag.Repeat : "0",
+                       placeholder = "0",
+                       rule = "InputOnlyNum"
+                   })
+
+                         @Html.ValidationMessageFor(m => m.Repeat, null, new { @class = "valiation", id = "errorIsValidRepeatCnt" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group" style="height: 34px;">
+                        @Html.LabelFor(m => Model.VideoConfirmation, new { @class = "control-label" })   <br />                                       
+                        @{
+                            var VideoConfirmation = ViewBag.VideoConfirmation;
+                        }
+                        <input type="radio" name="rbtVideoConfirmation" id="rbtVideoCat1" value="Yes" checked="@((VideoConfirmation == "Yes"))"/>
+                        <label for="General">YES</label>
+                        <input type="radio" name="rbtVideoConfirmation" id="rbtVideoCat2" value="No" checked="@((VideoConfirmation == "No"))"/>
+                        <label for="VIP">NO</label>  
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => Model.VideoInterval, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.VideoInterval, new
+                     {
+                       id = "txtVideoIntervalCnt",
+                       @onblur = "IsValidVideoIntervalCnt()",
+                       maxlength = 2,
+                       @onkeypress = "return validateNumber(event)",
+                       @readonly = "readonly",
+                       @class = "form-control",
+                       @Value = (ViewBag.VideoInterval!=null) ? ViewBag.VideoInterval : "0",
+                       placeholder = "0",
+                       rule = "InputOnlyNum"
+                   })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group" style="height: 34px;">
+                        @Html.LabelFor(m => Model.Dispatch, new { @class = "control-label" })<br />
+                        @{
+                            var DispatchConfirmation = ViewBag.DispatchConfirmation;
+                        }
+
+                        <input type="radio" name="rbtDispatchConfirmation" id="rbtDispatchCat1" value="Yes" checked="@((DispatchConfirmation == "Yes"))"/>
+                        <label for="General">YES</label>
+                        <input type="radio" name="rbtDispatchConfirmation" id="rbtDispatchCat2" value="No" checked="@((DispatchConfirmation == "No"))"/>
+                        <label for="VIP">NO</label> 
+                    </div>
+                </div>
+            </div>
+                </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>
+
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddSubscriptionDetails"
+                onclick="if ($(FormSubscriptionCreate).valid() && $('#txtSubName').val() != '')
+                    { return confirm('Are you sure to Add this Subscription Details?') };" />
+
+
+            <input class="btn btn-info" type="reset" value="Refresh" id="btnRefresh" onclick="setValue()" />
+            <input type="button" data-dismiss="modal" class="btn btn-warning"  value="Close" 
+                onclick="@("window.location.href='" + @Url.Action("Index", "Subscription") + "'")    ;" />
+        </div>
+    </div>
+}
+<script type="text/javascript">
+   $(function () {
+       $('input:radio[name="rbtVideoConfirmation"]').change(function ()
+       {
+           if ($(this).val() == 'NO' || $(this).val() == 'No')
+            {
+                document.getElementById("txtVideoIntervalCnt").readOnly = true;
+                document.getElementById("txtVideoIntervalCnt").value = "0";
+               
+            }
+            else
+            {
+                document.getElementById("txtVideoIntervalCnt").readOnly = false;
+               
+            }
+        });
+    });
+
+
+    </script>

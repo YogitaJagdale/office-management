@@ -1,0 +1,129 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ClientCircle
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+
+@if (TempData["invalidmsgUpdated"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["MessageUpdated"] != null)
+{
+    <script>
+        $("#divSuccess").show();
+        $("#btnUpdate").attr('disabled', true);
+
+    </script>// this script to show failed alerts
+}
+<script language="javascript" type="text/javascript">
+
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+    function IsValidClientCircleName() {
+        $("#errorIsValidClientCircleName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtClientCircleName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtClientCircleName").after('<span id="errorIsValidClientCircleName" class="mandatory">Enter Valid Client Circle Name</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidClientCircleName").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+</script>
+<div class="modal-header">
+      <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Edit</h3>
+</div>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(false, null, htmlAttributes: new { @class = "valiation" })
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                <p class="mandatory">Fields marked by <strong>(*)</strong> are mandatory</p>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                    @if (TempData["invalidmsgUpdated"] != null)
+                    {      @TempData["invalidmsgUpdated"]
+
+                    }
+                </div>
+                <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                    @if (TempData["MessageUpdated"] != null)
+                    {      @TempData["MessageUpdated"]
+                    }
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ClientCircleName, new { @class = "" })
+                    @Html.TextBoxFor(m => m.ClientCircleName, new
+                   {
+                   id = "txtClientCircleName",
+                   @onblur = "IsValidClientCircleName()",
+                   @class = "form-control required",
+                   @onkeypress = "return charonly(event)"
+                   })
+                    @Html.ValidationMessageFor(m => m.ClientCircleName, null, new { @class = "valiation", id = "errorIsValidClientCircleName" })
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update" id="btnUpdate"
+                onclick="return confirm('Do you want to update this Client Circle?');" />
+            <input type="button"  class="btn btn-warning"  value="Close" 
+              onclick="@("window.location.href='" + @Url.Action("Index", "ClientCircle", new { controller = "ClientCircle", name = @Session["CircleClientID"] }) + "'");" />
+        </div>
+    </div>
+}

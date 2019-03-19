@@ -1,0 +1,193 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Panel>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Panel :: CAMSPlus";
+}
+
+
+@if (Convert.ToInt32(TempData["Difference"]) == 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            ///For Bulk Upload
+
+            //$("#btnaddui").attr("Disabled", "Disabled");
+            $("#btnaddui").hide();
+            //$("#btnaddui").attr("title", "Cannot Add Panel(s) as License Limit Achieved!");
+
+            $('#divLicenceAlert').attr("style", "display:block");
+            document.getElementById('divLicenceAlert').innerHTML = "Cannot add panel(s) as license limit achieved.";
+
+        });
+
+    </script>
+}
+
+@if (Convert.ToInt32(TempData["Difference"]) <= 500 && Convert.ToInt32(TempData["Difference"]) > 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+
+            $('#divLicenceAlert').attr("style", "display:block");
+            document.getElementById('divLicenceAlert').innerHTML = "Only " + @TempData["Difference"] + " panel(s) are remaining for this licence.";
+
+        });
+
+    </script>
+}
+
+@if (TempData["PanelInvalidSearch"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#divinvalidmsg").show();
+        });
+    </script>
+}
+
+@if (TempData["PanelDelete"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            alert('@TempData["PanelDelete"]');
+        });
+    </script>
+}
+
+
+
+@*
+@if (Convert.ToInt32(TempData["Difference"]) <= 500)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+
+            alert("Only "+ @TempData["Difference"]+ " Panels are Left for this Licence.");
+            //$("#btnaddui").attr("Disabled", "Disabled");
+            //$("#btnaddui").attr("title", "Cannot Add Panel as License Limit Achieved!");
+        });
+
+   </script>
+}
+
+@if (Convert.ToInt32(TempData["Difference"]) == 0)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            $("#btnaddui").attr("Disabled", "Disabled");
+            $("#btnaddui").attr("title", "Cannot Add Panel as License Limit Achieved!");
+        });
+
+    </script>
+}*@
+
+
+ 
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div id="panellist" class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Panel</h2>
+                </div>`     
+                <div class="pull-right col-md-6">
+                    <a class="btn btn-success btn-sm pull-right margin" id="btnaddui" href="Create"><i class="fa fa-plus"></i>ADD   </a>
+
+                    <a class="btn btn-success btn-sm pull-right margin" id="btnlistui" href="Index">
+                        <i class="fa fa-list"></i>List  
+                    </a>
+
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+        <div class="Panel-body">
+            @using (Html.BeginForm("Index", null, FormMethod.Get))
+            {
+        
+                <div class="col-lg-12 margin-top">
+
+                    @{Html.RenderAction("SearchPanel", "Panel"); }
+
+                </div>
+ 
+                      if (Model != null)
+                      { <div class="col-md-12">
+                          <div class="pull-right">Count of records found : @Model.Count()</div>
+                      </div>
+                          if (Model.Count() > 0)
+                          {
+                              var grid = new WebGrid(Model, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10);
+                              grid.Pager(WebGridPagerModes.All);
+            
+
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <hr />
+                        @grid.GetHtml(tableStyle: "table table-striped table-advance table-bordered table-hover tbl-header", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+                        grid.Column("PanelID", "PanelID"),
+                        grid.Column("SOLID", "Site ID/SOL ID"),
+                        grid.Column("MfgID", "Manufacturing ID"),
+                        grid.Column("Panel_IP", "IP Address"),
+                        grid.Column("Client_Name", "Client"),
+                        grid.Column("PanelLatestVersion", "Panel Latest Version"),
+                        grid.Column("PanelCurrentVersion", "Panel Current Version"),
+                        grid.Column("CityName", "City"),
+                        grid.Column("Panel_Location", "Panel Location"),
+                        grid.Column("PanelType", "Panel Type"),
+                        grid.Column("ProjectName", "Project Name"),
+                        grid.Column("ArmStatus", "Armed Status"),
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                        @Html.ActionLink(" ", "Edit", new { PanelID = item.PanelID, ClientID = item.ClientID }, new { @class = "glyphicon glyphicon-edit btn btn-success btn-xs", title = "Edit" })
+                        </text>),
+                  grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                        @Html.ActionLink(" ", "EscalationConfig", new { PanelID = item.PanelID, ClientID = item.ClientID }, new { @class = "glyphicon glyphicon-envelope btn btn-primary btn-xs", title = "Escalation" })
+                        </text>)
+
+
+    ), mode: WebGridPagerModes.Numeric)
+
+
+                    </div>
+                </div>
+
+            
+@*</div>*@
+                          }
+                          else
+                          {
+                <div>No records found</div>
+                          }
+                      }
+
+
+            }
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="alert alert-danger" id="divinvalidmsg" role="alert" style="display: none" align="Left">
+            @if (TempData["PanelInvalidSearch"] != null)
+            {      @TempData["PanelInvalidSearch"]
+
+            }
+        </div>
+
+         <div class="alert alert-danger" id="divLicenceAlert" role="alert" style="display: none" align="Left">
+                        
+                    </div>
+    </div>
+</div>
+

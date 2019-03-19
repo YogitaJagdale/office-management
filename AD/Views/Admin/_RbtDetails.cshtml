@@ -1,0 +1,33 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Admin
+@{
+    Layout = "";
+}
+
+<div >
+     @{ int i = 0; }
+
+        @foreach (var item in (SelectList)ViewBag.TiposPost)
+        {
+           
+            if (i == 0)
+            {
+                <strong>User Type: </strong>@Html.RadioButtonFor(model => model.rbtlist, item.Value, new { Checked = "checked", @class = "user-input"})
+                <label class="control-label">@item.Text</label>
+                i++;
+            }
+            
+             else
+            {
+                @Html.RadioButtonFor(model => model.rbtlist, item.Value, new { @class = "user-input"})
+                <label class="control-label">@item.Text</label>
+            }
+                 
+        }
+    <br />
+     <br />
+         <strong>Active: </strong> @Html.RadioButton("Active", "1", true, new { id = "rbtActyes", @class = "user-input" }) Yes
+         @Html.RadioButton("Active", "0", false, new { id = "rbtActno", @class = "user-input" }) No
+         
+    </div>
+  
+

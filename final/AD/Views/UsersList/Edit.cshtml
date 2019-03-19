@@ -1,0 +1,811 @@
+﻿@model SECU_CAMSPlus_DEV.Models.UsersList
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@if (@ViewBag.UserType == "1") 
+{ 
+     <script type="text/javascript">
+         $(document).ready(function ()
+         {
+            $("#divResetExpiry").hide();
+        });
+
+    </script>
+}
+
+
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["Message"]');  
+    </script>
+}
+
+@if (TempData["Loginstatuschanged"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () 
+        {
+           $("#divLoginstatuschanged").show(); 
+        });
+    </script>
+}
+
+@if (TempData["Passwordexpirystatuschanged"] != null)
+{
+    <script type="text/javascript"> 
+        $(document).ready(function () 
+        {
+            $("#divPasswordexpirystatuschanged").show(); 
+        });
+    </script>
+}
+
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#divinvalidmsg").show();
+        });
+    </script>
+}
+
+@if (TempData["Successfullnotice"] != null)
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#divSuccessfullnotice").show();
+         });
+    </script>
+}
+
+
+<script type="text/javascript">
+
+    function varcharonly(evt) {
+        var e = evt
+        if (window.event) { //IE
+            var ascii = e.keyCode;
+        }
+        else if (e.which) {   // Safari 4, Firefox 3.0.4
+            var ascii = e.which
+        }
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) ||
+            (ascii == 32 || ascii == 40 || ascii == 41 || ascii == 44 || ascii == 45 || ascii == 95 || ascii == 46 || ascii == 47) || (ascii > 47 && ascii < 58))
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38))
+        {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function validateNumber() {
+        var ascii = event.keyCode
+        var key = window.event ? event.keyCode : event.which;
+
+        if (ascii === 8 || ascii === 46
+         || ascii === 37 || ascii === 39) {
+            event.returnValue = true;
+        }
+        else if (key < 48 || key > 57) {
+            event.returnValue = false;
+        }
+        else return true;
+    };
+    function IsValidUserName() {
+        $("#errorIsValidUserName").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtUserName").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtUserName").after('<span id="errorIsValidUserName" class="mandatory">Enter Valid User Name</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidUserName").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidAddress() {
+        $("#errorIsValidAddress").html('');
+        var pwdreg = /^[a-zA-Z0-9 \.\-\/ , ( )]+$/;
+        var pwdval = $("#txtAddress").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtAddress").after('<span id="errorIsValidAddress" class="mandatory">Enter Valid Address</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidAddress").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidPinCode() {
+        $("#errorIsValidPinCode").html('');
+        var pwdreg = /^[0-9]{6,6}$/;
+        var pwdval = $("#txtPincode").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtPincode").after('<span id="errorIsValidPinCode" class="mandatory">Enter Valid Pin code</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidPinCode").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidContactPerson() {
+        $("#errorIsValidContactPersone").html('');
+        var pwdreg = /^[a-zA-Z ]+$/;  // [a-zA-Z ]+$here '^' and '\' are shown invalid characters 
+        var pwdval = $("#txtContactPerson").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtContactPerson").after('<span id="errorIsValidContactPersone" class="mandatory">Enter Valid Contact Person Name</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidContactPersone").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidMobileNo() {
+        $("#errorIsValidMobileNo").html('');
+        var pwdreg = /^[0-9]{10,12}$/;
+        var pwdval = $("#txtMobileNo").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtMobileNo").after('<span id="errorIsValidMobileNo" class="mandatory">Enter Valid Mobile No</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidMobileNo").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidEmailID() {
+        $("#errorIsValidEmailID").html('');
+        var pwdreg = /^([\w-\.]+@@([\w-]+\.)+[\w-]{2,6})?$/;
+        var pwdval = $("#txtEmailID").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtEmailID").after('<span id="errorIsValidEmailID" class="mandatory">Enter Valid Email ID</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else if ($("#txtEmailID").val() == '') {
+            $("#txtEmailID").after('<span id="errorIsValidEmailID" class="mandatory">Enter Valid Email ID</span>');
+            $("#btnUpdate").attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidEmailID").html('');
+            $("#btnUpdate").attr('disabled', false);
+        }
+    }
+
+    function IsValidULoginID() {
+        $("#errorIsValidULoginID").html('');
+        var pwdreg = /^[a-zA-Z0-9 ]+$/;
+        var pwdval = $("#txtULoginID").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtULoginID").after('<span id="errorIsValidULoginID" class="mandatory">Enter Valid Login ID</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidULoginID").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidUserPassword() {
+        $("#errorIsValidUserPassword").html('');
+        var pwdreg = /^[a-zA-Z0-9 * @@ # $ % &]+$/;
+        var pwdval = $("#txtUserPassword").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtUserPassword").after('<span id="errorIsValidUserPassword" class="mandatory">Enter Valid User Password</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidUserPassword").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    function IsValidconfirmpassword() {
+        $("#errorIsValidconfirmpassword").html('');
+        var pwdreg = /^[a-zA-Z0-9 * @@ # $ % &]+$/;
+        var pwdval = $("#txtconfirmpassword").val();
+        if (!pwdreg.test(pwdval)) {
+            $("#txtconfirmpassword").after('<span id="errorIsValidconfirmpassword" class="mandatory">Enter Valid confirm Password</span>');
+            $('#btnUpdate').attr('disabled', true);
+        }
+        else {
+            $("#errorIsValidconfirmpassword").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    
+    function IsselectedValidUserType() {
+        $("#errorIsValidUserType").html('');
+        var ddlState = $("#ddlUserType");
+        if (ddlState.val() == "") {
+            $("#ddlUserType").after('<span id="errorIsValidUserType" class="mandatory">Please Select User Type</span>');
+            $('#btnUpdate').attr('disabled', true);
+            return false;
+        }
+        else {
+            $("#errorIsValidUserType").html('');
+            $('#btnUpdate').attr('disabled', false);
+
+        }
+    }
+
+
+    function IsselectedValidClientID() {
+        $("#errorIsValidUserType").html('');
+        var ddlUserType = $("#ddlUserType");
+        if (ddlUserType.val() == "") {
+            $("#ddlUserType").after('<span id="errorIsValidUserType" class="mandatory">Please Select User Type</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidUserType").html('');
+            $('#btnUpdate').attr('disabled', false);
+
+        }
+    }
+
+
+    function IsselectedValidDealerID() {
+        $("#errorIsValidDealerID").html('');
+        var ddlDealers = $("#ddlDealers");
+        if (ddlDealers.val() == "") {
+            $("#ddlDealers").after('<span id="errorIsValidDealerID" class="mandatory">Please Select User Type</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidDealerID").html('');
+            $('#btnUpdate').attr('disabled', false);
+
+        }
+    }
+
+    function IsselectedValidshift() {
+        $("#errorIsValidshift").html('');
+        var ddlshift = $("#ddlshift");
+        if (ddlshift.val() == "") {
+            $("#ddlshift").after('<span id="errorIsValidshift" class="mandatory">Please Select User Type</span>');
+            $('#btnUpdate').attr('disabled', true);
+            return false;
+        }
+        else {
+            $("#errorIsValidshift").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+    
+    function IsselectedValidClientID() {
+        $("#errorIsValidClientID").html('');
+        var ddlClients = $("#ddlClients");
+        if (ddlClients.val() == "") {
+            $("#ddlClients").after('<span id="errorIsValidClientID" class="mandatory">Please Select User Type</span>');
+            $('#btnUpdate').attr('disabled', true);
+            return false;
+        }
+        else {
+            $("#errorIsValidClientID").html('');
+            $('#btnUpdate').attr('disabled', false);
+        }
+    }
+
+
+    function IsselectedState() {
+        $("#errorIsValidstate").html('');
+        var ddlState = $("#ddlstate");
+        if (ddlState.val() == "") {
+            $("#ddlstate").after('<span id="errorIsValidstate" class="mandatory">Please Select State</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidstate").html('');
+        }
+    }
+
+    function IsselectedCity() {
+        $("#errorIsValidCity").html('');
+        var ddlCity = $("#ddlCity");
+        if (ddlCity.val() == "") {
+            $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            return false;
+        }
+        else {
+            $("#errorIsValidCity").html('');
+        }
+    }
+
+
+    function setValue() {
+        $("#errorIsValidUserName").remove();
+        $("#errorIsValidAddress").remove();
+        $("#errorIsValidPinCode").remove();
+        $("#errorIsValidContactPersone").remove();
+        $("#errorIsValidMobileNo").remove();
+        $("#errorIsValidEmailID").remove();
+        $("#errorIsValidULoginID").remove();
+        $("#errorIsValidUserPassword").remove();
+        $("#errorIsValidconfirmpassword").remove();
+        $("#errorIsValidCity").remove();
+        $("#errorIsValidstate").remove();
+        $("#errorIsValidshift").remove();
+        $("#errorIsValidUserType").remove();
+        $("#errorIsValidDealerID").remove();
+        $("#errorIsValidClientID").remove();
+        $('#btnUpdate').attr('disabled', false);
+    }
+
+</script>
+
+@if (TempData["invalidmsgloginID"] != null)
+{
+    <script> $("#divinvalidtest").show();
+    </script>
+}
+@if (TempData["notice"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show failed alerts
+}
+
+@using (Html.BeginForm("Edit", "UsersList", FormMethod.Post, new { @id = "formUserListEdit" }))
+{
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Edit</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="">
+                    <p class="mandatory">Fields marked by <strong>(*)</strong> are mandatory</p>
+                </div>
+
+                <div align="left" id="divResetExpiry"> 
+                    <div>
+                         @Html.Label("Reset Expiry Date :",new { @class = "control-label" })
+                    </div>
+     
+                    <input align="left" type="button"  class="btn btn-warning"  value="Expiry Status"  id="btnExpiryStatus"/>
+                </div>
+
+                <div>
+                    <input align="left" type="button"  class="btn btn-warning"id="btnRest"  value="Reset" />
+                   @* onclick="@("window.location.href='" + @Url.Action("Reset", "UsersList") + "'")    ;" />*@
+                </div>
+          <div class="alert alert-success" role="alert" id="divLoginstatuschanged" style="display: none" align="Left">
+                        @if (TempData["Loginstatuschanged"] != null)
+                        {      @TempData["Loginstatuschanged"]
+                        }
+          </div>
+
+                <div class="alert alert-success" role="alert" id="divPasswordexpirystatuschanged" style="display: none" align="Left">
+                        @if (TempData["Passwordexpirystatuschanged"] != null)
+                        {      @TempData["Passwordexpirystatuschanged"]
+                        }
+          </div>
+
+
+                <div>
+                     @Html.AntiForgeryToken()
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.UserName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.UserName, new { id = "txtUserName", @onblur ="IsValidUserName()",maxlength = 50,
+                           @class = "form-control required" })
+                           @Html.ValidationMessageFor(m => m.UserName,null,new { @class = "valiation",id="errorIsValidUserName" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.UserType, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.UserTypeID, new SelectList(Model.IUserType,"Value", "Text",Model.UserTypeID), "---Select---", 
+                            new { @onclick="IsselectedValidUserType()", @class = "form-control required", @id = "ddlUserType"})
+                            @Html.ValidationMessageFor(m => m.UserType,null,new { @class = "valiation",id="errorIsValidUserType" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group" id="divDelaers">
+                            @Html.LabelFor(m => Model.DealerID, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.DealerID, new SelectList(ViewBag.Dealers, "Value", "Text"), "---Select---",
+                            new { @onclick="IsselectedValidDealerID()",@class = "form-control required", @id = "ddlDealers" })
+                            @Html.ValidationMessageFor(m => m.DealerID,null,new { @class = "valiation",id="errorIsValidDealerID" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" id="divClients">
+                            @Html.LabelFor(m => Model.ClientID, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.ClientID, new SelectList(ViewBag.Clients, "Value", "Text"), "---Select---",
+                           new { @onclick="IsselectedValidClientID()", @class = "form-control required", @id = "ddlClients" })
+                             @Html.ValidationMessageFor(m => m.ClientID,null,new { @class = "valiation",id="errorIsValidClientID" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.shift, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.shift, new SelectList(ViewBag.workingshift, "Value", "Text"), "---Select---", 
+                            new {@onclick="IsselectedValidshift()", @class = "form-control required", @id = "ddlshift"})
+                            @Html.ValidationMessageFor(m => m.shift,null,new { @class = "valiation",id="errorIsValidshift" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Address, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Address, new {id = "txtAddress", @onblur ="IsValidAddress()",maxlength = 150, @class = "form-control required",
+                           @onkeypress = "return varcharonly(event)" })
+                            @Html.ValidationMessageFor(m => m.Address,null,new { @class = "valiation",id="errorIsValidAgencyAddress" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.CellNumber, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.CellNumber, new {id = "txtMobileNo",@onblur ="IsValidMobileNo()", maxlength = 16, @class = "form-control required",
+                           @onkeypress = "return validateNumber(event)"})
+                             @Html.ValidationMessageFor(m => m.CellNumber,null,new { @class = "valiation",id="errorIsValidMobileNo" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Email, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Email, new {id = "txtEmailID", @onblur ="IsValidEmailID()", maxlength = 50,
+                           @class = "form-control required"})
+                          @Html.ValidationMessageFor(m => m.Email,null,new { @class = "valiation", id="errorIsValidEmailID"})
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                         <div class="form-group">
+                            @Html.LabelFor(m => Model.StateName, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.StateName, new SelectList(Model.StateList as System.Collections.IEnumerable, "Value", "Text"), "------select------",
+                            new { @onclick="IsselectedState()", @class = "form-control required", @id = "ddlstate"})
+                            @Html.ValidationMessageFor(m => m.StateName,null,new { @class = "valiation",id="errorIsValidstate" })
+                        </div>
+                                              
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.CityName, new { @class = "control-label" })
+                            @Html.DropDownListFor(m => m.CityName, new SelectList(Model.CityList as System.Collections.IEnumerable, "Value", "Text"), "------select------",
+                            new {@onclick="IsselectedCity()", @class = "form-control required", @id = "ddlCity" })
+                           @Html.ValidationMessageFor(m => m.CityName,null,new { @class = "valiation",id="errorIsValidCity" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.Pincode, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.Pincode, new {id = "txtPincode", @onblur ="IsValidPinCode()", maxlength = 6, @class = "form-control required",
+                           @onkeypress = "return validateNumber(event)"})
+                          @Html.ValidationMessageFor(m => m.Pincode,null,new { @class = "valiation",id="errorIsValidPinCode" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.ActiveStatus, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.ActiveStatus, new SelectList(
+                          new List<Object>{ 
+                               new { value = 9 , text = "--Select--"  },
+                               new { value = 1 , text = "Yes" },
+                               new { value = 0, text = "No"} },
+                          "value","text", 0), new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => Model.UploadImage, new { @class = "control-label" })
+                            <input type="file" id="btn_Upload" name="file_Uploader" onchange="document.getElementById('ImageFileName').value = this.value;" />
+                        </div>
+                    </div>
+
+                </div>
+
+                 <div class="row" >
+                    <div class="col-md-4" id="divdashaccess" >
+                        <div class="form-group">
+                            @Html.Label("Dashboard Access ",new { @class = "control-label" })
+                          <input type="checkbox" id="chkChart" name="chkChart" >Charts
+                           <input type="checkbox" id="chkImages" name="chkImages" >Live View
+                           <input type="checkbox" id="chkReport" name="chkReport" >Reports
+                        </div>
+                    </div>
+                    <div class="col-md-8" ID="pnlCircle" >
+                        Circles 
+                        <div class="form-group"> 
+                        @for (int i = 0; i < Model.CircleCheckBoxItems.Count; i++)
+                            {
+                                 <tr>
+                                    <td>
+                                        @Html.CheckBoxFor(m => Model.CircleCheckBoxItems[i].IsChecked)
+                                        @Model.CircleCheckBoxItems[i].Text
+                                        @Html.HiddenFor(m => Model.CircleCheckBoxItems[i].Value)
+                                        @Html.HiddenFor(m => Model.CircleCheckBoxItems[i].Text)
+                                    </td>
+                                </tr>
+                             }
+                        </div>
+                    </div>                    
+                </div>
+                
+
+                <div class="form-horizontal">
+
+                    <div style="display: none;">
+                        @* @Html.LabelFor(m => Model.ULoginID, new { data_val = false })*@
+                        @Html.HiddenFor(model => model.ULoginID)
+                        @Html.DisplayFor(m => Model.lblViewUserType, new { @class = "control-label " })
+                        @Html.TextBoxFor(m => Model.lblViewUserType)
+                    </div>
+                </div>
+                <div class="col-md-12">
+
+                    <div class="alert alert-danger" id="divinvalidtest" role="alert" style="display: none" align="Left">
+                        @if (TempData["invalidmsgloginID"] != null)
+                        {      @TempData["invalidmsgloginID"]
+
+                        }
+                    </div>
+                   
+                    <div class="alert alert-danger" id="divinvalidmsg" role="alert" style="display: none" align="Left">
+                        @if (TempData["invalidmsg"] != null)
+                        {      @TempData["invalidmsg"]
+
+                        }
+                    </div>
+                    <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+                        @if (TempData["notice"] != null)
+                        {      @TempData["notice"]
+                        }
+                    </div>
+                    
+                    <div class="alert alert-success" role="alert" id="divSuccessfullnotice" style="display: none" align="Left">
+                        @if (TempData["Successfullnotice"] != null)
+                        {      @TempData["Successfullnotice"]
+                        }
+                    </div>
+
+                    @*<span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>*@
+                </div>
+            </div>
+            <div class="panel-footer text-center">
+                <input class="btn btn-success btn-md" type="submit" id="btnUpdate" value="Update" 
+                    onclick="return confirm('Are you sure you wish to Update this Panel Service Vendor?');" />
+               <input align="Right" type="button"  class="btn btn-warning"  value="Close" 
+                    onclick="@("window.location.href='" + @Url.Action("Index", "UsersList") + "'");" />
+            </div>
+        </div>
+
+    </div>
+    <div class="clearfix"></div>
+
+   
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script type="text/javascript">
+
+    
+    $("#ULoginID").removeAttr("data-val-required")
+
+    $(document).ready(function ()
+    {
+        var value = $("#lblViewUserType").val();      
+        if ((value == 5))
+        {
+            $('#ddlDealers').show();
+            $('#divDelaers').show();
+ 
+        }
+        else if (value == 7)
+        {
+            $('#ddlClients').show();
+            $('#divClients').show();
+     
+        }
+        else {
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+
+        }
+
+    });
+
+    $('#ddlUserType').on('change', function ()
+    {
+        var value = $("#ddlUserType").val();
+        if ((value == 5)) {
+            $('#ddlDealers').show();
+            $('#divDelaers').show();
+            $('#pnlCircle').hide();
+
+        }
+        else if (value == 7) {
+            $('#ddlClients').show();
+            $('#divClients').show();
+            $('#pnlCircle').hide();
+            $('#divdashaccess').show();
+        }
+        else if (value == 3 || value == "4" || value == "6" || value == "9") {
+            $('#pnlCircle').show();
+
+        }
+        else if (value == 7 || value == "8" || value == "10") {
+            $('#pnlCircle').show();
+            $('#divdashaccess').show();
+
+        }
+        else {
+            $('#ddlDealers').hide();
+            $('#divDelaers').hide();
+            $('#ddlClients').hide();
+            $('#divClients').hide();
+            $('#divdashaccess').hide();
+        }
+    });
+
+    /*new code addd for state city bind*/
+    $(document).ready(function ()
+    {
+
+        $('#ddlstate').change(function ()
+        {
+            //var url = "/UsersList/bindCityList/";
+            //$.ajax({
+            //    url: url,
+            //    data: { stateid: $('#ddlstate').val() },
+            //    cache: false,
+            //    type: "POST",
+            //    success: function (data) {
+            //        var markup = "<option value='0'>---Select---</option>";
+            //        for (var x = 0; x < data.length; x++) {
+            //            markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+            //        }
+            //        $("#ddlCity").html(markup).show();
+            //    }
+            //});
+            //if ($("#ddlstate").val() != "") {
+            //    $("#errorIsValidCity").html('');
+            //    $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+            //   }
+
+            var url = "/UsersList/BindCityList/";
+            $.ajax({
+                url: url,
+                data: { stateid: $('#ddlstate').val() },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    var markup = "<option value='0'>---Select---</option>";
+                    for (var x = 0; x < data.length; x++) {
+                        markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
+                    }
+                    $("#ddlCity").html(markup).show();
+                    alert('call to edit state');
+                }
+            });
+
+            if ($("#ddlstate").val() != "") {
+                $("#errorIsValidCity").html('');
+                $("#ddlCity").after('<span id="errorIsValidCity" class="mandatory">Please Select City</span>');
+                $('#btnUpdate').attr('disabled', true);
+            }
+        });
+
+        $('#ddlCity').change(function ()
+        {
+            $('#btnUpdate').attr('disabled', false);
+        });
+
+
+        $("#btnExpiryStatus").click(function () 
+        {
+           var url = "/UsersList/ExpiryStatus/";
+            $.get(url,  function (data)
+            {
+         
+            });
+           
+        });
+             
+        $("#btnRest").click(function () 
+        {
+            var url = "/UsersList/Reset/";
+            $.get(url,  function (data)
+            {
+         
+            });
+           
+        });
+
+
+        var dashacc = @ViewBag.DashAccess;   
+
+        if(dashacc == "01")
+        {
+            $( "#chkChart" ).prop( "checked", false );
+            $( "#chkImages" ).prop( "checked", false );
+            $( "#chkReport" ).prop( "checked", true );
+
+        }
+        if(dashacc == "02")
+        {
+            $( "#chkChart" ).prop( "checked", false );
+            $( "#chkImages" ).prop( "checked", true );
+            $( "#chkReport" ).prop( "checked", false );
+           
+        }
+        if (dashacc == "03")
+        {
+            $( "#chkChart" ).prop( "checked", false );
+            $( "#chkImages" ).prop( "checked", true );
+            $( "#chkReport" ).prop( "checked", true );
+            
+        }
+        if (dashacc == "04")
+        {
+            $( "#chkChart" ).prop( "checked", true );
+            $( "#chkImages" ).prop( "checked", false );
+            $( "#chkReport" ).prop( "checked", false );
+           
+        }
+        if (dashacc == "05")
+        {
+            $( "#chkChart" ).prop( "checked", true );
+            $( "#chkImages" ).prop( "checked", false );
+            $( "#chkReport" ).prop( "checked", true );
+           
+        }
+        
+        if (dashacc == "06")
+        {
+            $( "#chkChart" ).prop( "checked", true );
+            $( "#chkImages" ).prop( "checked", true );
+            $( "#chkReport" ).prop( "checked", false );
+       
+        }
+        if (dashacc == "07")
+        {
+            $( "#chkChart" ).prop( "checked", true );
+            $( "#chkImages" ).prop( "checked", true );
+            $( "#chkReport" ).prop( "checked", true );
+           
+        }
+        if(dashacc == "0")
+        {
+            $( "#chkChart" ).prop( "checked", false );
+            $( "#chkImages" ).prop( "checked", false );
+            $( "#chkReport" ).prop( "checked", false );
+           
+        }
+        
+    });
+    
+           
+</script>

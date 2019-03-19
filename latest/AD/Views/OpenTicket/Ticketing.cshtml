@@ -1,0 +1,870 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Tickets
+
+@{
+    ViewBag.Title = "Ticket Transaction :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+<script src="~/Scripts/jquery.dataTables.rowGrouping.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/RowSorter.js"></script>
+<script src="~/Scripts/OpenTicket.js"></script>
+
+
+<style>
+    footer#colophon {
+        position: relative!important;
+    }
+</style>
+
+<style type="text/css">
+    .nodisplay {    
+        display: none;
+    }
+
+    .hide_column {
+        display: none;
+    }
+    .dataTable thead tr th:nth-child(1), .dataTable tbody tr td:nth-child(1) {
+   width: 166px;
+}
+    .dataTable thead tr th:nth-child(2), .dataTable tbody tr td:nth-child(2) {
+   width: 98px;
+}
+    .dataTable thead tr th:nth-child(3), .dataTable tbody tr td:nth-child(3) {
+   width: 96px;
+}
+    .dataTable thead tr th:nth-child(4), .dataTable tbody tr td:nth-child(4) {
+   width: 85px;
+}
+    .dataTable thead tr th:nth-child(5), .dataTable tbody tr td:nth-child(5) {
+   width: 104px;
+}
+    .dataTable thead tr th:nth-child(6), .dataTable tbody tr td:nth-child(6) {
+   width: 147px;
+}
+    .dataTable thead tr th:nth-child(7), .dataTable tbody tr td:nth-child(7) {
+   width: 66px;
+}
+    .dataTable thead tr th:nth-child(8), .dataTable tbody tr td:nth-child(8) {
+   width: 78px;
+}
+    .dataTable thead tr th:nth-child(9), .dataTable tbody tr td:nth-child(9) {
+   width: 104px;
+}
+
+.dataTable thead tr th:nth-child(10), .dataTable tbody tr td:nth-child(10) {
+    width: 70px;
+}
+</style>
+
+<script>
+    $(".table").click(function () {
+        $("th").removeAttr("style");
+    });
+</script>
+
+@if (TempData["TicketClose"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var msg = '@TempData["TicketClose"]';
+            alert(msg);
+        });
+    </script>
+}
+
+@if (TempData["CloseSelectedTicket"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            var msg = '@TempData["CloseSelectedTicket"]';
+            alert(msg);
+        });
+    </script>
+}
+
+@if (TempData["TicketPendingAssign"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            alert(@TempData["TicketPendingAssign"]);
+        });
+    </script>
+}
+
+@*<script type="text/javascript">
+    $(function () {
+
+        $(document).bind('contextmenu', function (e) {
+            e.preventDefault();
+            alert('Due to security reason, Right Click is not allowed.');
+        });
+    });
+
+    $(document).mousedown(function (e) {
+        if (e.which === 2) {
+            alert("Due to security reason, Middle Click is not allowed.")
+            e.preventDefault();
+            // return false;
+        }
+    });
+</script>*@
+@*<script>
+    var start = new Date();
+
+    $(window).load(function () {
+
+        console.log(new Date() - start)
+       // $('body').html(new Date() - start);
+    });
+</script>*@
+
+<div id="header" class="wow animated fadeIn">
+    <nav class="navbar" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="btn-block btn-drop navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <strong>MENU</strong>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li id="liAllCount">
+                        <a href="Ticketing?id=All">
+                            <div class="text-center">
+                                <i class="fa fa-th fa-2x"></i>
+                                <span>All (@ViewBag.allcount)</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li id="liFireCount">
+                        <a href="Ticketing?id=Fire">
+                            <div class="text-center">
+                                <i class="fa fa-fire fa-2x"></i>
+                                <span>Fire (@ViewBag.Firecount)</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liIntrusionCount">
+                        <a href="Ticketing?id=Intrusion">
+                            <div class="text-center">
+                                <i class="fa fa-user-times fa-2x"></i>
+                                <span>Intrusion (@ViewBag.Intrusioncount)</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liPIRCount">
+                        <a href="Ticketing?id=PIR">
+                            <div class="text-center">
+                                <i class="fa fa-bullseye fa-2x"></i>
+                                <span>PIR (@ViewBag.PIRCount) </span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liVIPCount">
+                        <a href="Ticketing?id=VIP">
+                            <div class="text-center">
+                                <i class="fa fa-user fa-2x"></i>
+                                <span>VIP (@ViewBag.VIPCount)</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liFalseCount">
+                        <a id="anchorFalse" href="Ticketing?id=False">
+                            <div class="text-center">
+                                <i class="fa fa-times fa-2x"></i>
+                                <span>False (@ViewBag.falsecount)</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li id="liCurrentADCount">
+                        <a href="Ticketing?id=CurrentAD">
+                            <div class="text-center">
+                                <i class="fa fa-video-camera fa-2x"></i>
+                                <span>Current AD</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liEnableQueueCount">
+                        <a id="btnqueue" href="Ticketing?id=EnableQueue">
+                            <div class="text-center">
+                                <i class="fa fa-list fa-2x"></i>
+                                <span>Ticket Queue</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liBlueCount" style="display:none">
+                        <a href="Ticketing?id=Blue">
+                            <div class="text-center">
+                                <i class="fa fa-plus-square fa-2x"></i>
+                                <span>Blue (@ViewBag.NOADCount)</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liTwoWayCount"  style="display:none">
+                        <a href="Ticketing?id=TwoWay">
+                            <div class="text-center">
+                                <i class="fa fa-plus-square fa-2x"></i>
+                                <span>Two Way (@ViewBag.twowaycount)</span>
+                            </div>
+                        </a>
+
+                    </li>
+                    <li id="liAD">
+
+                       @* @if (Convert.ToString(HttpContext.Current.Session["PageRequestCount"]) == "")
+                        { *@
+                            <a href="@Url.Action("AUTOAD", "AUTOAD", new {Controller="AUTOAD",Action="AUTOAD", OperatorID = @ViewBag.LoginId})" target="_blank">  @*, PageRequestCount = Convert.ToInt32(HttpContext.Current.Session["PageRequestCount"])*@
+                       
+                            <div class="text-center">
+                                <i class="fa fa-eye fa-2x"></i>
+                                <span>Active Deterrence</span>
+                            </div>
+                        </a>
+                       @* }*@
+
+
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+
+
+<body>
+    @using (@Html.BeginForm("Ticketing", "OpenTicket"))
+    {
+        <input type="hidden" value="@ViewBag.txtpencnt" id="hdnPendingcnt" />
+        <input type="hidden" value="@ViewBag.txthldcnt" id="hdnHoldcnt" />
+        
+        <div class="container-fluid">
+            <div class="row pageheader">
+                <div class="col-md-12 request-btn">
+                    <div class="pull-left form-inline">
+                        <div class="form-group" id="divAssignTosupervisor" style="display: none;">
+                            <label>Assign To Supervisor</label>
+                            @Html.DropDownList("SupervisorLoginId", new SelectList(ViewBag.SLoginId, "Value", "Text"), "--Select--", new { @class = "form-control" })
+                            <input class="btn btn-primary btn-sm" type="button" value="Assign To Supervisor" name="Command" id="imgbtnAssign">
+                        </div>
+                    </div>
+                    <div class="row pull-right">
+                        <input class="btn btn-success" type="button" value="Send AD Request" name="Command" id="btnSendADRequest" style="display:none" />
+                        <input class="btn btn-primary" type="button" value="Assign To Supervisor" name="Command" id="btnAssignToSupervisor" />
+                        @if (Session["UserType"].ToString() == "4")
+                        {
+                            <input class="btn btn-danger" type="button" value="Close All Tickets" name="Command" id="btnCloseAllTickets" />
+                        }
+
+                        <input class="btn btn-warning" onclick="stopRefresh()" type="button" value="Stop Auto Refresh" name="Command" id="btnStartStopAutoRefersh" />
+
+                        <input class="btn btn-info" type="button" value="Re-Assign Ticket" name="Command" id="btnReAssignTicket" />
+                        @if (Session["UserType"].ToString() == "4")
+                        {
+                            <input class="btn btn-default" type="button" value="Enable Multi Selection" name="name" id="btnEnableMultiSelection" />
+                        }
+
+                    </div>
+                </div>
+                <div class="col-md-12 request-btn">
+                    <label class="text-danger" id="lblPControlErrorADRequest"></label>
+                    <label class="text-success" id="lblADRequest"></label>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="col-lg-12">
+                <div class="row">
+                    @if (Model.TicketsPendingList != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        Unacknowledged Tickets
+                                    </div>
+                                    <div class="col-md-3 form-inline mar-btm0">
+                                        <input type="text" class="form-control" id="txtsearchPending"  value="@ViewBag.SearchPendingPara"/>
+                                        <input type="button" class="btn btn-success btn-sm" id="btnsearchPending" value="Search" name="Command" />
+                                        <a class="btn btn-success btn-sm" id="btnsearchPendingReset" href="Ticketing">Reset</a>
+
+                                    </div>
+
+                                    <div class="col-md-2">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body mar-btm0">
+                                <div class="table-responsive">
+
+                                    @if (Model.TicketsPendingList != null)
+                                    {
+                                        //if (Model.TicketsPendingList.Count() > 0)
+                                        //{
+                                        var grid = new WebGrid(Model.TicketsPendingList, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10, pageFieldName:"UnAcknowlegedTickets");
+                                        grid.Pager(WebGridPagerModes.All);
+
+                                        @grid.GetHtml(tableStyle: "table table-striped table-advance table-hover tbl-header", htmlAttributes: new { id = "dtPendingDataTable" }, footerStyle: "tfoot dataTables_paginate", columns:
+
+
+                                  //  @grid.GetHtml(tableStyle: "table table-striped table-advance  table-hover tbl-header", htmlAttributes: new { id = "dtPendingDataTable" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+                        grid.Column(header: "Ticket No", canSort: false, style: "action", format: (item) => Html.ActionLink((string)item.TicketNo, "CurrentState", "OpenTicket", new { sTicketNo = item.TicketNo, sPanelid = item.PanelID, sClientId = item.ClientID, sZoneNo = item.ZoneNo, sMessageType = item.MessageType, sMessageClass = item.MessageClass, sCircleID = item.O_CircleID, sMessageDescription = item.MessageDescription, sMessage = item.SMessage, sCamera = item.Camera, sCategoryName = item.CategoryName, sTicket_Open_Time = item.Ticket_Open_Time, sTicketStatus = item.Ticket_Status, sFromPage = "Open", sPending = "No", sAssignTo = Convert.ToString(HttpContext.Current.Session["LoginID"]) }, null)),
+                        
+                        grid.Column("ClientName", "Client Name"),
+                        grid.Column("StateName", "State Name"),
+                        grid.Column("CityName", "City Name"),
+                        grid.Column("Ticket_Open_Time", "Ticket Open Time"),
+                        grid.Column("SensorType", "Sensor Type"),
+                        grid.Column("PanelID", "PanelID"),
+                        grid.Column("timeLeft", "Time Left"),
+                        grid.Column("Actual_Alert_Time", "Actual Alert Time"),
+
+                        grid.Column(format: @<text><input name="checkPendingName" type="checkbox" value="some value" /></text>, header: "{chkPendingDataTableSelectAll}"),
+                                          grid.Column("MessageClass", "MessageClass"),
+                        grid.Column("ActiveDeterenceTime", "ActiveDeterenceTime")
+
+    ), mode: WebGridPagerModes.All)                              
+@*</div>*@
+                                        //}
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group" id="divEnableMultiSelection" style="display: none;">
+                        <label>Sensor No. highlighted by yellow color showing the active deterrence is happened</label>
+                        <button class="btn btn-danger" type="button" value="Close Selected Tickets" name="Command" id="btnmultiClose" data-toggle="tooltip" data-original-title="Close selected tickets"><i class="fa fa-user fa-1x"></i></button>
+                        <div id="Temp1" hidden="hidden" class="OverlayMsgBox">
+                            <div id="Temp" hidden="hidden" class="PopUpMsgBox">
+                                <label>Closure Comments:</label>
+                                @Html.TextArea("Description", null, new { @class = "form-control" })
+                                <br />
+                                @Html.DropDownList("ddlCloseTicketsComment", new SelectList(ViewBag.ddlCloseTicketsComment, "Value", "Text"), "--Select--", new { @class = "form-control" })
+                                <br />
+                                <button id="btnmultiOk" class="btn btn-primary btn-sm">Close selected tickets</button>
+                                <input class="btn btn-default" type="button" value="Cancel" name="Command" id="btnmultiCloseCancel">
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.TicketsOnHoldList != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row ">
+                                    <div class="col-md-9">
+                                        Acknowledged Tickets
+                                    </div>
+
+                                    <div class="col-md-3 form-inline mar-btm0">
+                                        <input type="text" class="form-control" id="txtsearchHold"  value="@ViewBag.SearchHoldPara"/>
+                                        <input type="button" class="btn btn-success btn-sm" id="btnsearchHold" value="Search" name="Command" />
+                                        <a class="btn btn-success btn-sm" id="btnsearchreset" href="Ticketing">Reset</a>
+
+                                    </div>
+
+                                    <div class="col-md-2">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="panel-body mar-btm0">
+
+                                <div class="table-responsive">
+
+                                    @if (Model.TicketsOnHoldList != null)
+                                    {
+                                        //if (Model.TicketsOnHoldList.Count() > 0)
+                                        //{
+                                        var grid = new WebGrid(Model.TicketsOnHoldList, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10, pageFieldName: "AcknowlegedTickets");
+                                        grid.Pager(WebGridPagerModes.All);
+            
+
+        
+              
+                                        @grid.GetHtml(tableStyle: "table table-striped table-advance table-hover tbl-header", htmlAttributes: new { id = "dtOnHoldDataTable" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+            // grid.Column(header: "",style: "action",format: @<text><input type="checkbox" id="chkPending' + (i++) + '" name="checkPendingName" value=""></text>),
+
+
+                        grid.Column(header: "Ticket No", canSort: false, style: "action", format: (item) => Html.ActionLink((string)item.TicketNo, "CurrentState", "OpenTicket", new { sTicketNo = item.TicketNo, sPanelid = item.PanelID, sClientId = item.ClientID, sZoneNo = item.ZoneNo, sMessageType = item.MessageType, sMessageClass = item.MessageClass, sCircleID = item.O_CircleID, sMessageDescription = item.MessageDescription, sMessage = item.SMessage, sCamera = item.Camera, sCategoryName = item.CategoryName, sTicket_Open_Time = item.Ticket_Open_Time, sTicketStatus = item.Ticket_Status, sFromPage = "Open", sPending = "No", sAssignTo = Convert.ToString(HttpContext.Current.Session["LoginID"]) }, null)),
+                        grid.Column("ClientName", "Client Name"),
+                        grid.Column("StateName", "State Name"),
+                        grid.Column("CityName", "City Name"),
+                        grid.Column("Ticket_Open_Time", "Ticket Open Time"),
+                        grid.Column("SensorType", "Sensor Type"),
+                        grid.Column("PanelID", "Panel ID"),
+                        grid.Column("timeLeft", "Time Left"),
+                        grid.Column("Actual_Alert_Time", "Actual Alert Time"),
+                        grid.Column(format: @<text><input name="checkOnHoldName" type="checkbox" value="some value" /></text>, header: "{chkOnHoldDataTableSelectAll}"),
+                               grid.Column("MessageClass", "MessageClass"),
+                        grid.Column("ActiveDeterenceTime", "ActiveDeterenceTime")
+    ), mode: WebGridPagerModes.All)
+
+
+                
+              
+
+            
+@*</div>*@
+                                        // }
+
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    }
+                    @if (Model.TicketsAddoneList != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        Pending Tickets
+                                    </div>
+                                    <div class="col-md-3 form-inline mar-btm0">
+                                        <input type="text" class="form-control" id="txtsearchAddone"  value="@ViewBag.SearchADDonePara"/>
+                                        <input type="button" class="btn btn-success btn-sm" id="btnsearchAddone" value="Search" name="Command" />
+                                        <a class="btn btn-success btn-sm" id="txtResetAddone" href="Ticketing">Reset</a>
+
+                                    </div>
+
+                                    <div class="col-md-2">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+
+                                    @if (Model.TicketsAddoneList != null)
+                                    {
+                                        //if (Model.TicketsAddoneList.Count() > 0)
+                                        //{
+                                        var grid = new WebGrid(Model.TicketsAddoneList, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10, pageFieldName: "PendingTickets");
+                                        grid.Pager(WebGridPagerModes.All);
+            
+
+        
+              
+                                        @grid.GetHtml(tableStyle: "table table-striped table-advance table-hover tbl-header", htmlAttributes: new { id = "dtADDOneDataTable" }, footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+
+                        grid.Column(header: "Ticket No", canSort: false, style: "action", format: (item) => Html.ActionLink((string)item.TicketNo, "CurrentState", "OpenTicket", new { sTicketNo = item.TicketNo, sPanelid = item.PanelID, sClientId = item.ClientID, sZoneNo = item.ZoneNo, sMessageType = item.MessageType, sMessageClass = item.MessageClass, sCircleID = item.O_CircleID, sMessageDescription = item.MessageDescription, sMessage = item.SMessage, sCamera = item.Camera, sCategoryName = item.CategoryName, sTicket_Open_Time = item.Ticket_Open_Time, sTicketStatus = item.Ticket_Status, sFromPage = "Open", sPending = "Yes", sAssignTo = Convert.ToString(HttpContext.Current.Session["LoginID"]) }, null)),
+                        grid.Column("ClientName", "Client Name"),
+                        grid.Column("StateName", "State Name"),
+                        grid.Column("CityName", "City Name"),
+                        grid.Column("Ticket_Open_Time", "Ticket Open Time"),
+                        grid.Column("SensorType", "Sensor Type"),
+                        grid.Column("PanelID", "Panel ID"),
+                        grid.Column("timeLeft", "Time Left"),
+                        grid.Column("Actual_Alert_Time", "Actual Alert Time"),
+                        grid.Column(format: @<text><input name="checkADDOneName" type="checkbox" value="some value" /></text>, header: "{chkADDOneDataTableSelectAll}"),
+                               grid.Column("MessageClass", "MessageClass"),
+                        grid.Column("ActiveDeterenceTime", "ActiveDeterenceTime")
+    ), mode: WebGridPagerModes.All)
+
+
+                
+              
+
+            
+@*</div>*@
+                                        //  }
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (ViewData["gvfalseOnHold"] != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        False Tickets
+                                    </div>
+                                    <div class="clearfix">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table id="dtfalseOnHold" class="table table-hover">
+                                        <thead>
+                                            <tr>
+
+                                                <th>Ticket No
+                                                </th>
+                                                <th>Client Name
+                                                </th>
+                                                <th>State
+                                                </th>
+                                                <th>City
+                                                </th>
+                                                <th>Ticket Open Time
+                                                </th>
+                                                <th>Sensor No
+                                                </th>
+                                                <th>Panel ID
+                                                </th>
+                                                <th>Actual Alert Time
+                                                </th>
+                                                <th>Zone Details
+                                                </th>
+                                                <th style="display: none">Message Class
+                                                </th>
+                                                <th style="display: none">Active Deterrence Time
+                                                </th>
+                                                <th>
+                                                    <input type="checkbox" name="select_all" value="1" id="chkfalseOnHoldSelectAll"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (System.Data.DataRow dr in (ViewData["gvfalseOnHold"] as System.Data.DataTable).Rows)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["TicketNo"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Client_Name"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["StateName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["CityName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["SensorType"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["PanelID"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Actual_Alert_Time"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["FalseTicket"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["MessageClass"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Active_Deterrence_Time"])
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                    @if (ViewData["gvEnableQueueOnHold"] != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        Tickets Queue
+                                    </div>
+                                    <div class="clearfix">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table id="dtEnableQueueOnHold" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Ticket No
+                                                </th>
+                                                <th>Client Name
+                                                </th>
+                                                <th>State
+                                                </th>
+                                                <th>City
+                                                </th>
+                                                <th>Ticket Open Time
+                                                </th>
+                                                <th>Sensor No
+                                                </th>
+                                                <th>Panel ID
+                                                </th>
+                                                <th>Actual Alert Time
+                                                </th>
+                                                <th style="display: none">Message Class
+                                                </th>
+                                                <th style="display: none">Active Deterrence Time
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (System.Data.DataRow dr in (ViewData["gvEnableQueueOnHold"] as System.Data.DataTable).Rows)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.HiddenFor(modelItem => dr["Srno"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["TicketNo"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Client_Name"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["StateName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["CityName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["SensorType"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["PanelID"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Actual_Alert_Time"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["MessageClass"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Active_Deterrence_Time"])
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                    @if (ViewData["CurrentAD"] != null)
+                    {
+                        <div class="panel panel-yellow wow animated fadeIn">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        CurrentAD Tickets
+                                    </div>
+                                    <div class="clearfix">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table id="dtCurrentADDataTable" class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Ticket No
+                                                </th>
+                                                <th>Client Name
+                                                </th>
+                                                <th>State
+                                                </th>
+                                                <th>City
+                                                </th>
+                                                <th>Ticket Open Time
+                                                </th>
+                                                <th>Sensor No
+                                                </th>
+                                                <th>Panel ID
+                                                </th>
+                                                <th>Min Left
+                                                </th>
+                                                <th>Actual Alert Time
+                                                </th>
+                                                <th style="display: none">ClientID
+                                                </th>
+                                                <th style="display: none">Message Type
+                                                </th>
+                                                <th style="display: none">Message Class
+                                                </th>
+                                                <th style="display: none">Active Deterrence Time
+                                                </th>
+                                                <th style="display: none">Circle ID
+                                                </th>
+                                                <th style="display: none">Message Description
+                                                </th>
+                                                <th style="display: none">SMessage
+                                                </th>
+                                                <th style="display: none">Camera
+                                                </th>
+                                                <th style="display: none">CategoryName
+                                                </th>
+                                                <th style="display: none">Ticket_Open_Time
+                                                </th>
+                                                <th style="display: none">AD_Added_Time
+                                                </th>
+                                                <th style="display: none">Ticket Status
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (System.Data.DataRow dr in (ViewData["CurrentAD"] as System.Data.DataTable).Rows)
+                                            {
+                                                <tr>
+
+                                                    <td>
+                                                        @Html.Raw(Html.ActionLink(dr["TicketNo"].ToString(), "CurrentState", "OpenTicket", routeValues: new { sTicketNo = dr["TicketNo"], sPanelid = dr["PanelID"], sClientId = dr["ClientID"], sZoneNo = dr["ZoneNo"], sMessageType = dr["MessageType"], sMessageClass = dr["MessageClass"], sCircleID = dr["O_CircleID"], sMessageDescription = dr["MessageDescription"], sMessage = dr["SMessage"], sCamera = dr["Camera"], sCategoryName = dr["CategoryName"], sTicket_Open_Time = dr["Ticket_Open_Time"], sTicketStatus = dr["Ticket_Status"], sFromPage = "Open", sPending = "No", sAssignTo = Convert.ToString(HttpContext.Current.Session["LoginID"]) }, htmlAttributes: null))
+
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Client_Name"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["StateName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["CityName"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["SensorType"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["PanelID"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["timeLeft"])
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => dr["Actual_Alert_Time"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["ClientID"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["MessageType"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["MessageClass"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Active_Deterrence_Time"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["O_CircleID"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["MessageDescription"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["SMessage"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Camera"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["CategoryName"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.HiddenFor(modelItem => dr["AD_Added_Time"])
+                                                    </td>
+                                                    <td style="display: none">
+                                                        @Html.DisplayFor(modelItem => dr["Ticket_Status"])
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+   
+    }
+
+
+</body>
+
+@*<script>
+    $('tfoot dataTables_paginate').click(function () {
+
+        // when the user clicks on any of the pager links
+        // try to extract the page number from the link and
+        // set the value of the hidden field
+        var page = this.href.match(/page=([0-9])+/)[1];
+        $('#page').val(page);
+
+        // submit the form so that the POST action is invoked
+        // passing along the search criteria (Name and Year) along
+        // with the page hidden field value to the Index action
+        $('form').submit();
+
+        // cancel the default action of the link which is to simply redirect
+        // to the Index action using a GET verb.
+        return false;
+
+    });
+    
+
+</script>*@
+
+@*<script>
+
+    $("#dtPendingDataTable th").each(function () {
+        debugger;
+        if ($.trim($(this).text().toString().toLowerCase()) === "{chkPendingDataTableSelectAll}") {
+            $(this).text('');
+            $("<input/>", { type: "checkbox", id: "chkPendingDataTableSelectAll", value: "" }).appendTo($(this));
+            $(this).append("<span>Select All</span>");
+        }
+    });
+</script>*@

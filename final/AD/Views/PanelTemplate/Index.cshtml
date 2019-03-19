@@ -1,0 +1,96 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.PanelTemplate>
+
+@{
+    ViewBag.Title = "Panel Template :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}
+
+@using (Html.BeginForm("Index", "PanelTemplate", FormMethod.Get))
+{
+
+    var grid = new WebGrid(Model, canSort: false);
+       
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Panel Template</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text"
+                        name="filter"
+                        value="@ViewBag.filter"
+                        class="form-control"
+                        style="display: inline"
+                        placeholder="Search by Template name or panel type" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Index">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                        <a class="btn btn-success" href="Create" id="btnCreate">
+                            <span class="glyphicon glyphicon-plus"></span>&nbsp;Add     
+                        </a>
+                    </div>
+
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">@*footerStyle: "tfoot dataTables_paginate",*@
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped",footerStyle: "webgrid-footer",  columns:
+                grid.Columns
+                (
+                          grid.Column("TemplateName", "Template Name"),
+                        grid.Column("PanelType", "Panel Type"),
+                         grid.Column("StateName", "State Name"),
+                         grid.Column("CityName", "City Name"),
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+                    @* @Html.Raw("<a data-modal='' href='/City/details/" + item.CityID + "' id='" + item.CityID + "' data-toggle='modal' title='Detail'> <span class='glyphicon glyphicon-search'> </span> </a>")*@
+                    @Html.Raw("<a data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.PnlTempID + "' id='" + item.PnlTempID + "'></a>")
+
+                    </text>)
+
+ //grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.PnlTempID },
+ //   new { onclick = "return confirm('Are you sure to delete this Panel Template?'); ", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" }))
+
+
+     ), mode: WebGridPagerModes.Numeric)
+                    <script type="text/javascript">
+                        function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                            }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        var imgbtnNew = '@ViewBag.imgbtnNew';
+        if (imgbtnNew == "false" || imgbtnNew == "False") {
+            $("#btnCreate").attr("disabled", "disabled");
+            $('#btnCreate').removeAttr('href');
+            $('#btnCreate').attr("title", "No Rights To View");
+        }
+      
+    });
+</script>

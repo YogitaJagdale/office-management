@@ -1,0 +1,235 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Project>
+@*@model SECU_CAMSPlus_DEV.Models.Project*@
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+@using (Html.BeginForm())
+{
+
+<div class="row">
+    <div class="clo-lg-12">
+        <div class="panel">
+            @* <div class="panel-body">*@
+            @*       <table>
+            @foreach (var item in Model.SensorListList)
+            {
+       
+                <tr id=@item.ProjectID>
+                    <td>
+                        @item.SensorType
+      
+                        <input type="checkbox" name="agree" value="agree" checked="@item.SchedulerBool" />
+                        @item.Scheduler
+                                   @Html.CheckBox("chksche", @item.SchedulerBool)
+              
+                            <input type="checkbox" name="agree" value="agree" checked="@item.SMSBool" />
+                            @item.SMS
+                            @Html.CheckBox("chksms", @item.SMSBool)
+                    
+                            @item.ScheduleActivity
+                            <br>
+                            @item.TimeFrom
+                            <br>
+                            @item.TimeTo
+                            @item.CameraNo
+                       
+                            @Html.DropDownList("ddlselectedCamera", new SelectList(ViewBag.CameraList, "Text", "Value", item.CameraNo))
+       
+
+                            <br>
+                     
+                    </td>
+                </tr>
+                                
+            }
+        </table>*@
+
+
+            <div class="text-center mbot30">
+                <p>To update and delete the sensor(s) required to check the respective Sensor."</p>
+            </div>
+            <table style="width: 100% ;    border-top: 0px !important;" class="table">
+                <thead>
+                    <div class="chart-tittle">
+                        <tr>
+
+                            <th style="width: 5%">
+                                <div class="task-progress">
+                                    <h1>Select</h1>
+                                </div>
+                            </th>
+                            <th style="width: 20%">
+
+
+                                <div class="task-progress">
+                                    <h1>Zone No.</h1>
+                                </div>
+                            </th>
+                            <th style="width: 20%">
+
+
+                                <div class="task-progress">
+                                    <h1>Sensor Type*</h1>
+                                </div>
+                            </th>
+                            <th style="width: 15%">
+
+                                <div class="task-progress">
+                                    <h1>Location</h1>
+                                </div>
+                            </th>
+                            <th style="width: 15%">
+
+                                <div class="task-progress">
+                                    <h1>Description</h1>
+                                </div>
+                            </th>
+                            <th style="width: 5%">
+                                <div class="task-progress">
+                                    <h1>Scheduler</h1>
+                                </div>
+                            </th>
+                            <th>
+
+                                <div class="task-progress">
+                                    <h1>Camera</h1>
+                                </div>
+                            </th>
+                            <th style="width: 5%">
+
+                                <div class="task-progress">
+                                    <h1>SMS</h1>
+                                </div>
+                            </th>
+                            <th style="width: 15%"></th>
+                        </tr>
+                    </div>
+                </thead>
+
+                @foreach (var item in Model.SensorListList)
+                {
+                    <tr id=@item.ProjectID>
+
+                        <td style="width: 5%">
+                            @Html.CheckBox("chkboxSensors", @item.SMSBool)
+                        </td>
+                        <td style="width: 20%">
+                            @Html.TextBoxFor(m => item.ZoneNo, new { @class = "form-control required" ,@style="width: 40%;"})
+                        </td>
+                        <td style="width: 20% ;color: #E6560F;font-weight: 600;">
+                            @Html.DisplayFor(m => item.SensorType, new { @class = "form-control required " })
+                        </td>
+                        <td style="width: 15%">
+                            @Html.TextBoxFor(m => item.SensorLocation, new { @class = "form-control required" })
+                        </td>
+                        <td style="width: 15%">
+
+                            @Html.TextBoxFor(m => item.ZoneDescription, new { @class = "form-control required" })
+                        </td>
+                        <td style="width: 5%">
+                            @Html.CheckBox("chkScheduler", @item.SchedulerBool, new { @class = "chk" })
+                        </td>
+                        <td>
+                            @*    @Html.TextBoxFor(m => m.CameraNo)*@
+                            @Html.DropDownList("ddlselectedCamera", new SelectList(ViewBag.CameraList, "Text", "Value", item.CameraNo), new { @class = "form-control required" })
+                        </td>
+                        <td style="width: 5%">
+                            @Html.CheckBox("chkboxSMSalert", @item.SMSBool)
+                        </td>
+                        <td style="width: 15%"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8">
+
+                            <div id="showscheduler" style="border: 1px solid #ccc;
+    border-radius: 4px;@(item.SchedulerBool ? "display:block" : "display:none") " class="panel-body">
+                                <table style="width: 100%;background-color: #F1F2F7;" class="table">
+                                    <tr>
+                                        <td style="width:15%">
+                                            Siren
+                                        </td>
+                                        <td style="width:10%">
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_1", "true", isChecked: @item.SirenBool)  ON 
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_1", "false", isChecked: !@item.SirenBool) OFF 
+                                        </td>
+                                          <td style="width:15%">
+                                              Raise Ticket
+                                        </td>
+                                        <td style="width:10%">
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_2", "true", isChecked: @item.RaiseTicketBool)  ON 
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_2", "false", isChecked: !@item.RaiseTicketBool) OFF 
+                                        </td>
+                                          <td style="width:15%">
+                                              Send Alert
+                                        </td>
+                                        <td style="width:10%">
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_3", "true", isChecked: @item.SendAlertBool)  ON 
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_3", "false", isChecked: !@item.SendAlertBool) OFF 
+                                        </td>
+                                           <td style="width:15%">
+                                               Send Video
+                                        </td>
+                                        <td style="width:10%">
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_4", "true", isChecked: @item.SendVideoBool)  ON 
+                                            @Html.RadioButton("Active" + @item.ProjectID + "_4", "false", isChecked: !@item.SendVideoBool) OFF 
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Weekdays</td>
+                                          <td> @Html.TextBoxFor(model => item.TimeFrom, "{0:HH:MM}", new { type = "time", @id=@item.ProjectID+"_TimeFrom" ,@Value =item.TimeFrom.ToString("HH:MM"),@class = "form-control required"})</td>
+                                          <td>to</td>
+                                          <td>@Html.TextBoxFor(model => item.TimeTo, "{0:HH:MM}",new { type = "time",@id=@item.ProjectID+"_TimeTo" ,@Value = item.TimeTo.ToString("HH:MM"),@class = "form-control required"})</td>
+
+                                          <td colspan="4"></td>
+                                    </tr>
+                                </table>
+                               
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="border-top: 1px solid #ccc">
+
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+}
+<div class="modal-footer">
+    @*    <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      @TempData["invalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {      @TempData["notice"]
+            }
+        </div>*@
+    <span id="progress" class="text-center" style="display: none;">
+        <img src="/images/ajax-loader.gif" alt="wiat" />
+        Wait..
+    </span>
+    <input class="btn btn-primary" type="submit" value="Add" id="btnaddcity" onclick="return confirm('Are you sure you wish to add this city?');" />
+    @Html.ActionLink("Update", "Update", "Project", new { @class="btn btn-primary"})
+    <button class="btn" data-dismiss="modal">Cancel</button>
+</div>
+<script>
+    $(document).ready(function () {
+        //$(".chk").on("change", function (a) { console.log($(this).parent().find("#showscheduler").toggle()) });
+        $(".chk").on("change", function (a) { console.log($(this).parent().parent().next().find("#showscheduler").toggle()) });
+    });
+</script>

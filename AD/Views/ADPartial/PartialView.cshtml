@@ -1,0 +1,330 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ADinfo
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>PartialView</title>
+
+    <style>
+        .modal-popup {
+            background: rgba(0, 0, 0, 0.20);
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            z-index: 999;
+        }
+
+        .modal-content {
+            /*background-color: #ebeaea;*/
+        }
+    </style>
+</head>
+
+     @if (TempData["ViewRendered"] != null)
+    {
+        
+        <script type="text/javascript">
+            debugger;
+            alert('@TempData["ViewRendered"]');
+        </script>
+    }
+
+    @if (Model.Remark != null)
+    {
+        
+    }
+
+<script>
+    var auto_refresh;
+    var AutoRefreshTimeOut;
+    AutoRefreshTimeOut = '@System.Web.Configuration.WebConfigurationManager.AppSettings["AutoRefreshTimeOut"]';
+    $(document).ready(function () {
+       // debugger;
+        function RefreshPartial() {
+            //this will wait 3 seconds and then fire the load partial function
+            auto_refresh = setTimeout(function () {
+                loadPartialView();
+                //recall this function so that it will continue to loop
+                RefreshPartial();
+            }, AutoRefreshTimeOut);
+        }
+        //initialize the loop
+        RefreshPartial();
+    });
+
+    function loadPartialView() {
+       // debugger;
+         $.ajax({
+            url: '@Url.Action("GetLatestImage")',
+            type: 'post',
+            cache: false,
+            async: true,
+            success: function (result) {
+              @*  $('#ADImage').attr('src', '/ADPartial/GetLatestImage');*@
+                $('#ADImage').attr('src', '@Url.Action("GetLatestImage","ADPartial",new{Controller="ADPartial", Action="GetLatestImage"})');
+            }
+        });
+    }
+
+  
+    $("#ddlOperatorComments").change(function () {
+         debugger;
+        clearInterval(auto_refresh);
+
+        if ($(this).val() == "------Select------") {
+            $("textarea[name=txtSelectedComment]").val("");
+            alert("Please Select the Comment.");
+           
+            return false;
+        }
+        
+        var text = $("textarea[name=txtSelectedComment]").val();
+        if (text == "") {
+            text = $(this).val();
+        }
+        else {
+            text = text + '\n' + $(this).val();
+        }
+        $("textarea[name=txtSelectedComment]").val(text);
+    });
+
+    function ManualADClose() {
+         debugger;
+        var Flag = true;
+        var comment = $('#txtSelectedComment').val();
+        if (comment.trim() == "" || comment == " ") {
+            Flag = false;
+        }
+        if (Flag == true) {
+            jQuery.ajax({
+                url: '@Url.Action("ManualADCloserComment")',
+                type: 'POST',
+                data: {
+
+                    sUserComment: comment,
+                },
+                success: function (response) {
+                    @*window.location.href = "/OpenTicket/Ticketing";*@
+                    window.location.href = '@Url.Action("Ticketing", "OpenTicket", new { Controller = "OpenTicket", Action = "Ticketing" })';
+                }
+            });
+        }
+        else {
+            alert("Please add Comment");
+        }
+    }
+
+
+    function CancelManualAD() {
+        // debugger;
+        //var Flag = true;
+        //var comment = $('#txtSelectedComment').val();
+        //if (comment == "") {
+        //    Flag = false;
+        //}
+        //if (Flag == true) {
+            jQuery.ajax({
+                url: '@Url.Action("ManualADCloserComment")',
+                type: 'POST',
+                data: {
+
+                    sUserComment: "CancelAD",
+                },
+                success: function (response) {
+                    //window.location.href = "/OpenTicket/Ticketing";
+                    window.location.href = '@Url.Action("Ticketing", "OpenTicket", new { Controller = "OpenTicket", Action = "Ticketing" })';
+                }
+            });
+        //}
+        //else {
+        //    alert("Please add Comment");
+        //}
+    }
+</script>
+
+    <script type="text/javascript">
+
+        function StartAudio(ClientID, PanelID, TicketID, ActivityID) {
+            debugger;
+            //$("#btnNext").attr("style", "display: block");
+            jQuery.ajax({
+                url: '@Url.Action("StartAudio")',
+                type: 'POST',
+                data: {
+                    ClientID: ClientID,
+                    PanelID: PanelID,
+                    TicketID: TicketID,
+                    ActivityID: ActivityID,
+
+                },
+                //success: function (data) {
+                //    debugger;
+                //    // var result = $('<div />').append(data).find('#partialView1').html();
+                //    //$('#partialView1').attr("style", "display: block");
+                //    //$('#partialView1').html(data);
+                //    //$('#StartAudio').hide();
+                //    //if (data == 1) {
+                //    //    alert("Audio Verification already in Process!");
+                //    //}
+                //    //else if (data == 2) {
+                //    //    alert("Audio Verification Started!");
+                //    //}
+                //    //else i    f (data == 0) {
+                //    //    alert("Failed to start Audio Verification!");
+                //    //}
+
+                //    //else {
+                //    alert("Audio verification started successfully!");
+                //    //}
+                //},
+                error: function (xhr, status) {
+                    debugger;
+                    alert("Audio verification already in process!");
+                }
+                //complete: function (xhr, status) {
+                //    debugger;
+                //    alert("Complete, there was No problem during Audio Verification!");
+                //}
+
+                //$("#AllADImage").attr('src', '/AutoAD/GetImage/' + response)
+
+            })
+        };
+
+    </script>
+
+<body>
+    <div class="clearfix"></div>
+    <div id="partialView" class="modal-popup">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h4 class="modal-title">Manual AD</h4>
+                </div>
+                
+                <div class="modal-body">
+                    @*@foreach (var item in Model)
+                    {
+                        *@
+                    <div class="col-md-6">
+                            <div id="divimage">
+                                @*<img class="img-responsive" src="/ADPartial/GetImage/@item.SrNo" id="ADImage"/> *@
+                                 @*@Html.Label("", @Model.Remark, htmlAttributes: new { id = "lblRemark", style = "display:block;color: red;font-size: medium;" })*@
+                                <img class="img-responsive" src="@Url.Action("GetImage", "ADPartial", new { Controller="ADPartial", Action="GetImage", id=@Model.SrNo})" id="ADImage"/> 
+                            </div>
+                            <br />
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        @Html.DropDownListFor(modelItem => modelItem.OperatorCommentList, new SelectList(ViewBag.CommentList as System.Collections.IEnumerable, "Value", "Text"), new { @class = "form-control required", @id = "ddlOperatorComments" })
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        @Html.TextArea("txtSelectedComment", null, new { @class = "form-control", placeholder = "Comments" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <table id="AD_Details" class="table table-bordered table-striped">
+                                <colgroup>
+                                    <col width="30%" />
+                                    <col width="70%" />
+                                </colgroup>
+                                <tr>
+                                    <td>Ticket NO : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.TicketID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Activity ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.ActivityID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Alarm : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.SensorType)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Zone No : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.ZoneNo)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Camera : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.Camra)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ticket Open Time : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.Ticket_Open_Time)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>IP Address : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.PanelIP)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Client : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.ClientName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Panel ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.PanelID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SOL ID/ Site ID : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.SOLID)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Panel Address : </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => modelItem.Panel_Address)
+                                    </td>
+                                </tr>
+                            </table>
+                            <div>
+                                @*<div class="form-group pull-right">
+                                    <button id="btnStartAudio" type="button" class="btn btn-success" value="Audio Verification" onclick="StartAudio('@Model.ClientID','@Model.PanelID','@Model.TicketID','@Model.ActivityID');">Audio Verification</button>
+                                     @*<button id="btnStopAudio" type="button" class="btn btn-danger" value="Start Audio" onclick="StopAudio('@item.TicketID','@item.ActivityID','@ViewBag.ProcessID');">Stop Audio</button>
+                                </div>*@
+                                <div class="form-group pull-right">
+                                     <button id="btnStartAudio" type="button" class="btn btn-success" value="Audio Verification" onclick="StartAudio('@Model.ClientID','@Model.PanelID','@Model.TicketID','@Model.ActivityID');">Audio Verification</button>
+                                    <button id="btncloseTicket" type="button" class="btn btn-danger" onclick="ManualADClose()">Close Ticket</button>
+                                    <input type="button"  class="btn btn-warning"  value="Cancel" onclick="CancelManualAD();" />  @*@("window.location.href='" + @Url.Action("Ticketing", "OpenTicket") + "'")    ;*@
+                                </div>
+                            </div>
+                        </div>
+                    @*}*@
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

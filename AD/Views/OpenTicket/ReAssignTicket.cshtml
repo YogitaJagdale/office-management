@@ -1,0 +1,402 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Tickets
+
+@{
+    ViewBag.Title = "Tikcet Transaction :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+<script src="~/Scripts/jquery.dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        var CheckSelected = null;
+         CheckSelected = getParameterByName('Check');
+        //console.log(CheckSelected);
+     
+        if (CheckSelected  != null) {
+            if (CheckSelected=='1') {
+                $('input#rbtnReassignTicketOperator').attr('checked', 'checked');
+            } else {
+                
+                $('input#rbtnReassignTicketSupervisor').attr('checked', 'checked');
+            }
+        }
+        var selected = "1";
+
+
+        $('.rdo').click(function () {
+            debugger;
+            //document.getElementById("divGrid").style.visibility = "hidden";
+            if ($(this).val() == '1') {
+                selected = $(this).val();
+            }
+            else if ($(this).val() == '2') {
+                selected = $(this).val();
+            }
+            $("#operator1").empty();
+
+            $.ajax({
+                type: "POST",
+                url: "RadioButtonChangeEvent",
+                data: { selected: selected },
+                async: false,
+                success: function (operator1) {
+                    console.log(operator1);
+                    $.each(operator1, function (i, operator1) {
+
+                        $("#operator1").append('<option value="' + operator1.Value + '">' +
+                        operator1.Text + '</option>');
+                    });
+
+                   
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve operator.' + ex);
+                }
+
+            });
+        });
+
+
+        $('#chkSelectall').click(function (e) {
+            debugger;
+            var cnt = 0;
+            var yourArray=[];
+            var chk = $(this).prop('checked');
+            var selectedcount = $(":checkbox[name=chkAssignName]:checked").length;
+            $('.chkselect').prop('checked', $(this).prop("checked"));
+
+            var currentRows = $('#dtAssignTickets');
+            $.each(currentRows, function () {
+                $(this).find(':checkbox[name=chkAssignName]').each(function () {
+                    yourArray.push($(this).val());
+                    ChkReAssignArray[cnt] = $(this).parent().next().text().trim();
+                    cnt++;
+                    $(this).prop('checked', chk);
+                });
+            });
+        });
+
+        $('#operator1').change(function () {
+            debugger;
+            //document.getElementById("divGrid").style.visibility = "visible";
+           
+            if ($('#ReassignTickettooperator').val() == "NotLogoutReassign") {
+                var ddlSelected = $('#operator1').val();
+                var Commond = "NotLogout";
+                window.location.href = '@Url.Action("ReAssignTicket", "OpenTicket")?Id=' + ddlSelected + '&Command=NotLogout&Check='+selected+'';
+            }
+
+        });
+    });
+
+    function getParameterByName(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+</script>
+
+<script>
+    var ChkReAssignArray = new Array();
+    var cntReAssign = 0;
+    $(document).ready(function () {
+
+
+
+        var i = 0;
+        var table = $('#dtAssignTickets').DataTable({
+            "paging": false,
+            "searching": false,
+            //"columnDefs": [
+            //{
+            //    "targets": [0],
+            //    "visible": true,
+            //    'searchable': false,
+            //    'orderable': false,
+            //    'className': 'dt-body-center',
+            //    'render': function (data, type, full, meta) {
+            //        return '<input type="checkbox" id="chkAssign' + (i++) + '" name="chkAssignName" value="' + $('<div/>').text(data).html() + '">';
+            //    }
+            //}
+
+            //],
+            'order': [1, 'asc']
+        });
+
+        //$('#chkSelectall').click(function (e) {
+        //    debugger;
+        //    var cnt = 0;
+        //    var chk = $(this).prop('checked');
+        //    var currentRows = $('#dtAssignTickets tbody tr');
+        //    $.each(currentRows, function () {
+        //        $(this).find(':checkbox[name=chkAssignName]').each(function () {
+        //            ChkReAssignArray[cnt] = $(this).parent().next().text().trim();
+        //            cnt++;
+        //            $(this).prop('checked', chk);
+        //        });
+        //    });
+        //});
+
+        $('#dtAssignTickets tbody').on('change', 'input[type="checkbox"]', function () {
+            debugger;
+            ChkReAssignArray[cntReAssign] = $(this).parent().next().text().trim();
+            cntReAssign++;
+            if (!this.checked) {
+                var delPendingchk = $(this).parent().next().text().trim();
+                ChkReAssignArray = jQuery.grep(ChkReAssignArray, function (value) {
+                    return value != delPendingchk;
+                });
+                var el = $('#chkSelectall').get(0);
+                if (el && el.checked && ('indeterminate' in el)) {
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        $("#imgbtnAssignOperTB").on("click", function () {
+            debugger;
+            var flag = true;
+            var selected = $('#operator1').val();
+            if (selected == "---Select---" || selected == 0 || selected == null) {
+                flag = false;
+                alert("Please select Operator/Supervisor..!!");
+            }
+            if (ChkReAssignArray.length == 0) {
+                flag = false;
+                alert("Select at least one ticket ...!!!")
+            }
+            if (flag == true) {
+                //$("form").attr('action', 'SelectedReAssignTicket?assignArray=' + ChkReAssignArray + '&id=' + selected + '')
+                //$("form")[0].submit();
+                $('#divwait').show();
+
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: "SelectedReAssignTicket",
+                    data: { assignArray: ChkReAssignArray, id: selected },
+                    success: function (data) {
+                        location.reload();
+                        alert("Ticket assign succesfully...!!!");
+                        $('#divwait').hide();
+                    },
+                });
+            }
+        });
+
+        $("#dtAssignTickets th").each(function () {
+            debugger;
+            if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                $(this).text('');
+                $("<input/>", { type: "checkbox", id: "chkSelectall" }).appendTo($(this));
+                $(this).append("<span>Select All</span>");
+            }
+        });
+    });
+
+    //$("#chkSelectall").change(function () {
+    //    debugger;
+    //    $('.chkselect').prop('checked', $(this).prop("checked"));
+    //});
+   
+</script>
+
+<script>
+    $(document).ready(function () {
+
+  
+
+    });
+
+</script>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ReAssignTicket</title>
+</head>
+<body>
+    <div class="clearfix">@{int i = 0;}</div>
+    @using (@Html.BeginForm("ReAssignTicket", "OpenTicket"))
+    {
+                       
+          @Html.Hidden("ReassignTickettooperator", Session["ReassignTickettooperator"], new { @id = "ReassignTickettooperator" })           
+        
+        <div class="col-lg-12 animated fadeIn margin-top">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h2>Reassign Ticket</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div id="divdropdown" class="form-group">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @Html.RadioButtonFor(model => model.IsReassignTicket, "1", new { id = "rbtnReassignTicketOperator", @class = "rdo" }) Operator
+                    @Html.RadioButtonFor(model => model.IsReassignTicket, "2", new { id = "rbtnReassignTicketSupervisor", @class = "rdo" }) Supervisor
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.DropDownList("operator1", new SelectList(ViewBag.AssignOperTB, "Value", "Text", ViewBag.SelectedLogin), new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <input class="btn btn-primary" type="button" value="Re-Assign To Operator/Supervisor" name="Command" id="imgbtnAssignOperTB" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="divwait" class="alert alert-warning" style="display:none">Please wait......, it will take minutes of time to assign the tickets. 
+                        <br />
+Do not refresh the page or redirect to other page !.</div>
+                    <div id="divGrid">
+                        @if (ViewData["GridAssignOperTB"] != null)
+                        {
+                            <hr />
+                            <div class="table-responsive">
+                                <table id="dtAssignTickets" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" name="select_all" value="1" id="chkSelectall"></th>
+                                            <th>Ticket No
+                                            </th>
+                                            <th>Activity ID
+                                            </th>
+                                            <th>Client Name
+                                            </th>
+                                            <th>Panel Address
+                                            </th>
+                                            <th>Panel Location
+                                            </th>
+                                            <th>Ticket Open Time
+                                            </th>
+                                            <th>Sensor No
+                                            </th>
+                                            <th>Sensor Location
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (System.Data.DataRow dr in (ViewData["GridAssignOperTB"] as System.Data.DataTable).Rows)
+                                        {
+                                            <tr>
+                                                <td>
+                                                     @Html.CheckBox("chkAssignName", false, new { @class = "chkselect",@id = "chk" + i })
+                                                   @* @Html.CheckBoxFor(modelItem => modelItem[i].SelectBool, new { @class = "chkselect", @id = "chk" + i })*@
+                                                </td>
+                                                <td>
+                                                    @Html.Raw(dr["TicketNo"])
+                                                </td>
+                                                <td>
+
+                                                    @Html.DisplayFor(modelItem => dr["ActivityID"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Client_Name"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Panel_Address"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Panel_Location"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Ticket_Open_Time"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["ZoneNo"])
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => dr["Location"])
+                                                </td>
+
+                                            </tr>
+                                            i++;
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>@*
+                        }
+                        else
+	{
+                                
+	}*@
+
+                                 @*<div class="table-responsive">
+
+                                   @if (Model.GridAssignOperTBList != null)
+                                   // {
+                                        //if (Model.TicketsOnHoldList.Count() > 0)
+                                        //{
+                                       // var grid = new WebGrid(Model.GridAssignOperTBList, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10);
+                                      //  grid.Pager(WebGridPagerModes.All);
+            
+
+        
+           
+                                       // @grid.GetHtml(tableStyle: "table table-striped table-advance  table-hover tbl-header", htmlAttributes: new { id = "dtAssignTickets" }, footerStyle: "tfoot dataTables_paginate", columns:
+              //  grid.Columns
+                //(
+                                // grid.Column(header: "",style: "action",format: @<text><input type="checkbox" id="chkPending' + (i++) + '" name="checkPendingName" value=""></text>),
+
+           //grid.Column(format: @<text><input name="chkAssignName" type="checkbox" value="some value" id="chkTicket"/></text>, header: "{checkall}"),
+                        //grid.Column(header: "TicketNo", canSort: false, style: "action", format: (item) => Html.ActionLink((string)item.TicketNo, "CurrentState", "OpenTicket", new { sTicketNo = item.TicketNo, sPanelid = item.PanelID, sClientId = item.ClientID, sZoneNo = item.ZoneNo, sMessageType = item.MessageType, sMessageClass = item.MessageClass, sCircleID = item.O_CircleID, sMessageDescription = item.MessageDescription, sMessage = item.SMessage, sCamera = item.Camera, sCategoryName = item.CategoryName, sTicket_Open_Time = item.Ticket_Open_Time, sTicketStatus = item.Ticket_Status, sFromPage = "Open", sPending = "No", sAssignTo = Convert.ToString(HttpContext.Current.Session["LoginID"]) }, null)),
+                        //    grid.Column("TicketNo", "TicketNo"),
+                        //                             grid.Column("ActivityID", "ActivityID"),
+                        //                            grid.Column("ClientName", "ClientName"),
+                        //grid.Column("Panel_Address", "Panel_Address"),
+                        //grid.Column("Panel_Location", "Panel_Location"),
+                        //grid.Column("Ticket_Open_Time", "Ticket_Open_Time"),
+                        //grid.Column("ZoneNo", "ZoneNo"),
+                        //grid.Column("PanelID", "PanelID"),
+                        //grid.Column("PanelLocation", "Location")
+                        //grid.Column("Actual_Alert_Time", "Actual_Alert_Time"),
+             
+                        //       grid.Column("MessageClass", "MessageClass"),
+                        //grid.Column("ActiveDeterenceTime", "ActiveDeterenceTime")
+    ), mode: WebGridPagerModes.Numeric)
+
+
+                
+              
+
+            
+@*</div>*@
+                                        // }
+
+                                    }
+                             @*   </div>*@
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+
+    }
+</body>
+</html>

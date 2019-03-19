@@ -1,0 +1,187 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Comments>
+@{
+    ViewBag.Title = "Operator Comments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["AlertMessage"] != null)
+{
+    <script>
+        alert('@TempData["AlertMessage"]');
+    </script>
+}
+@if (TempData["NoRecordMsg"] != null)
+{
+    <script>
+        alert('@TempData["NoRecordMsg"]');
+   
+    </script>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtfilter").on('change', function ()
+        {
+             $('#btnfilter').attr('href', $('#btnfilter').attr('href') + '&filter=' + $('#txtfilter').val());
+
+        })
+    });
+</script>
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-12 col-sm-7 col-md-7">
+                    <h2>Operator Comments</h2>
+                 </div>
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fa fa-search"></i>
+                            <input id="txtfilter" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by Comments" />
+                            <span class="input-group-btn">
+                                @* <button class="btn btn-default" type="submit" value="Comments" >Go</button>*@
+                                <a class="btn btn-default"  id="btnfilter" href="@Url.Action("index", "Comments", new { name = @TempData["CommentType"] })">Go</a>
+                            </span>
+                        </div>
+                        <!-- /input-group -->
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-1 col-md-1" id="divnewadd">
+                    <a class="btn btn-success btn-sm"  id="btnCreate"  data-modal="" href="~/Comments/Create?name=@TempData["CommentType"]"><i class="fa fa-plus"></i> &nbsp;Add
+                    </a>
+                    <a class="btn btn-success" id="hidebtnCreate" style="display:none" ><i class="fa fa-plus"></i>&nbsp;Add</a>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="panel-body">
+            <div class="responsive-tabs-container accordion-xs accordion-sm">
+                <ul class="nav nav-tabs responsive-tabs">
+                                     
+                    @if ((Request.Params["name"] == "1"))
+                    {
+                      <li class="active">
+                        @Html.ActionLink("User Comments", "Index", "Comments", new { @name = "1"}, htmlAttributes: new { @id = "UserComments1" })
+                      </li>
+                    }
+                    else
+                    {
+                      <li>
+                        @Html.ActionLink("User Comments", "Index", "Comments", new { @name = "1"}, null)
+                     </li>
+                    }
+
+                    @if ((Request.Params["name"] == "2"))
+                    {
+                      <li class="active">
+                       @Html.ActionLink("Closure Comments", "Index", "Comments", new { @name = "2"},  htmlAttributes: new { @id = "ClosureComments2" })
+                      </li>
+                    }
+                    else
+                    {
+                      <li>
+                        @Html.ActionLink("Closure Comments", "Index", "Comments", new { @name = "2" }, null)
+                     </li>
+                    }
+
+                    @if ((Request.Params["name"] == "3"))
+                    {
+                      <li class="active">
+                      @Html.ActionLink("Reopen Comments", "Index", "Comments", new { @name = "3" },  htmlAttributes: new { @id = "ReopenComments3" })
+                      </li>
+                    }
+                    else
+                    {
+                      <li>
+                        @Html.ActionLink("Reopen Comments", "Index", "Comments", new { @name = "3" }, null)
+                     </li>
+                    }  
+                </ul>
+            </div>
+            @using (Html.BeginForm("Index", "Comments", FormMethod.Get, new { @id = "CommentsMasterindex" }))
+            {
+               
+                @Html.AntiForgeryToken()
+                var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+                           
+                <div class="table-responsive">
+                    <div class="pull-right">Total no. records found : @Model.Count()</div>   
+
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", alternatingRowStyle: "webgrid-alternating-row",
+                    headerStyle: "grid-header", columns:
+                    grid.Columns
+                    (
+                    //grid.Column("CommentsID","CommentsID"),
+                    //grid.Column("ForId", "ID"),
+                    grid.Column("UserComments", "Comments"),
+                    grid.Column(header: "", canSort: false, style: "action",
+                    format: @<text>
+
+                    @*  @Html.Raw("<a data-modal='' href='Edit/" + item.CommentsID+ "' id='" + item.CommentsID + "' title='Edit''> Edit</a>")*@
+                    @Html.Raw("<a name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.CommentsID + "' id='" + item.CommentsID + "'> </a>")
+                    @Html.Raw("<a name='EditHide' data-toggle='tooltip' style='display:none' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></a>")
+
+
+                    </text>),
+                            grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.CommentsID },
+                  new { onclick = "return confirm('Do you want to Delete this Comments?');", @Name = "Delete",
+                      @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" }))
+                    ,
+                         grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Index", new {  },
+                        new { @Name = "DeleteHide", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs",@style="display:none" }
+                            ))                
+                            ), mode: WebGridPagerModes.Numeric)
+
+                   
+                </div>
+     
+            }
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var res = '@ViewBag.Visibility';
+        if (res == "False" || res == "false")
+        {
+            ////$('#divnewadd').css("display", "none");
+            $('#btnCreate').hide();
+            $('#hidebtnCreate').show();
+            $('#hidebtnCreate').attr('disabled', true);
+            $('#hidebtnCreate').attr("title", "No Rights To Add");
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false")
+        {
+            $('[name=Edit]').hide();
+            $('[name=EditHide').show();
+            $('[name=EditHide').attr('disabled', true);
+            $('[name=EditHide').attr("title", "No Rights To Edit");
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false")
+        {
+            $('[name=Delete]').hide();
+            $('[name=DeleteHide]').show();
+            $('[name=DeleteHide]').attr('disabled', true);
+            $('[name=DeleteHide').attr("title", "No Rights To Delete");
+        }
+
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+

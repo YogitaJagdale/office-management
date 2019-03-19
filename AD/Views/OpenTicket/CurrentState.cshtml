@@ -1,0 +1,534 @@
+﻿@model SECU_CAMSPlus_DEV.Models.Tickets
+
+@{
+    ViewBag.Title = "CurrentState";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@if (TempData["TicketClosedMsg"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            $("#divSuccess").show(); 
+        });
+    </script>
+    
+}
+
+<style>
+footer#colophon {position: relative!important;}
+</style>
+
+<script>
+    $(document).ready(function () {
+
+        if ($('#tdSensorStatus').text().trim() == "Normal") {
+            $('#tdSensorStatus').css('color', '#45A747')
+        }
+        else if ($('#tdSensorStatus').text().trim() == "Alarmed") {
+            $('#tdSensorStatus').css('color', 'Red')
+        }
+        else if ($('#tdSensorStatus').text().trim() == "Fault") {
+            $('#tdSensorStatus').css('color', 'Yellow')
+        }
+        else if ($('#tdSensorStatus').text().trim() == "Fault Alarmed") {
+            $('#tdSensorStatus').css('color', 'Khaki')
+        }
+        else if ($('#tdSensorStatus').text().trim() == "Bypassed") {
+            $('#tdSensorStatus').css('color', 'Red')
+        }
+        else if ($('#tdSensorStatus').text().trim() == "Uninstalled") {
+            $('#tdSensorStatus').css('color', '#DBECDC')
+        }
+        else {
+            $('#tdSensorStatus').css('color', 'black')
+        }
+        $("#btnCloseTicket").on("click", function () {
+            $('#divClosureCommentPopUp').show();
+            $('#divClosureCommentOverlay').show();
+        });
+
+        $("#tdSubscription").on("click", function () {
+            $('#divSubcriptionOverlay').show();
+            $('#divSubcriptionPopUp').show();
+        });
+        $("#btnPanelInfo").on("click", function (e) {
+            $("#divPanelInfo").show();
+            debugger;
+            if ($("#hdnSensorStatus").val() == 'Bypass') {
+                $('#btnBypassName').text('Unbypass');
+            }
+            if ($('#hdnSensorStatus').val() == 'Normal') {
+                $('#btnBypassName').text('Bypass')
+            };
+            if ($("#hdnSensorStatus").val() == 'Uninstalled') {
+                $("#btnBypassSensor").hide();
+            }
+            e.preventDefault();
+            var url = '@Url.Action("PanelInfo")';
+            $.get(url, {}, function (result) {
+                $('#divPanelInfo').html(result);
+            });
+        });
+        $("#btnAssYourSelf").on("click", function () {
+            debugger;
+            $.ajax({
+                url: "SelfAssign",
+                data: {},
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                    if (data.Success) {
+                        $('#divSelfAssignOverlay').hide();
+                        $('#divSelfAssignPopUp').hide();
+                    }
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+        $("#btnCloseTicketsComment").on("click", function () {
+            debugger;
+            $('#divClosureCommentPopUp').hide();
+            $('#divClosureCommentOverlay').hide();
+            debugger;
+            var Flag = true;
+            var comment = $('#Description').val();
+            if (comment == "") {
+                Flag = false;
+            }
+            if (Flag == true) {
+                $("form").attr('action', 'CurrentStateCloserComment?sUserComment=' + comment)
+                $("form")[0].submit();
+            }
+            else {
+                alert("Please add comment");
+            }
+        });
+        $("#btnCloseTicketCancel").on("click", function () {
+            $('#divClosureCommentPopUp').hide();
+            $('#divClosureCommentOverlay').hide();
+        });
+        var text = "";
+        $("#ddlCloseTicketsComment").change(function () {
+            if (text == "") {
+                text = $(this).val();
+            }
+            else {
+                text = text + '\n' + $(this).val();
+            }
+            $("textarea[name=Description]").val(text);
+        });
+        $("#btnRe_Open").on("click", function () {
+            $('#divReOpenCommentOverlay').show();
+            $('#divReOpenCommentPopUp').show();
+        });
+        $("#btnTicketRe_OpenOk").on("click", function () {
+            var Flag = true;
+            debugger;
+            $('#divReOpenCommentOverlay').hide();
+            $('#divReOpenCommentPopUp').hide();
+            debugger;
+            var comment = $('#txtAreaReOpenComment').val();
+            if (comment == "") {
+                Flag = false;
+            }
+            if (Flag == true) {
+                $("form").attr('action', 'CurrentStateReOpenComment?sReOpenComment=' + comment)
+                $("form")[0].submit();
+             
+            }
+            else {
+                alert("Please add comment");
+            }
+        });
+        $("#btnTicketRe_OpenCancel").on("click", function () {
+            $('#divReOpenCommentOverlay').hide();
+            $('#divReOpenCommentPopUp').hide();
+        });
+
+        $("#btnBack").on("click", function () {
+            debugger;
+            $("form").attr('action', 'OpenPreviousPage')
+            $("form")[0].submit();
+           
+        });
+
+
+        $("#btnSubcriptionCancel").on("click", function () {
+            $('#divSubcriptionOverlay').hide();
+            $('#divSubcriptionPopUp').hide();
+        });
+
+        $("#btnAssignTicketCancel").on("click", function () {
+            $('#divSelfAssignOverlay').hide();
+            $('#divSelfAssignPopUp').hide();
+        });
+        
+
+        var text = "";
+        $("#ddlReOpenTicketsComment").change(function () {
+            if (text == "") {
+                text = $(this).val();
+            }
+            else {
+                text = text + '\n' + $(this).val();
+            }
+            $("textarea[name=txtAreaReOpenComment]").val(text);
+        });
+        $("#btnAssTickets").on("click", function () {
+            $('#divSelfAssignOverlay').show();
+            $('#divSelfAssignPopUp').show();
+        });
+    });
+
+</script>
+
+
+
+
+<script>
+    function blinker() {
+        $('.blinking').fadeOut(400).fadeIn(400);
+        }
+    setInterval(blinker, 1500);
+   
+</script>
+
+@using (@Html.BeginForm())
+{
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="row">
+          
+            <div class="col-md-12 ticket-status">
+                <h2>Ticket Current Status</h2>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <!--Panel Details Panel-->
+                        @if (Convert.ToString(Session["tdpanelDetails"]) == "Yes")
+                        {
+                            <div class="panel panel-mint">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">Panel Details: Status:  <span class="blinking">@Html.DisplayFor(m => m.PanelStatus)</span></h3>
+                                </div>
+                                <div class="panel-body panel-body-bdr-pad0">
+
+                                    <table class="table table-hover">
+
+                                        <tbody>
+                                            <tr>
+                                                <td>Client Name : 
+                                                </td>
+                                                <th>
+                                                    @Html.DisplayFor(m => m.ClientName)
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <td>Panel Location :
+                                                </td>
+                                                <th>
+                                                    @Html.DisplayFor(m => m.PanelLocation)
+                                                </th>
+                                            </tr>
+                                            <tr>
+                                                <td>Panel Type :
+                                                </td>
+                                                <th>
+                                                    @Html.DisplayFor(m => m.PanelType)
+                                                </th>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        }
+                        <!--End Panel Details Panel-->
+
+                    </div>
+                    <div class="col-sm-4">
+
+                        <!--Current Signal Panel-->
+                        <div class="panel panel-mint panel-warning">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Current Signal: <span class="blinking">@Html.DisplayFor(m => m.Reason)</span></h3>
+                            </div>
+                            <div class="panel-body panel-body-bdr-pad0">
+                                <table class="table table-hover table-striped">
+
+                                    <tbody>
+                                        @if (Convert.ToString(Session["ZoneDetailsSensorStatus"]) == "Yes")
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(m => m.SensorStatus)
+                                                </td>
+                                                <th id="tdSensorStatus">
+                                                    @Html.DisplayFor(m => m.txtSensorStatus, new { @id = "txtSensorStatus" })
+                                                    @Html.Hidden("hdnSensorStatus", Model.txtSensorStatus, new { @id = "hdnSensorStatus" })
+                                                </th>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            @if (Convert.ToString(Session["ZoneDetailsSensorNo"]) == "Yes")
+                                            { 
+                                                <td>Sensor No./Type :
+                                                </td>
+                                            }
+                                            <th>
+                                                @Html.DisplayFor(m => m.SensorNoType)
+                                                <br />
+                                                  @Html.DisplayFor(m => m.SensorNoTypeTwo)
+                                                   
+                                               
+                                            </th>
+                                        </tr>
+                                        @if (Convert.ToString(Session["ZoneDetailsLocation"]) == "Yes")
+                                        {
+                                            <tr>
+                                                <td>Location :
+                                                </td>
+                                                <th>
+                                                    @Html.DisplayFor(m => m.ZoneLocation) 
+                                                </th>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--End Current Signal Panel-->
+
+                    </div>
+                    <div class="col-sm-4">
+
+                        <!--Ticket status Panel-->
+                        <div class="panel panel-ticket panel-danger">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Ticket status: @Html.DisplayFor(m => m.TicketStatus)</h3>
+                            </div>
+                            <div class="panel-body panel-body-bdr-pad0">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <td>Ticket No:</td>
+                                            <th>@Html.DisplayFor(m => m.TicketNo)
+                                                @if (Convert.ToString(Session["lblTktNo"]) == "Yes")
+                                                {
+                                                    @Html.DisplayFor(m => m.TicketNo)
+                                                }
+                                            </th>
+                                        </tr>
+                                        <tr>
+
+                                            <td>Activity No:
+                                            </td>
+                                            <th>@Html.DisplayFor(m => m.ActivityNo)</th>
+                                        </tr>
+                                        <tr>
+                                            <td>Date Time:</td>
+                                            <th>@Html.DisplayFor(m => m.lblDateTime)
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!--End Ticket status Panel-->
+
+                    </div>
+                </div>
+                    <div class="list-group-item">
+                    <div class="col-sm-8">
+                         
+                            <div class="line-hight">
+                                <span class="text-muted">Category:</span>&nbsp;<strong>@Html.DisplayFor(m => m.PanelCategory)</strong>
+                                <span class="text-muted" id="tdSubscription">Subscription:</span>&nbsp;<strong>@Html.DisplayFor(m => m.Subscription)</strong>
+                                <span class="text-muted">Video verification:</span>&nbsp;<strong>@Html.DisplayFor(m => m.VideoVerification)</strong>
+                                <span class="text-muted">IP:</span>&nbsp;<strong>@Html.DisplayFor(m => m.IPAddress)</strong>
+                                <span class="text-muted">Camera available:</span>&nbsp;<strong>@Html.DisplayFor(m => m.CameraAvailable)</strong>
+                            </div>
+                            <div class="line-hight">
+                                <span class="text-muted">Ticket Send For AD:</span>&nbsp;<strong>@Html.DisplayFor(m => m.ticketsendADtime)</strong>
+                                <span class="text-muted">Video Render:</span>&nbsp;<strong>@Html.DisplayFor(m => m.videoRendertime)</strong>
+                                <span class="text-muted">Video Start:</span>&nbsp;<strong>@Html.DisplayFor(m => m.videoStartime)</strong>
+                                <span class="text-muted">Video End:</span>&nbsp;<strong>@Html.DisplayFor(m => m.videoEndtime)</strong>
+                                @*<span class="text-muted">AD Time:</span>&nbsp;<strong>@Html.DisplayFor(m => m.ADtime)</strong>*@
+                            </div>
+                         
+
+                    </div>
+                    <div class="col-md-4 current-status">
+        @if (Convert.ToString(Session["ClosureCommentDiv"]) == "Yes")
+        {
+            <button class="btn btn-danger" type="button" value="" data-toggle="tooltip" title="Close Selected Tickets" name="Command" id="btnCloseTicket"><i class="fa fa-times" aria-hidden="true"></i></button>
+        }
+       
+        <button id="btnBack" class="btn btn-primary glyphicon glyphicon-arrow-left" data-toggle="tooltip" data-original-title="Go back to all tickets"></button>
+      
+        @if (Convert.ToString(Session["ReOpenCommentDiv"]) == "Yes")
+        {
+            <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Re_Open Tickets" name="Command" id="btnRe_Open"><i class="fa fa-undo" aria-hidden="true"></i></button>
+        }
+       
+
+        @if (Convert.ToString(Session["SelfAssignCommentDiv"]) == "Yes")
+        {
+            <button class="btn btn-default" type="button" value="" data-toggle="tooltip" title="Assign Tickets" name="Command" id="btnAssTickets"><i class="fa fa-ticket" aria-hidden="true"></i></button>
+        }
+       
+
+        <button class="btn btn-info" type="button" value="" data-toggle="tooltip" title="Display panel info" name="Command" id="btnPanelInfo"><i class="fa fa-desktop" aria-hidden="true"></i></button>
+    </div>
+                        <div class="clearfix"></div>
+                        </div>
+               
+            </div>
+        </div>
+    </div>
+
+  
+
+    <div id="divPanelInfo" style="display: none;">
+        @if (Model.Panelinfo == true)
+        {
+            @Html.Partial("PanelInfo");
+        }
+    </div>
+    
+    <div class="modal-footer">
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["TicketClosedMsg"] != null)
+            {      @TempData["TicketClosedMsg"]
+
+            }
+        </div>
+    </div> 
+    
+    
+     <div id="divClosureCommentOverlay" hidden="hidden" class="OverlayMsgBox">
+            <div id="divClosureCommentPopUp" hidden="hidden" class="PopUpMsgBox">
+                <label>Closure Comments:</label>
+                @Html.TextArea("Description", null, new { @class = "form-control" })
+                <br />
+                @if (ViewBag.ddlCloseTicketsComment != null)
+                {
+                    @Html.DropDownList("ddlCloseTicketsComment", new SelectList(ViewBag.ddlCloseTicketsComment, "Value", "Text"), "--Select--", new { @class = "form-control" })
+                }
+                <br />
+                <button id="btnCloseTicketsComment" class="btn btn-danger btn-sm">Close Tickets</button>
+                  <input class="btn btn-default" type="button" value="Cancel" name="Command" id="btnCloseTicketCancel">
+            </div>
+        </div>
+    
+    
+     <div id="divReOpenCommentOverlay" hidden="hidden" class="OverlayMsgBox">
+            <div id="divReOpenCommentPopUp" hidden="hidden" class="PopUpMsgBox">
+                <label>Re-Open Comments:</label>
+                @Html.TextArea("txtAreaReOpenComment", null, new { @class = "form-control" })
+                <br />
+                @if (ViewBag.ddlReOpenTicketsComment != null)
+                {
+                    @Html.DropDownList("ddlReOpenTicketsComment", new SelectList(ViewBag.ddlReOpenTicketsComment, "Value", "Text"), "--Select--", new { @class = "form-control" })
+                }
+                <br />
+                <button id="btnTicketRe_OpenOk" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="right" data-original-title="Reopen Tickets"><i class="fa fa-user"></i></button>
+                <input class="btn btn-default" type="button" value="Cancel" name="Command" id="btnTicketRe_OpenCancel">
+            </div>
+        </div>
+    
+     <div id="divSelfAssignOverlay" hidden="hidden" class="OverlayMsgBox">
+            <div id="divSelfAssignPopUp" hidden="hidden" class="PopUpMsgBox">
+                  @if (Convert.ToString(Session["AssigntoYourselfCommentDiv"]) == "Yes")
+                  {
+                <input class="btn btn-default" type="button" value="Click here to assign to yourself" name="Command" id="btnAssYourSelf">
+                  }
+                @if (ViewData["OperatorUserLoginID"] != null)
+                {
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>UserName
+                                </th>
+                                <th>LoginID
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (System.Data.DataRow dr in (ViewData["OperatorUserLoginID"] as System.Data.DataTable).Rows)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.Raw(Html.ActionLink(dr["UserName"].ToString(), "Operators_Select", "OpenTicket", routeValues: new { sUserName = dr["UserName"], sLoginID = dr["LoginID"] }, htmlAttributes: null))
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => dr["LoginID"])
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+               <input class="btn btn-default" type="button" value="Cancel" name="Command" id="btnAssignTicketCancel">
+            </div>
+        </div>
+    @*
+      <div id="divSubcriptionOverlay" hidden="hidden" class="OverlayMsgBox">
+        <div id="divSubcriptionPopUp" hidden="hidden" class="PopUpMsgBox">
+            @if (Model.PanelSubscription != null)
+            {
+                <table class="table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Name
+                            </th>
+                            <th>Sms
+                            </th>
+                            <th>Phone
+                            </th>
+                            <th>Email
+                            </th>
+                            <th>Repeat
+                            </th>
+                            <th>Dispatch
+                            </th>
+                            <th>Video
+                            </th>
+                        </tr>
+                    </thead>
+                    @for (int i = 0; i < Model.PanelSubscription.Count; i++)
+                    {                                   
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionSubName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionSMS_Cnt)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionPhone_Cnt)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionEmail_Cnt)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionRepeat)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionDispatch)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => Model.PanelSubscription[i].SubscriptionVideoConfirmation)
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <input class="btn btn-default" type="button" value="Cancel" name="Command" id="btnSubcriptionCancel">
+            }
+        </div>
+    </div>*@
+}
+ 

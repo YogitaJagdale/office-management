@@ -1,0 +1,1320 @@
+﻿@model SECU_CAMSPlus_DEV.Models.SystemMaintenance
+
+@{
+    ViewBag.Title = "System Maintainance :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery-1.9.1.js"></script>
+
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+
+
+@if (TempData["SystemMaintMessage"] != null)
+{
+    <script>
+        alert('@TempData["SystemMaintMessage"]');
+    </script>
+}
+@using (Ajax.BeginForm("Index", "SystemMaintenance", new AjaxOptions { UpdateTargetId = "Productresult" }))
+{            
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h2>System Maintainance</h2>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 col-md-5">
+                        <div class="form-group">
+                            @Html.DropDownList("clients", new SelectList(ViewBag.clients, "Value", "Text"), "---Select---", new { @class = "form-control" })
+
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-md-7">
+                        <div class="form-group">
+
+                            <a class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="Activate Client" id="btnActivate">
+                                <span class="imageActive"><i class="fa fa-check-circle fa-2x"></i></span>
+                            </a>
+                            <a class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="Deactivate Client" id="btnDeactivate">
+                                <span class="imageActive"><i class="fa fa-ban fa-2x"></i></span>
+                            </a>
+
+                            <button class="btn btn-success btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights to Activate Client" data-original-title="Activate Client" id="btnActivateNew">
+                                <span class="imageActive"><i class="fa fa-check-circle fa-2x"></i></span>
+                            </button>
+                            <button class="btn btn-danger btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights to Deactivate Client" data-original-title="Deactivate Client" id="btnDeactivateNew">
+                                <span class="imageActive"><i class="fa fa-ban fa-2x"></i></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.ListBox("SelectLeft", new MultiSelectList(string.Empty, "Value", "Text"), new { @class = "form-control", style = "height:200px", @Required = "Required" })
+                        </div>
+
+                        <div class="col-sm-1">
+                            <br />
+                            <br />
+                            <input id="MoveRight" type="submit" value=" >> " class="btn btn-warning" />
+                            <br />
+                            <br />
+                            <input id="MoveLeft" type="submit" value=" << " class="btn btn-warning" />
+                        </div>
+
+                        <div class="col-sm-2">
+                            @Html.ListBox("SelectRight", new MultiSelectList(string.Empty, "Value", "Text"), new { @class = "form-control", style = "height:200px" })
+
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group" id="rbtnDiv">
+
+                                        @Html.RadioButton("rbtTestmodeCat", "1", false, new { id = "testmode1", @ConsoleColor = "Green", @class = "radiobuttonlist" }) Test
+                                         @Html.RadioButton("rbtTestmodeCat", "4", false, new { id = "testmode2", @class = "radiobuttonlist" }) Quality
+                                         @Html.RadioButton("rbtTestmodeCat", "0", false, new { id = "testmode3", @class = "radiobuttonlist" }) Live
+                                         @Html.RadioButton("rbtTestmodeCat", "3", false, new { id = "testmode4", @class = "radiobuttonlist" }) Service
+                                         @Html.RadioButton("rbtTestmodeCat", "5", false, new { id = "testmode5", @class = "radiobuttonlist" }) Low Priority
+                                         @Html.RadioButton("rbtTestmodeCat", "2", false, new { id = "testmode6", @class = "radiobuttonlist" }) Dismentle                
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+
+                                        <a class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="Activate Panel" id="btnActivatePanel">
+                                            <span class="imageActive"><i class="fa fa-check-circle fa-2x"></i></span>
+                                        </a>
+                                        <a class="btn btn-danger btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="Deactivate Panel" id="btnDeactivatePanel">
+                                            <span class="imageActive"><i class="fa fa-ban fa-2x"></i></span>
+                                        </a>
+
+                                        <button class="btn btn-success btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights to activate panel" data-original-title="Activate Panel" id="btnActivatePanelNew">
+                                            <span class="imageActive"><i class="fa fa-check-circle fa-2x"></i></span>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights to deactivate panel" data-original-title="Deactivate Panel" id="btnDeactivatePanelNew">
+                                            <span class="imageActive"><i class="fa fa-ban fa-2x"></i></span>
+                                        </button>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <button class="btn btn-danger btn-sm" data-placement="top" data-original-title="Deactivate Panel" id="btnshowsensors">
+                                            show sensors
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div id="Productresult" class="col-xs-12 col-md-5">
+                        <div class="form-group">
+                            @Html.DropDownList("Zones", new SelectList(ViewBag.SelectSensor, "Value", "Text"), new { @class = "form-control", @SelectionMode = "Single" })
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-7" id="divByPass" hidden="hidden">
+                        <div class="form-group">
+                            <a class="btn btn-info btn-sm" data-toggle="tooltip" data-placement="top" id="btnBypassSensor">
+                                <span><i class="fa fa-dot-circle-o fa-2x"></i></span>
+                            </a>
+                            @*<button class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="" data-original-title="Camera" id="btnCamera">
+                                <span><i class="fa fa-camera fa-2x"></i></span>
+                            </button>*@
+
+                            <button class="btn btn-info btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights to bypass sensor" data-original-title="Bypass Sensor" id="btnBypassSensorNew">
+                                <span><i class="fa fa-dot-circle-o fa-2x"></i></span>
+                            </button>
+                           @* <button class="btn btn-primary btn-sm" style="display: none" disabled="disabled" data-placement="top" title="No Rights for camera" data-original-title="Camera" id="btnCameraNew">
+                                <span><i class="fa fa-camera fa-2x"></i></span>
+                            </button>*@
+                        </div>
+
+                    </div>
+
+                </div>
+                <div id="DivLogin" hidden="hidden" class="OverlayMsgBox">
+                    <div id="DivLogin2" hidden="hidden" class="PopUpMsgBox">
+                        Dual Authentication
+                        <br />
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.LoginID, htmlAttributes: new { @class = "control-label col-sm-3" })
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.LoginID, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LoginID, null, new { @class = "valiation" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Password, new { @class = "col-sm-3 control-label" })
+                                <div class="col-sm-8">
+                                    @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Password, null, new { @class = "valiation" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Comments, htmlAttributes: new { @class = "control-label col-sm-3" })
+                                <div class="col-sm-8">
+                                    @Html.TextBoxFor(model => model.Comments, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Comments, null, new { @class = "valiation" })
+                                </div>
+                            </div>
+                            <div class="form-group" hidden="hidden" id="circles">
+                                @Html.LabelFor(model => model.Circle, htmlAttributes: new { @class = "control-label col-sm-3" })
+                                <div class="col-sm-8">
+                                    @Html.DropDownList("CircleList", new SelectList(ViewBag.CirclesList, "Value", "Text"), "---Select---", new { @class = "form-control" })
+                                    @Html.ValidationMessage("CircleList", null, new { @class = "valiation" })
+                                </div>
+                            </div>
+                            <div class="PopUpMsgBox-tbl">
+                            <table id="tblpanel">
+                                <tbody>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                            <span id="progress" class="text-center" style="display: none;">
+                                <img src="/images/ajax-loader.gif" alt="Wait" />
+                                Wait..
+                            </span>
+                            <a class="btn btn-success" id="btnActivateClientOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-success" id="btnDeactivateClientOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-success" id="btnActivatePanelOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-success" id="btnDeactivatePanelOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-success" id="btnChangeTestModeOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-success" id="btnByPassOk" hidden="hidden">
+                                <span>Ok</span>
+                            </a>
+                            <a class="btn btn-warning" id="btnCancel">
+                                <span>Cancel</span>
+                            </a>
+
+                            <div class="valiation" id="divval"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div id="divnoauth" hidden="hidden" class="OverlayMsgBox">
+                    <div id="divnoauthpopup" hidden="hidden" class="PopUpMsgBox">
+                        <div id="divnoauthmsg"></div>
+                        <br />
+
+                        <div class="modal-footer">
+                            <div class="form-group text-center">
+                                <button class="btn btn-success" id="btnNoAuthYesCamera" hidden="hidden">YES</button>
+                                <button class="btn btn-success" id="btnNoAuthYesUnbypass" hidden="hidden">YES</button>
+                                <button class="btn btn-warning" id="btnNoAuthNo">NO</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="divmsg"></div>
+                <label id="lblbypUnbypassRequest"></label>
+                <label id="lblbypUnbypassRequestError"></label>
+                <label id="lblCameraRequest"></label>
+                <label id="lblCameraRequestError"></label>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#clients").change(function () {
+            $("#SelectLeft").empty();
+            $("#SelectRight").empty();
+            $("#Zones").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetPanelID")', // we are calling json method
+                dataType: 'json',
+                data: { id: $("#clients").val() },
+                // here we are get value of selected country and passing same value
+                success: function (PanelID) {
+                    $.each(PanelID, function (i, PanelID) {
+                        $("#SelectLeft").append('<option value="' + PanelID.Value + '">' +
+                             PanelID.Text + '</option>');
+                        // here we are adding option for States
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve panels.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#MoveRight,#MoveLeft").click(function (event) {
+
+            var id = $(event.target).attr("id");
+            var selectFrom = id == "MoveRight" ? "#SelectLeft" : "#SelectRight";
+            var moveTo = id == "MoveRight" ? "#SelectRight" : "#SelectLeft";
+            if (selectFrom == '#SelectLeft' && moveTo == '#SelectRight') {
+                if ($('#SelectLeft option:selected').val() == null) {
+                    alert('Select at least one panel from left ');
+                }
+
+            }
+            else if (selectFrom == '#SelectRight' && moveTo == '#SelectLeft') {
+                if ($('#SelectRight option:selected').val() == null) {
+                    alert('Select at least one panel from right');
+                }
+            }
+            var selectedItems = $(selectFrom + " :selected").toArray();
+            $(moveTo).append(selectedItems);
+            selectedItems.remove;
+        });
+    });
+</script>
+
+
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#btnshowsensors").click(function (e) {
+            $('#Zones').empty();
+            var selected = $('#SelectRight').val();
+            if (selected == null) {
+                alert('Please select panel ');
+            } else {
+              
+                var icount = $('#SelectRight').val().length;
+                debugger;
+                data = { clientid: $('#clients').val(), panelid: $('#SelectRight').val() };
+                var jsonOfLog = JSON.stringify(data);
+                if (icount == 1) {
+
+                    $("#SelectSensor").empty();
+                    $('#divByPass').show();
+         
+                    $.ajax({
+                        type: "POST",
+                        url: "getSensors",
+                        data: "jsonOfLog=" + jsonOfLog,
+                        async: false,
+                        success: function (Zones) {
+
+                            $.each(Zones, function (i, Zones) {
+
+                                $("#Zones").append('<option value="' + Zones.Value + '">' +
+                                     Zones.Text + '</option>');
+                            });
+                        },
+                        error: function (ex) {
+                            alert('Failed to retrieve sensors.' + ex);
+                        }
+
+                    });
+                }
+                else if (icount == 0) {
+                    alert('Please select atleast one panel.');
+                }
+                else {
+                    alert('Please select only one panel .');
+                }
+            }
+        });
+    })
+</script>
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        $("#btnActivate").on("click", function () {
+            var status = true;
+            if ($('#clients').val() == '' || $('#clients').val() == "---Select---") {
+                alert("Please select client");
+                status = false;
+            }
+            if (status == true) {
+                $('#DivLogin2').show();
+                $('#DivLogin').show();
+                $('#btnActivateClientOk').show();
+                $('#btnDeactivateClientOk').hide();
+                $('#btnActivatePanelOk').hide();
+                $('#btnDeactivatePanelOk').hide();
+                $('#btnChangeTestModeOk').hide();
+                $('#btnByPassOk').hide();
+                $('#circles').hide();
+                $('#tblpanel').hide();
+            }
+            else {
+
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnDeactivate").on("click", function () {
+
+            var status = true;
+            if ($('#clients').val() == '' || $('#clients').val() == "---Select---") {
+                alert("Please select client");
+                status = false;
+            }
+            if (status == true) {
+                $('#btnActivateClientOk').hide();
+                $('#btnDeactivateClientOk').show();
+                $('#btnActivatePanelOk').hide();
+                $('#btnDeactivatePanelOk').hide();
+                $('#btnChangeTestModeOk').hide();
+                $('#btnByPassOk').hide();
+                $('#DivLogin2').show();
+                $('#DivLogin').show();
+                $('#circles').hide();
+                $('#tblpanel').hide();
+            }
+            else {
+
+            }
+        });
+    });
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnActivatePanel").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var selected = $('#SelectRight').find(':selected').text();
+            if (selected == "") {
+                alert("Please select at least one panel to activate");
+                status = false;
+            }
+            if (status == true) {
+                $('#DivLogin').show();
+                $('#DivLogin2').show();
+                $('#btnActivateClientOk').hide();
+                $('#btnDeactivateClientOk').hide();
+                $('#btnActivatePanelOk').show();
+                $('#btnDeactivatePanelOk').hide();
+                $('#btnChangeTestModeOk').hide();
+                $('#btnByPassOk').hide();
+                $('#circles').hide();
+                var pnllist = $('#SelectRight').val() + ',';
+                var panels = '';
+                var row = '';
+                var arr = pnllist.split(',');
+                for (i = 0; i < arr.length; i++) {
+                    row += '<tr><td>' + arr[i] + '</td></tr>';
+                    row += '';
+                }
+                $('#tblpanel').html(row);
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnDeactivatePanel").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var selected = $('#SelectRight').find(':selected').text();
+            if (selected == "") {
+                alert("Please select at least one panel to deactivate");
+                status = false;
+            }
+            if (status == true) {
+                $('#DivLogin2').show();
+                $('#DivLogin').show();
+                $('#btnActivateClientOk').hide();
+                $('#btnDeactivateClientOk').hide();
+                $('#btnActivatePanelOk').hide();
+                $('#btnDeactivatePanelOk').show();
+                $('#btnChangeTestModeOk').hide();
+                $('#btnByPassOk').hide();
+                $('#circles').hide();
+                var pnllist = $('#SelectRight').val() + ',';
+                var panels = '';
+                var row = '';
+                var arr = pnllist.split(',');
+                for (i = 0; i < arr.length; i++) {
+                    row += '<tr><td>' + arr[i] + '</td></tr>';
+                    row += '';
+                }
+                $('#tblpanel').html(row);
+            }
+        });
+    });
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnCancel").on("click", function () {
+            $('#DivLogin2').hide();
+            $('#DivLogin').hide();
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnActivateClientOk").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+
+
+            if (status == true) {
+                var clientid = $('#clients').val();
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'Active',
+                        Values: '',
+                        circles: '',
+                        Sensor: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            var clients = data.List;
+                            alert(data.Text);
+                            $("#clients").empty();
+                            $.each(clients, function (i, clients) {
+
+                                if (clients.Value == clientid) {
+                                    $("#clients").append('<option selected value="' + clients.Value + '">' +
+                                  clients.Text + '</option>');
+                                } else {
+                                    $("#clients").append('<option value="' + clients.Value + '">' +
+                                    clients.Text + '</option>');
+                                }
+                            });
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+                        }
+                    }
+                });
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnDeactivateClientOk").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+
+
+            if (status == true) {
+                var clientid = $('#clients').val();
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'Deactive',
+                        Values: '',
+                        circles: '',
+                        Sensor: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            var clients = data.List;
+                            alert(data.Text);
+                            $("#clients").empty();
+                            $.each(clients, function (i, clients) {
+                                if (clients.Value == clientid) {
+                                    $("#clients").append('<option selected value="' + clients.Value + '">' +
+                                  clients.Text + '</option>');
+                                } else {
+                                    $("#clients").append('<option value="' + clients.Value + '">' +
+                                    clients.Text + '</option>');
+                                }
+                            });
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+                        }
+                    }
+                });
+            }
+            else {
+                $('#divval').html(errors);
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnActivatePanelOk").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+
+
+            if (status == true) {
+                var pnllist = $('#SelectRight').val();
+                var panels = '';
+                for (i = 0; i < pnllist.length; i++) {
+                    panels += (i == 0 ? '' : ',') + pnllist[i];
+                }
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'ActivePanel',
+                        Values: panels,
+                        circles: '',
+                        Sensor: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            alert(data.Text);
+
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+                        }
+                    }
+                });
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+        });
+    });
+
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnDeactivatePanelOk").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+
+
+            if (status == true) {
+
+                var pnllist = $('#SelectRight').val();
+                var panels = '';
+                for (i = 0; i < pnllist.length; i++) {
+                    panels += (i == 0 ? '' : ',') + pnllist[i];
+                }
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'DeactivePanel',
+                        Values: panels,
+                        circles: '',
+                        Sensor: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            alert(data.Text);
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+                        }
+                    }
+                });
+            } else {
+                $('#divval').html(errors);
+            }
+        });
+    });
+
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".radiobuttonlist").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var selected = $('#SelectRight').find(':selected').text();
+            if (selected == "") {
+                alert("Please select at least one panel to change mode");
+
+                status = false;
+            }
+            if (status == true) {
+
+                if ($(this).val() == '1') {
+                    selected = $(this).val();
+                }
+                else if ($(this).val() == '4') {
+                    selected = $(this).val();
+                }
+                else if ($(this).val() == '0') {
+                    selected = $(this).val();
+                }
+                else if ($(this).val() == '3') {
+                    selected = $(this).val();
+                }
+                else if ($(this).val() == '5') {
+                    selected = $(this).val();
+                }
+                else if ($(this).val() == '2') {
+                    selected = $(this).val();
+                }
+                if (status == true) {
+                    var pnllist = $('#SelectRight').val();
+                    var panels = '';
+                    for (i = 0; i < pnllist.length; i++) {
+                        panels += (i == 0 ? '' : ',') + pnllist[i];
+                    }
+                    var url = "rbtnselctedIndexChange/";
+                    var selected = $(this).val(); // get current dropdown element selected value
+                    $.ajax({
+                        type: "POST",
+                        dataType: "json",
+                        url: url,
+                        data: {
+                            TestMode: selected,
+                            Values: panels
+                        },
+                        success: function (data) {
+                            if (data.Success) {
+                                if (data.Text != "") {
+                                    alert(data.Text);
+                                }
+                            } else {
+                                var circles = data.List;
+                                $("#CircleList").empty();
+                                $.each(circles, function (i, circles) {
+
+                                    $("#CircleList").append('<option value="' + circles.Value + '">' +
+                                         circles.Text + '</option>');
+                                });
+                                $('#DivLogin').show();
+                                $('#DivLogin2').show();
+                                $('#btnActivateClientOk').hide();
+                                $('#btnDeactivateClientOk').hide();
+                                $('#btnActivatePanelOk').hide();
+                                $('#btnDeactivatePanelOk').hide();
+                                $('#btnChangeTestModeOk').show();
+                                $('#btnByPassOk').hide();
+                                $('#circles').show();
+                            }
+                        },
+                        error: function (ex) {
+                            alert('Failed to retrieve Circles.' + ex);
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $("#btnChangeTestModeOk").on("click", function () {
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+            if ($('#CircleList').val() == "" || $('#CircleList').val() == "0" || $('#CircleList').val() == "---Select---") {
+                errors += "Please select Circle. <br/>";
+                status = false;
+            }
+
+
+
+            if (status == true) {
+
+
+                var pnllist = $('#SelectRight').val();
+                var panels = '';
+                for (i = 0; i < pnllist.length; i++) {
+                    panels += (i == 0 ? '' : ',') + pnllist[i];
+                }
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'ChangeMode',
+                        Values: panels,
+                        circles: $('#CircleList').val(),//$("#SelectedCountryId option:selected").text();
+                        rbtTestmodeCat: $('.radiobuttonlist').val(),
+
+                        Sensor: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            debugger;
+                            alert(data.Text);
+                            var Panels = data.List;
+                            $("#SelectRight").empty();
+                            $("#SelectLeft").empty();
+                            $.each(Panels, function (i, Panels) {
+                                $("#SelectLeft").append('<option value="' + Panels.Value + '">' +
+                                Panels.Text + '</option>');
+                            });
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+
+                        }
+
+                    }
+                });
+            } else {
+                $('#divval').html(errors);
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnBypassSensor").on("click", function () {
+
+            $('#divval').html("");
+            var selectedSensor = $('#Zones').val()
+            if (selectedSensor == '0' || selectedSensor == null) {
+
+                alert('Please select sensor');
+
+            }
+            else {
+                var SensorsstatusList = selectedSensor.split('_');
+                var Sensors = SensorsstatusList[1];
+                var Sensorsstatus = SensorsstatusList[0];
+
+                if (Sensorsstatus == 'Bypassed') {
+
+
+                    $('#divnoauthmsg').html("Are you sure you wants to unbypass sensor?");//no authentication
+                    $('#divnoauth').show();
+                    $('#divnoauthpopup').show();
+                    $('#btnNoAuthYesUnbypass').show();
+                    $('#btnNoAuthYesCamera').hide();
+                }
+                else {
+                    $('#DivLogin').show();
+                    $('#DivLogin2').show();
+                    $('#btnActivateClientOk').hide();
+                    $('#btnDeactivateClientOk').hide();
+                    $('#btnActivatePanelOk').hide();
+                    $('#btnDeactivatePanelOk').hide();
+                    $('#btnChangeTestModeOk').hide();
+                    $('#btnByPassOk').show();
+
+                    $('#LoginID').val('');
+                    $('#Password').val('');
+                    $('#Comments').val('');
+                    $('#circles').hide();
+                }
+            }
+        });
+
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        $("#btnNoAuthNo").on("click", function () {
+            $('#divnoauth').hide();
+            $('#divnoauthpopup').hide()
+        });
+        $("#btnCamera").on("click", function () {
+            debugger;
+           
+            var selectedSensor = $('#Zones').val()
+            if (selectedSensor == null || selectedSensor == '0') {
+
+                alert('Please select sensor');
+
+            } else {
+                $('#divnoauthmsg').html("Are you sure you wants to start camera?");//no authentication
+                $('#divnoauth').show();
+                $('#divnoauthpopup').show();
+                $("#btnNoAuthYesCamera").show();
+                $('#btnNoAuthYesUnbypass').hide();
+            }
+
+        });
+        //camera yes click
+        $("#btnNoAuthYesCamera").on("click", function () {
+            console.log('click');
+
+            var pnllist = $('#SelectRight').val();
+            var panels = '';
+            for (i = 0; i < pnllist.length; i++) {
+                panels += (i == 0 ? '' : ',') + pnllist[i];
+            }
+            var url = '@Url.Action("PanelControls")';
+            jQuery.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    clientid: $('#clients').val(),
+                    Login: '',
+                    password: '',
+                    Comments: '',
+                    Type: 'Camera',
+                    Values: panels,
+                    Sensor: $("#Zones option:selected").text(),
+                    circles: '',
+                    Auth: ''
+
+                },
+                success: function (data) {
+                    // alert(data.Text);
+                    $('#divnoauth').hide();
+                    $('#divnoauthpopup').hide();
+
+                    $('#lblCameraRequestError').html(data.Text);
+                    $('#lblCameraRequest').html(data.ReqID);
+                    visiblefalseCamera();
+
+                }
+            });
+        });
+
+
+        $("#btnNoAuthYesUnbypass").on("click", function () {
+            debugger;
+            var pnllist = $('#SelectRight').val();
+            var panels = '';
+            for (i = 0; i < pnllist.length; i++) {
+                panels += (i == 0 ? '' : ',') + pnllist[i];
+            }
+            var selectedSensor = $('#Zones').val()
+            var SensorsstatusList = selectedSensor.split('_');
+            var Sensors = SensorsstatusList[1];
+            var Sensorsstatus = SensorsstatusList[0];
+            var url = '@Url.Action("PanelControls")';
+            jQuery.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    clientid: $('#clients').val(),
+                    Login: '',
+                    password: '',
+                    Comments: '',
+                    Type: 'UnBypassSensor',
+                    Values: panels,
+                    Sensor: Sensors,
+                    circles: '',
+                    Auth: ''
+                },
+                success: function (data) {
+
+                    $('#divnoauth').hide();
+                    $('#divnoauthpopup').hide();
+                    $('#lblbypUnbypassRequestError').html(data.Text);
+                    $('#lblbypUnbypassRequest').html(data.ReqID);
+                    visiblefalseUnbypass();
+
+                }
+            });
+        });
+        function visiblefalseCamera() {
+
+            setTimeout(function () {
+
+                BlinkBoxCamera();
+            }, 10000);
+        }
+
+        function visiblefalseUnbypass() {
+            debugger;
+            setTimeout(function () {
+
+                BlinkBoxUnbypass();
+            }, 10000);
+        }
+        function BlinkBoxCamera() {
+            if ($('#lblCameraRequest').html() != "") {
+                var MID = $('#lblCameraRequest').html();
+                $.ajax({
+                    url: "ProcessRequest",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblCameraRequestError').html(data.ResultRes);
+                            $('#lblCameraRequest').html("");
+                        }
+                    },
+                });
+            }
+        }
+
+        function BlinkBoxUnbypass() {
+            if ($('#lblbypUnbypassRequest').html() != "") {
+                var MID = $('#lblbypUnbypassRequest').html();
+                $.ajax({
+                    url: "ProcessRequest",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblbypUnbypassRequestError').html(data.ResultRes);
+                            $('#lblbypUnbypassRequest').html("");
+                        }
+                    },
+                });
+            }
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#btnByPassOk").on("click", function () {
+
+            $('#divval').html("");
+            var status = true;
+            var errors = "";
+
+
+            if ($('#LoginID').val() == "") {
+                errors += "LoginID can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Password').val() == "") {
+                errors += "Password can not be blank. <br/>";
+                status = false;
+            }
+            if ($('#Comments').val() == "") {
+                errors += "Comments can not be blank.  <br/>";
+                status = false;
+            }
+
+
+
+
+            if (status == true) {
+                debugger;
+                var clientid = $('#clients').val();
+                var pnllist = $('#SelectRight').val();
+                var panels = '';
+                for (i = 0; i < pnllist.length; i++) {
+                    panels += (i == 0 ? '' : ',') + pnllist[i];
+                }
+                var selectedSensor = $('#Zones').val()
+                var SensorsstatusList = selectedSensor.split('_');
+                var Sensors = SensorsstatusList[1];
+                var Sensorsstatus = SensorsstatusList[0];
+
+                var url = '@Url.Action("PanelControls")';
+                jQuery.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        clientid: $('#clients').val(),
+                        Login: $('#LoginID').val(),
+                        password: $('#Password').val(),
+                        Comments: $('#Comments').val(),
+                        Type: 'BypassSensor',
+                        Values: panels,
+                        Sensor: Sensors,
+                        circles: '',
+                        Auth: 'Yes'
+                    },
+                    success: function (data) {
+                        if (data.Authentication) {
+                            $('#divval').html(data.Text);
+
+                        } else {
+                            $('#lblbypUnbypassRequestError').html(data.Text);
+                            $('#lblbypUnbypassRequest').html(data.ReqID);
+                            visiblefalse();
+                            console.log(data);
+                            $('#DivLogin2').hide();
+                            $('#DivLogin').hide();
+                        }
+                    }
+                });
+
+            }
+            else {
+                $('#divval').html(errors);
+            }
+        });
+
+
+        function visiblefalse() {
+            $('#btnByPassOk').attr('disabled', true);
+            setTimeout(function () {
+                $('#btnByPassOk').attr('disabled', false);
+                BlinkBox();
+            }, 10000);
+        }
+
+        function BlinkBox() {
+            if ($('#lblbypUnbypassRequest').html() != "") {
+                var MID = $('#lblbypUnbypassRequest').html();
+                $.ajax({
+                    url: "ProcessRequest",
+                    data: {},
+                    cache: false,
+                    type: "POST",
+                    data: { MID1: MID },
+                    success: function (data) {
+                        if (data.Success) {
+                            $('#lblbypUnbypassRequestError').html(data.ResultRes);
+                            $('#lblbypUnbypassRequest').html("");
+                        }
+                    },
+                });
+            }
+        }
+        $('#Zones').change(function () {
+
+            var selectedSensor = $('#Zones').val()
+            var SensorsstatusList = selectedSensor.split('_');
+            var Sensors = SensorsstatusList[1];
+            var Sensorsstatus = SensorsstatusList[0];
+
+            if (Sensorsstatus == 'Bypassed') {
+                $('#btnBypassSensor').attr("title", "Unbypass Sensor");
+            }
+            else {
+
+                $('#btnBypassSensor').attr("title", "Bypass Sensor");
+            }
+
+        });
+
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+
+        var activeclient = '@ViewBag.btnActivate';
+        if (activeclient == "false" || activeclient == "False") {
+
+            $('#btnActivate').hide();
+            $('#btnActivateNew').show();
+        }
+        var deactivateClient = '@ViewBag.btnDeactivate';
+        if (deactivateClient == "false" || deactivateClient == "False") {
+
+            $('#btnDeactivate').hide();
+            $('#btnDeactivateNew').show();
+        }
+
+        var activePanel = '@ViewBag.btnActivatePanel';
+        if (activePanel == "false" || activePanel == "False") {
+
+            $('#btnActivatePanel').hide();
+            $('#btnActivatePanelNew').show();
+        }
+
+        var deactivePanel = '@ViewBag.btnDeactivatePanel';
+        if (deactivePanel == "false" || deactivePanel == "False") {
+
+            $('#btnDeactivatePanel').hide();
+            $('#btnDeactivatePanelNew').show();
+        }
+
+        var BypassSensor = '@ViewBag.btnBypassSensor';
+        if (BypassSensor == "false" || BypassSensor == "False") {
+
+            $("#btnBypassSensor").hide();
+            $("#btnBypassSensorNew").show();
+        }
+
+       @* var Camera = '@ViewBag.btnCamera';
+        if (Camera == "false" || Camera == "False") {
+            $("#btnCamera").hide();
+           // $("#btnCameraNew").show();
+        }*@
+
+        var rbtn = '@ViewBag.rbtn';
+        if (rbtn == "false" || rbtn == "False") {
+            $(".radiobuttonlist").attr("disabled", true);
+            $('.radiobuttonlist').attr("title", "No Rights to change mode");
+            $('#DivLogin2').hide();
+            $('#DivLogin').hide();
+        }
+
+        //Radio button reamining
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+
+

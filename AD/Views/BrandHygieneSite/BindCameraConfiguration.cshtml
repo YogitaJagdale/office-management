@@ -1,0 +1,623 @@
+﻿@model  IEnumerable<SECU_CAMSPlus_DEV.Models.BrandHygieneSite>
+@{
+    ViewBag.Title = "Add Camera Configuration :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    function getvalues(SiteLocationID, CameraLocationID) {
+        debugger;
+        $('span[id="errorCameraLocation"]').html('');
+        $('span[id="errorCameraNo"]').html('');
+
+        var arrChecklist;
+        var arrDescription
+        jQuery.ajax({
+            url: '@Url.Action("ChangeCameraNo")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                LocationID: SiteLocationID,
+            },
+            success: function (msg) {
+                debugger;
+                for (var m = 0; m < msg.length; m++) {
+                    var cameraNos = msg[m].Text;
+                    var Others = msg[m].Value;
+                    var arrayDescription_Checklist = Others.split("-");
+                    arrDescription = arrayDescription_Checklist[0];
+                    arrChecklist = arrayDescription_Checklist[1];
+                }
+                var dvrchannels = $('#hiddendvrchannel').val();
+                var array_Camerano = cameraNos.split(",");
+                var items = document.getElementsByName('selectedCamera');
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].type == 'checkbox')
+                        items[i].checked = false;
+                }
+                for (var i = 0; i <= dvrchannels; i++) {
+                    debugger;
+                    for (var j = 0; j <= array_Camerano.length ; j++) {
+
+                        if (array_Camerano[j] == i) {
+                            document.getElementById('chkCameraNo+' + i).checked = true;
+                            document.getElementById('chkCameraNo+' + i).disabled = false;
+                        }
+                    }
+                }
+                $("#txtDescription").val(arrDescription);
+                $("#ddlCameraLocation").val(CameraLocationID);
+                $('#hiddenCameraNoGrid').val(cameraNos);
+                $('#hiddenSiteLocationID').val(SiteLocationID)
+                debugger;
+                GetChecklistValues(CameraLocationID, arrChecklist);
+            }
+        });
+        $('#btnAdd').attr("style", "display: none");
+        $('#btnUpdate').attr("style", "display: initial")
+        // return false;
+    }
+
+    function GetChecklistValues(CameraLocationID, Checklist) {
+        debugger;
+        var checklistcount = $('#hiddenChecklistcount').val();
+        var array_Checklistvalues = Checklist.split(",");
+        jQuery.ajax({
+            url: '@Url.Action("ChangeChecklist")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                LocationID: CameraLocationID,
+            },
+            success: function (msg) {
+                $('#chkChklist').empty();
+                var content = '<label class="control-label check-list" for="">Check List</label> <label><input type="checkbox" id="chkSelectAll" name="SelectOption" onchange="toggle(this);" />Select All</label><label><input type="checkbox" id="chkDeSelectAll" name="SelectOption" onchange="change(this);" />De-Select All</label>';
+                for (var m = 0; m < msg.length; m++) {
+                    content += '<li><label><input type="checkbox" value = "' + msg[m].Value + '" onchange="updateChecklistValidationStatus();" name="selectedCheckList" id="chkChecklistItem+' + msg[m].Value + '"/>' + msg[m].Text + '</label></li>'
+                }
+                $('#chkChklist').html(content);
+                for (var i = 0; i < checklistcount; i++) {
+                    for (var j = 0; j < array_Checklistvalues.length ; j++) {
+                        if (array_Checklistvalues[j]) {
+                            document.getElementById('chkChecklistItem+' + array_Checklistvalues[j]).checked = true;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function saveCameraConfiguration(command) {
+        debugger;
+        var selectedchecklist = $("input[name='selectedCheckList']:checked");  ///Fetches the selected Checklist items
+        var selectedCameraNo = $("input[name='selectedCamera']:checked");
+        if ($("#ddlCameraLocation").val() == "" || $("#ddlCameraLocation").val() == 0 && selectedCameraNo.length == 0) {
+            $('span[id="errorCameraLocation"]').html('Required');
+            $('span[id="errorCameraNo"]').html('Required');
+            return false;
+        }
+
+        else if (selectedCameraNo.length == 0) {
+            $('span[id="errorCameraNo"]').html('Required');
+            return false;
+        }
+        else if (selectedchecklist.length == 0) {
+            $('span[id="errorCheckList"]').html('Required');
+            return false;
+        }
+        var arrayCameraNumbervalues = [];
+        var CameraNumberValues = "";
+        var dvrchannels = $('#hiddendvrchannel').val();
+        var cameraNos = $('#hiddenCameraNoGrid').val();
+        var checklistcount = $('#hiddenChecklistcount').val();
+        var arrayChecklistItemvalues = [];
+        var ChecklistValues = "";
+        var CameraLocation = $("#ddlCameraLocation").val();
+        var Description = $("#txtDescription").val();
+        var ClientID = $('#hiddenClientID').val();
+        var SiteID = $('#lblSiteIDDisplay').text();
+
+        ///Fetches the selected Camera Numbers
+        selectedchecklist.each(function () {
+            arrayChecklistItemvalues.push($(this).val());
+            ChecklistValues = arrayChecklistItemvalues.join(",");
+        });
+        selectedCameraNo.each(function () {
+            arrayCameraNumbervalues.push($(this).val());
+            CameraNumberValues = arrayCameraNumbervalues.join(",");
+        });
+        //debugger;
+        if (command == "Update") {
+            var SiteLocationID = $('#hiddenSiteLocationID').val();
+        }
+        else {
+            var SiteLocationID = 0;
+        }
+
+        jQuery.ajax({
+
+            url: '@Url.Action("SaveCameraConfiguration")',
+            type: 'POST',
+            //contentType: "application/json; charset=utf-8",
+            //dataType: "json",
+            data: {
+                SiteLocationID: SiteLocationID,
+                SiteID: SiteID,
+                ClientID: ClientID,
+                CameraLocationID: CameraLocation,
+                Checklist: ChecklistValues,
+                CameraList: CameraNumberValues,
+                Description: Description,
+            },
+            success: function (data) {
+                //debugger;
+                if (data.indexOf("successfully") > -1) {
+                    location.reload();
+                }
+                else {
+                    var divid = document.getElementById('divUpdateFail');
+                    $('#divUpdateFail').attr("style", "display:block");
+                    divid.innerHTML = '<div  class="alert alert-danger alert-dismissible fade in AutoHide" style="margin: 15px 0 0 0;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + data + '</div>';
+                }
+            }
+        });
+    }
+    window.onload = disableCameraCheckbox();
+
+    function disableCameraCheckbox() {
+        debugger;
+        jQuery.ajax({
+
+            url: '@Url.Action("ChangeCameraNo")',  @**@
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                LocationID: 0,
+            },
+            success: function (msg) {
+                //debugger;
+               // alert(msg);
+                var cameraNosall = "";
+                var cameraNos = "";
+                for (var m = 0; m < msg.length; m++) {
+
+                    cameraNosall += msg[m].Text + ",";
+                }
+                cameraNos = cameraNosall.substr(0, cameraNosall.length - 1);
+                var dvrchannels = $('#hiddendvrchannel').val();
+                var array_Camerano = cameraNos.split(",");
+                var items = document.getElementsByName('selectedCamera');
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].type == 'checkbox')
+                        items[i].checked = false;
+                }
+                for (var i = 0; i <= dvrchannels; i++) {
+                    debugger;
+                    for (var j = 0; j <= array_Camerano.length ; j++) {
+
+                        if (array_Camerano[j] == i) {
+                            debugger;
+                            document.getElementById('chkCameraNo+' + i).disabled = true;
+
+                            //    <label>
+                            //    <input type="checkbox" id="chkSelectAll"
+                            //    name="selectedCamera"
+                            //    onchange="SelectAllCheckList();"/>
+                            //    Select All
+                            //</label>
+                            //var Checklistboxid = document.getElementById('chkCameraNo+' + i);
+                            //Checklistboxid.attr("title", "Cannot add this Camera No.");
+
+                            //document.getElementById('chkCameraNo+' + i).attr("title", "Cannot add this Camera No.");
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+</script>
+
+@if (TempData["SiteLocationAddSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationAddSuccess"]
+        </div>
+    </div>
+}
+
+@*@if (TempData["SiteLocationAddFail"] != null)
+{
+              
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-danger alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationAddFail"]
+        </div>
+    </div>
+}*@
+@if (TempData["SiteLocationDeleteSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationDeleteSuccess"]
+        </div>
+    </div>
+}
+@if (TempData["SiteLocationDeleteFail"] != null)
+{
+              
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-danger alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationDeleteFail"]
+        </div>
+    </div>
+}
+
+@if (TempData["SiteLocationUpdateSuccess"] != null)
+{
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-success alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationUpdateSuccess"]
+        </div>
+    </div>
+}
+@if (TempData["SiteLocationUpdateFail"] != null)
+{
+              
+    <div class="col-md-3 col-md-offset-9">
+        <div class="alert alert-danger alert-dismissible fade in AutoHide" style="display: block; margin: 15px 0 0 0;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            @TempData["SiteLocationUpdateFail"]
+        </div>
+    </div>
+}
+<script>
+    $(function () {
+        $("#tooltip-3").tooltip({
+            content: "Cannot add this camera, as it is already added.",
+            track: true
+        }),
+        $("#tooltip-4").tooltip({
+            disabled: true
+        });
+    });
+</script>
+<div class="clearfix">@{int i = 0;}</div>
+<div class="clearfix">@{int j = i;}</div>
+<div class="clearfix">@{int cameracount = 1;}</div>
+
+<div class="col-lg-12 animated fadeIn margin-top">
+    <div class="panel panel-yellow">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>View Camera Configuration</h2>
+                </div>
+                <div class="pull-right col-md-6">
+                        <a class="btn btn-success btn-md pull-right margin" id="btnlistui" href="@Url.Action("Edit", "BrandHygieneSite", new { SiteID = Session["BrandHygieneSiteSiteID"], ClientID = Session["BrandHygieneSiteClientID"] })">
+                            <i class="fa fa-list"></i>Back to List  
+                        </a>
+                    </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-md-offset-9" id="divUpdateFail" style="display: none">
+        </div>
+
+        @using (Html.BeginForm("BindCameraConfiguration", "BrandHygieneSite", FormMethod.Get))
+        {
+            
+            @Html.AntiForgeryToken()
+            var grid = new WebGrid(Model, canSort: true, ajaxUpdateContainerId: "grid", rowsPerPage: 10);
+            grid.Pager(WebGridPagerModes.All);
+                      
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="note note-info">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <h3 class="box-heading">
+                                    @Html.Label("lblSiteID", "SiteID :", new { @class = "ProjectLabel" })
+                                    @Html.Label("lblSiteID", Convert.ToString(Session["BrandHygieneSiteSiteID"]), new { @class = "ProjectLabel", @id = "lblSiteIDDisplay" })
+
+                                </h3>
+
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            foreach (var item1 in Model)
+            {
+            @Html.HiddenFor(m => item1.ClientID, new { @id = "hiddenClientID" })
+            @Html.HiddenFor(m => item1.CameraConfigurationCameraLocationID, new { @id = "hiddenCameraLocationID" })
+            @Html.HiddenFor(m => item1.DescriptionGrid, new { @id = "hiddenDescriptionGrid" })
+            @Html.HiddenFor(m => item1.DVRChannel, new { @id = "hiddendvrchannel" })
+            @Html.HiddenFor(m => item1.Checklistcount, new { @id = "hiddenChecklistcount" })
+            @Html.HiddenFor(m => item1.CheckListGridvalue, new { @id = "hiddenChecklistgridvalue" })
+            @Html.HiddenFor(m => item1.SiteLocationID, new { @id = "hiddenSiteLocationID" })
+                if (i == 0)
+                {
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3 col-md-3">
+                        <div class="form-group">
+                            @Html.LabelFor(model => item1.CameraLocation, htmlAttributes: new { @class = "control-label" })
+                            @Html.DropDownListFor(m => item1.CameraLocation, new SelectList(item1.CameraLocationList as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required", @onfocus = "this.size=10;", @onblur = "this.size=1;", @id = "ddlCameraLocation", @onchange = "this.size=1; this.blur(); GetChecklist();" })
+                            @Html.ValidationMessageFor(m => item1.CameraLocation, null, new { @class = "valiation", @id = "errorCameraLocation" })
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            @Html.LabelFor(model => item1.CameraNo, htmlAttributes: new { @class = "control-label" })
+                            @Html.HiddenFor(m => item1.CameraNoGrid, new { @id = "hiddenCameraNoGrid" })
+                            @*@for (int j = 0; j < item.CameraNoList.Count(); j++)
+                            {
+                                @Html.CheckBoxFor(m => item.CameraNoList[i].Selected)
+                                @item.CameraNoList[i].Text
+                                @Html.HiddenFor(m => item.CameraNoList[i].Value)
+                                @Html.HiddenFor(m => item.CameraNoList[i].Text)
+                            }*@
+
+                            <div class="checkbox col-xs-12 col-sm-8 col-md-12 checkbox-1">
+
+                                @foreach (var cameranolist in item1.CameraNoList)
+                                {
+                                    <label>
+                                        <input type="checkbox" id="chkCameraNo+@cameracount"
+                               name="selectedCamera"
+                               value="@cameranolist.Value" onchange="updateCameraValidationStatus();" data-modal="" data-toggle="tooltip" data-placement="right" />
+                                        @*data-disabled-title='Cannot add this camera'*@
+                                        @cameranolist.Text
+                                    </label>
+                                    cameracount++;
+                                }
+                                @Html.ValidationMessageFor(m => item1.cameraSelected, null, new { @class = "valiation", @id = "errorCameraNo" })
+                            </div>
+
+                            @*<div id="chkCameralist" class="checkbox col-xs-12 col-sm-8 col-md-12"></div>*@
+
+
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => item1.Description, htmlAttributes: new { @class = "form-group control-label check-list" })
+
+                            @Html.TextAreaFor(m => item1.Description, new { @class = "Description_textarea required", @id = "txtDescription", @onkeypress = "return charandnumbers('validationDescription')" })
+                        </div>
+                    </div>
+                    <div class="checkbox col-xs-12 col-sm-8 col-md-12">
+                        
+                        <ul class="list-unstyled" id="chkChklist"></ul>
+                        @Html.ValidationMessageFor(m => item1.CheckListlst, null, new { @class = "valiation", @id = "errorCheckList" })
+                    </div>
+                </div>
+
+
+
+            </div>
+                
+            <div class="panel-footer text-center">
+                <input class="btn btn-success btn-sm" type="button" value="Save" style="display: initial" name="Command" id="btnAdd" onclick="saveCameraConfiguration('Add')" />
+                <input class="btn btn-success btn-sm" type="button" style="display: none" value="Update" name="Command" id="btnUpdate" onclick="saveCameraConfiguration('Update')" />
+                <input type="button"  class="btn btn-warning btn-sm"  value="Reset" onclick="@("window.location.href='" + @Url.Action("BindCameraConfiguration", "BrandHygieneSite", new { SiteID = Session["BrandHygieneSiteSiteID"], ClientID = Session["BrandHygieneSiteClientID"], SiteLocationID = 0, CameraLocationID = 0 }) + "'")    ;" />
+            </div>
+                                
+                                        
+            <div class="table-responsive" id="tablegrid">
+                @if (Model != null)
+                {
+                    if (item1.SiteLocationID != 0)  //Model.Count() > 1
+                    {
+                    @grid.GetHtml(htmlAttributes: new { id = "GridSiteDetails" }, tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+               grid.Column("CameraLocation", "Location"),
+                        grid.Column("CameraNoGrid", "Camera Number"),
+                        grid.Column("DescriptionGrid", "Description"),
+                        grid.Column("CheckListGrid", "CheckList"),
+
+            grid.Column(header: "", canSort: false, style: "action",
+                format:
+                @<text>
+                    @Html.Raw("<a  name='Edit' data-modal='' id='EditSiteDetails" + @j + "' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='#' onclick='getvalues(" + item.SiteLocationID + "," + item.CameraConfigurationCameraLocationID + ")''></a>") @* " + item.SiteID + "," + item.ClientID + "," + item.SiteLocationID + "*@
+                    </text>)
+                            ,
+  grid.Column(header: "", canSort: false, style: "action",
+                format:
+                @<text>
+                    @Html.Raw("<a  name='Delete' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs' href='#' onclick='deleteLocation(" + item.SiteLocationID + ")''></a>") @* " + item.SiteID + "," + item.ClientID + "," + item.SiteLocationID + "*@
+                    </text>)
+
+     ), mode: WebGridPagerModes.Numeric)
+                    }
+                    else
+                    {
+                    <div>No records found</div>
+                    }
+                }
+            </div>
+                i++;
+                }
+            <script type="text/javascript">
+                function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                }
+            </script>
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-danger" id="divInvalidMsg" role="alert" style="display: none" align="Left">
+                        @if (TempData["CameraLocationInvalidMsg"] != null)
+                        {     
+                            @TempData["CameraLocationInvalidMsg"]
+                        }
+                    </div>
+                    <div class="alert alert-success" role="alert" id="divSuccessMsg" style="display: none" align="Left">
+                        @if (TempData["CameraLocationNotice"] != null)
+                        {      
+                            @TempData["CameraLocationNotice"]
+                        }
+                    </div>
+                    <span id="progress" class="text-center" style="display: none;">
+                        <img src="/images/ajax-loader.gif" alt="wiat" />
+                        Wait..
+                    </span>
+
+                </div>
+            </div>
+        }
+        <div class="panel-footer text-center">
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+<script type="text/javascript">
+    function deleteLocation(SiteLocationID) {
+        debugger;
+        var confirmation = confirm('Do you want to delete this camera location?');
+        if (confirmation) {
+            jQuery.ajax({
+                url: '@Url.Action("DeleteSiteLocation")',
+               // contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                data: {
+                    SiteLocationID: SiteLocationID,
+                },
+                success: function (data) {
+                    debugger;
+                    if (data) {
+                        location.reload();
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            });
+        }
+        else {
+            return false;
+        }
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        window.setTimeout(function () {
+            debugger;
+            $(".AutoHide").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+    });
+</script>
+
+
+<script type="text/javascript">
+    function GetChecklist() {
+        debugger;
+        if ($("#ddlCameraLocation").val() == "" || $("#ddlCameraLocation").val() == 0) {
+            $('span[id="errorCameraLocation"]').html('Required');
+            return false;
+        }
+        else {
+            $('span[id="errorCameraLocation"]').html('');
+        }
+
+        $('input:checkbox').removeAttr('checked');
+        $("#txtDescription").val("");
+        var CameraLocationID = $("#ddlCameraLocation").val();
+
+        jQuery.ajax({
+            url: '@Url.Action("ChangeChecklist")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: {
+                LocationID: CameraLocationID,
+            },
+            success: function (msg) {
+                debugger;
+                $('#chkChklist').empty();
+               
+                $("#ddlCameraLocation").val(CameraLocationID);
+                var content = '<label class="control-label check-list" for="">Check List</label> <label><input type="checkbox" id="chkSelectAll" name="SelectOption" onchange="toggle(this);" />Select All</label><label><input type="checkbox" id="chkDeSelectAll" name="SelectOption" onchange="change(this);" />De-Select All</label>';
+                for (var m = 0; m < msg.length; m++) {
+                    content += '<li><label><input type="checkbox" value = "' + msg[m].Value + '" onchange="updateChecklistValidationStatus();" name="selectedCheckList" id="chkChecklistItem+' + msg[m].Value + '"/>' + msg[m].Text + '</label></li>'
+                }
+                $('#chkChklist').html(content);
+            }
+        });
+    }
+
+    function updateCameraValidationStatus() {
+        debugger;
+
+        var selectedCameraNo = $("input[name='selectedCamera']:checked");
+
+        if (selectedCameraNo.length == 0) {
+            $('span[id="errorCameraNo"]').html('Required');
+            return false;
+        }
+        else {
+            $('span[id="errorCameraNo"]').html('');
+        }
+    }
+
+    function updateChecklistValidationStatus() {
+        debugger;
+        var selectedchecklist = $("input[name='selectedCheckList']:checked");  ///Fetches the selected Checklist items
+
+        if (selectedchecklist.length == 0) {
+            $('span[id="errorCheckList"]').html('Required');
+            return false;
+        }
+        else {
+            $('span[id="errorCheckList"]').html('');
+        }
+    }
+
+    function SelectAllCheckList() {
+        debugger;
+        var AllChecklist = $("input[name='selectedCheckList']");
+            $("input[name='selectedCheckList']").checked = true;
+    }
+
+    function toggle(source) {
+        debugger;
+        var checkboxes = $("input[name='selectedCheckList']");
+        var checkboxesoption = $("input[id='chkDeSelectAll']")
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = true;
+        }
+        for (var i = 0; i < checkboxesoption.length; i++) {
+            if (checkboxesoption[i] != source)
+                checkboxesoption[i].checked = false;
+        }
+    }
+    function change(source) {
+        debugger;
+        var checkboxes = $("input[name='selectedCheckList']:checked");
+        var checkboxesoption = $("input[id='chkSelectAll']")
+        for (var i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i] != source)
+                checkboxes[i].checked = false;
+        }
+        for (var i = 0; i < checkboxesoption.length; i++) {
+            if (checkboxesoption[i] != source)
+                checkboxesoption[i].checked = false;
+        }
+    }
+
+</script>

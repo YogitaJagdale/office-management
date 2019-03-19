@@ -1,0 +1,84 @@
+﻿@model SECU_CAMSPlus_DEV.Models.MasterTemplate
+
+@{
+    ViewBag.Title = "Master Template :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $("#btnGo").on("click", function () {
+            var errors = "";
+            var status = true;
+            if ($('#ddlPanelType').val() == '---Select---') {
+                errors += "Please select panel type.<br/>";
+                status = false;
+            }
+            if (status == true) {
+                window.location.href = 'ATMTemplate';
+            } else {
+                $('#divval').html(errors);
+            }
+
+        });
+    });
+</script>
+@using (Html.BeginForm("Index", "MasterTemplate", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Master Template</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <label>Panel Type</label>
+                        @Html.DropDownListFor(model => model.PanelType, new SelectList(Model.PanelTypeList, "Value", "Text"), new { @id = "ddlPanelType", @class = "form-control required" })
+                    </div>
+                    <div id="divval" class="valiation">
+                    </div>
+                </div>
+                    </div>
+            </div>
+            <div class="panel-footer">
+                 <a class="btn btn-success" id="btnGo">
+                                    GO
+                                </a>
+              
+            </div>
+        </div>
+    </div>
+
+
+     
+}
+
+
+<script lang="javascript" type="text/javascript">
+    $(document).ready(function () {
+
+        $('#ddlPanelType').change(function () {
+            //   alert('gdxfgxdfg');
+            var url = "NewProjectID";
+            var selected = $('#ddlPanelType').val(); // get current dropdown element selected value
+            $.ajax({
+                type: "Get",
+                dataType: "json",
+                url: url,
+                data: { Id: selected },
+            });
+        });
+
+
+    });
+
+
+</script>

@@ -1,0 +1,157 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Holiday>
+
+@{
+    ViewBag.Title = "National Holiday";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["AlertMessage"] != null)
+{
+    <script>
+        alert('@TempData["AlertMessage"]');
+        $('#btnCreate').click(function () {
+            window.location.href = 'Create';
+            return false;
+        });
+    </script>
+}
+
+@if (TempData["NoRecordMsg"] != null)
+{
+<script >
+    alert('@TempData["NoRecordMsg"]');
+   
+</script>
+}
+
+@if (TempData["invalidmsg"] != null)
+{
+<script >
+    alert('@TempData["invalidmsg"]');
+   
+</script>
+}
+
+
+@using (Html.BeginForm("Index", "Holiday", FormMethod.Get, new { @id = "HolidayMasterindex" }))
+{
+
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+     
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                 <div class="row">
+                <div class="col-xs-12 col-sm-5 col-md-5"><h2>National Holiday</h2></div>
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <div class="col-md-5">
+                        <div class="">
+                           @* <i class="fa fa-search"></i>*@
+                            <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by Holiday Name" />
+                           </div>
+                            </div>
+                            <div class="col-md-5">
+                            <input class="form-control" name="filterDateSting" data-val="true" data-val-date="The field Date * must be a date." format="{0:yyyy-MM-dd}" id="datepicker" 
+                                type="date" value="@ViewBag.filterDateSting">
+                            </div>
+                        <div class="col-md-2">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit" value="btnHolidaysearch">Go</button>
+                            </span>
+                        </div>
+                       
+                    </div>
+                </div>
+                     
+                    <div class="col-xs-12 col-sm-1 col-md-1" id="divnewadd">
+                    <a class="btn btn-success btn-sm" id="btnCreate" data-modal="" href="Create">
+                       <i class="fa fa-plus"></i>&nbsp;Add </a>
+                    <a class="btn btn-success" id="hidebtnCreate" style="display:none" ><i class="fa fa-plus"></i>&nbsp;Add</a>
+                </div>
+               
+                    </div>
+                <div class="clearfix"></div>
+            </div>
+
+
+            <div class="panel-body">
+
+                <div class="table-responsive">
+                    <div class="pull-right">Total no. records found : @grid.TotalRowCount</div> 
+
+                @grid.GetHtml(tableStyle: "table table-hover table-striped", selectedRowStyle: "", footerStyle: "tfoot dataTables_paginate", alternatingRowStyle: "webgrid-alternating-row", headerStyle: "grid-header", columns:
+                grid.Columns
+                (
+        //grid.Column("HolidayID", "ID"),
+                        grid.Column("HD_Name", "Holiday Name"),
+                        grid.Column("HD_Date", "Holiday Date", format: (item) => string.Format("{0:dd/MM/yyyy}", item.HD_Date)),
+
+                        grid.Column(header: "", canSort: false, style: "action",
+                        format: @<text>
+
+                    @Html.Raw("<a  name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.HolidayID + "' id='" + item.HolidayID + "'> </a>")
+                    @Html.Raw("<a name='EditHide' data-toggle='tooltip' style='display:none' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></a>")
+
+                    </text>),
+                        grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.HolidayID },
+                     new { onclick = "return confirm('Do you want to Delete this Holiday Details?');",@Name="Delete", 
+                         @class = "glyphicon glyphicon-trash btn btn-danger btn-xs", })),
+                         
+                         grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Index", new {  },
+                        new { @Name = "DeleteHide", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs",@style="display:none" }
+                            ))                
+                            ), mode: WebGridPagerModes.Numeric)
+
+                </div>
+              </div>
+        </div>
+    </div>
+     <div class="clearfix"></div>
+}
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        var res = '@ViewBag.NewAdd';    
+        if (res == "false" || res == "False")
+        {
+            $('#btnCreate').hide();
+            $('#hidebtnCreate').show();
+            $('#hidebtnCreate').attr('disabled', true);
+            $('#hidebtnCreate').attr("title", "No Rights To Add");
+            
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false")
+        {
+            $('[name=Edit]').hide();
+            $('[name=EditHide').show();
+            $('[name=EditHide').attr('disabled', true);
+            $('[name=EditHide').attr("title", "No Rights To Edit");
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete=="False"||allowDelete=="false")
+        {
+            $('[name=Delete]').hide();
+            $('[name=DeleteHide]').show();
+            $('[name=DeleteHide]').attr('disabled', true);
+            $('[name=DeleteHide').attr("title", "No Rights To Delete");
+        }
+
+});
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}

@@ -1,0 +1,128 @@
+﻿@model SECU_CAMSPlus_DEV.Models.BrandHygieneChecklist
+
+@{
+    Layout = null;
+    ViewBag.Title = "Brand Hygiene CheckList :: CAMSPlus";
+}
+
+
+@if (TempData["noticeEdit"] != null)
+{
+    <script> //$("#divSuccess").show();
+        //window.location.href = "/BrandHygieneChecklist/Index";
+        var url = '@Url.Action("Index", "BrandHygieneChecklist")';
+        window.location = url;
+    </script>// this script to show successslerts
+    
+}
+
+@if (TempData["invalidmsgEdit"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+
+<div class="modal-header">
+ @*   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>*@
+      <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Brand Hygiene Checklist :: Edit</h3>
+</div>
+
+@*<style type="text/css">
+ .select-dropdown{
+    position:relative;
+    height:50px;
+}
+.select-dropdown select {
+    position:absolute;
+}
+.select-dropdown select option:hover {
+    background-color: #2c94fb;
+    color: #ffffff;
+}
+</style>*@
+
+@using (Html.BeginForm())
+{
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group select-dropdown">
+                    @Html.LabelFor(m => Model.CameraLocation, new { @class = "control-label" })
+                    @Html.DropDownList("CameraLocation", null, "---Select---", new {@onclick="IsselectedCameraLocation()", @class = "form-control required",  @id = "CameraLoc" })
+                    @*@Html.DropDownList("CameraLocationList",new SelectList(Model.Locations as System.Collections.IEnumerable, "Value", "Text"), "---select---", new { @class = "form-control required" })*@                    
+                    @*@Html.DropDownListFor(m => Model.Locations, null, "---select---", new { @class = "form-control required" })*@
+                    @Html.ValidationMessageFor(m => m.CameraLocation,null, new { @class = "valiation",id="errorIsValidCameraLocation" })
+
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => Model.ItemName, new { @class = "control-label" })
+                    @Html.TextBoxFor(m => m.ItemName, new {  @onkeypress = "return charonly()" , @class = "form-control required" })
+                    @Html.ValidationMessageFor(m => m.ItemName, null, new { @class = "valiation",id="errorIsValidItemName" })
+                    
+                </div>
+
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsgEdit"] != null)
+            {      @TempData["invalidmsgEdit"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["noticeEdit"] != null)
+            {      @TempData["noticeEdit"]
+
+            }
+        </div>
+        @*<span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>*@
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Update"  />
+            @*  <input class="btn btn-primary" type="submit" value="Save"  onclick="@("window.location.href='" + @Url.Action("Edit", "city",new { id=Model.CityID}) + "'") ;   " />*@
+            <input type="button"  class="btn btn-warning"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Index", "brandhygienechecklist") + "'")    ;" />
+        </div>
+    </div>
+}
+
+<script>
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38) || (ascii == 44) || (ascii == 46) || (ascii > 47 && ascii < 58)) {
+            $("#errorIsValidItemName").html('');
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+
+    function IsselectedCameraLocation() {
+        var ddlCamraLoc = $("#CameraLoc");
+        if (ddlCamraLoc.val() == "") {
+            return false;
+        }
+        else {
+            $("#errorIsValidCameraLocation").html('');
+        }
+    }
+
+   @* $(document).ready(function () {
+        $('#CameraLoc').change(function () {
+            var url = '@Url.Content("~/")' + "BrandHygieneChecklist/GetSelectedLocation";
+            var ddlsource = "#CameraLoc";
+            $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+            });
+
+        });
+    });*@
+
+</script>

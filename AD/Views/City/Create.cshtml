@@ -1,0 +1,90 @@
+﻿@model SECU_CAMSPlus_DEV.Models.City
+
+@{
+    ViewBag.Title = "EditCity";
+    Layout = null;
+}
+
+@if (TempData["cityinvalidmsg"] != null)
+{
+    <script> $("#divinvalid").show(); </script>// this script to show failed alerts
+}
+@if (TempData["citynotice"] != null)
+{
+    <script> $("#divSuccess").show(); </script>// this script to show failed alerts
+}
+<div class="modal-header">
+   @* <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>*@
+    <a class="close" href="Index" aria-hidden="true">x</a>
+    <h3 class="modal-title">Add</h3>
+</div>
+
+
+@using (Html.BeginForm("Create", "City", FormMethod.Post))
+{   
+ 
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StateName, htmlAttributes: new { @class = "control-label" })
+                    @*  @Html.DropDownListFor(model => model.StateID, new SelectList(ViewBag.StateList, "Value", "Text"), "---Select---", new { @class = "form-control required"})*@
+                    @if (Model.StateID != null)
+                    {
+                        @Html.DropDownListFor(model => model.StateName, new SelectList(Model.States, "Value", "Text", Model.StateID), "---Select---", new { @class = "form-control required" })  
+                    }
+                    else
+                    {   
+                        @Html.DropDownListFor(model => model.StateName, new SelectList(Model.States, "Value", "Text"), "---Select---", new { @class = "form-control required" })
+                    }
+                     @Html.ValidationMessageFor(model => model.StateName,null,new { @class = "valiation",id="errorIsValidStateName" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CityName, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.CityName, htmlAttributes: new
+               {
+                   @class = "form-control",
+                   @onkeypress = "return charonly()"
+               })
+                     @Html.ValidationMessageFor(model => model.CityName,null,new { @class = "valiation",id="errorInValidCityName" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["cityinvalidmsg"] != null)
+            {      @TempData["cityinvalidmsg"]
+
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["citynotice"] != null)
+            {      @TempData["citynotice"]
+            }
+        </div>
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wiat" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddcity" onclick="return confirm('Are you sure to add this city?');" />
+            <a class="btn btn-warning" href="Index">Cancel</a>
+            @*<button class="btn btn-warning" data-dismiss="modal">Cancel</button>*@
+        </div>
+    </div>
+}
+<script>
+    function charonly() {
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+</script>

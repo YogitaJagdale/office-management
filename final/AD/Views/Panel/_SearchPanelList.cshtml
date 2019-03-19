@@ -1,0 +1,73 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Panel>
+
+@{
+    // ViewBag.Title = "cityMaster";
+    Layout = null;
+
+}
+<script>
+    $(document).ready(function () {
+        $(".table >  tbody  > tr").css({ "border-top": "1px solid #ddd" });
+    });
+</script>
+   
+<div class="panel" id="panellist">
+
+    @using (Html.BeginForm("cityMaster", null, FormMethod.Get))
+    {
+
+        var grid = new WebGrid(Model, canSort: false, ajaxUpdateContainerId: "grid");
+        grid.Pager(WebGridPagerModes.All);
+        <div style="margin-top: 17px;">
+            @grid.GetHtml(tableStyle: "table table-striped table-advance table-hover", footerStyle: "foot", columns:
+                grid.Columns
+                (
+
+                        grid.Column("PanelID", "PanelID"),
+                        grid.Column("ATMSiteName", "Site ID/SOL ID"),
+                        grid.Column("MfgID", "Manufacturing ID"),
+                        grid.Column("Panel_IP", "IP Address"),
+                        grid.Column("Client_Name", "Client"),
+                        grid.Column("PanelLatestVersion", "Panel Latest Version"),
+                        grid.Column("PanelCurrentVersion", "Panel Current Version"),
+                        grid.Column("CityName", "City"),
+                        grid.Column("Panel_Location", "Panel Location"),
+                        grid.Column("PanelType", "Panel Type"),
+                        grid.Column("ProjectName", "Project Name"),
+                        grid.Column("ArmStatus", "Armed Status"),
+            grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+            @* @Html.Raw("<a data-modal='' href='/City/details/" + item.CityID + "' id='" + item.CityID + "' data-toggle='modal' title='Detail'> <span class='glyphicon glyphicon-search'> </span> </a>")*@
+            @Html.Raw("<a data-modal='' href='Edit/" + item.PanelID + "' id='" + item.PanelID + "' title='Edit''> Edit</a>")
+
+            </text>)
+
+
+
+    ), mode: WebGridPagerModes.Numeric)
+            <script type="text/javascript">
+                function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("PanelList/?page=" + (grid.PageIndex + 1)).ToString()))
+    }
+</script>
+
+
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $(".page-number").live("click", function () {
+
+                        var page = parseInt($(this).html());
+
+                        $.ajax({
+                            url: '@Url.Action("SearchTemplate")',
+                data: { "page": page },
+                success: function (data) {
+                    $("#panellist").html(data);
+                }
+            });
+        });
+    });
+</script>
+        </div>
+    }
+</div>

@@ -1,0 +1,168 @@
+﻿@model SECU_CAMSPlus_DEV.Models.ZoneMaster
+<body id="divPartialViewPanelMsgTracking">
+ 
+    <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger" id="divMessageTrackingStop" role="alert" style="display: none" align="Left">
+                        @if (TempData["MessageTrackingStop"] != null)
+                        {      @TempData["MessageTrackingStop"]
+
+                        }
+                    </div>
+
+                    <div class="col-md-12" id="divSensorStatus">
+                        <h4>Sensor Status : </h4>
+                    </div>
+                </div>
+                 <div class="col-md-12">                
+                    @MvcHtmlString.Create(Model.ZoneStatus)                    
+                 </div>
+
+                    <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+                        @if (TempData["PartialViewinvalidmsg"] != null)
+                        {      @TempData["PartialViewinvalidmsg"]
+
+                        }
+                    </div>
+
+                    <br />
+
+                 <div class="alert alert-danger" id="divinvalidCAMSservice" role="alert" style="display: none" align="Left">
+                        @if (TempData["CAMSserviceinvalidmsg"] != null)
+                        {      @TempData["CAMSserviceinvalidmsg"]
+
+                        }
+                    </div>
+        
+                 <div class="row" id="divPanelEvents">
+                    <div class="col-md-12">
+                        <h4>Panel Events : </h4>
+                    </div>
+                </div>
+    
+<div class="table-responsive">
+                  <table id="ZoneDetailsDataTable" class="table tbl-header table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Panel ID
+                                        </th>
+                                        <th>Message Received Date
+                                        </th>
+                                        <th>Message Type
+                                        </th>
+                                        <th>Ip Address
+                                        </th>
+                                        <th>Manufacture Serial No.
+                                        </th>
+                                        <th>Zone No	
+                                        </th>
+                                        <th>SensorType	
+                                        </th>
+                                        <th>Message From	
+                                        </th>
+                                        <th>Message To	
+                                        </th>
+                                        <th>Sender Message	
+                                        </th>
+                                        <th>Response	
+                                        </th>
+                                        <th>Result		
+                                        </th>
+                                        <th>Reason	
+                                        </th>
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (System.Data.DataRow dr in (ViewData["PanelZoneDetails"] as System.Data.DataTable).Rows)
+                                    {
+                                        <tr>                                            
+                                            <td>
+                                               @Html.DisplayFor(modelItem => dr["Panel ID"])
+                                            </td>
+                                              <td>
+                                                @Html.DisplayFor(modelItem => dr["Msg ReceivedDate"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Msg Type"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Ip Address"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["MfG No"])
+                                            </td>
+                                            <td>
+                                               @Html.DisplayFor(modelItem => dr["Zone No"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Sensor Type"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Msg From"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Msg To"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Message"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Response"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Result"])
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => dr["Reason"])
+                                            </td>
+                                       </tr>
+                                    }
+                                </tbody>
+                            </table>
+                 </div>
+
+     <div class="alert alert-danger" id="divinvalidPanleEvents" role="alert" style="display: none" align="Left">
+        @if (TempData["invalidPanlelEventmsg"] != null)
+          {      
+            
+            @TempData["invalidPanlelEventmsg"]
+                                   
+           }
+     </div>
+
+
+
+</body>
+
+@if (TempData["PartialViewinvalidmsg"] != null)
+{
+    <script> $("#divinvalid").show();</script>
+}
+
+@if (TempData["MessageTrackingStop"] != null)
+{
+    <script>
+        $("#divMessageTrackingStop").show();
+        $("#divSensorStatus").hide();
+        $("#divPanelEvents").hide();
+        $("#btnstop").hide();
+        $("#btnStartTacking").show();
+    </script>
+}
+
+
+@if (TempData["CAMSserviceinvalidmsg"] != null)
+{
+    <script> $("#divinvalidCAMSservice").show();</script>
+}
+
+
+@if (TempData["invalidPanlelEventmsg"] != null)
+{
+    <script> $("#divinvalidPanleEvents").show();</script>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

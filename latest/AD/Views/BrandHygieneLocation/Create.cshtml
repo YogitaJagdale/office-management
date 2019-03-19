@@ -1,0 +1,111 @@
+﻿@model SECU_CAMSPlus_DEV.Models.BrandHygieneLocation
+
+@{
+    ViewBag.Title = "Add Camera Location :: CAMSPlus";
+    Layout = null;
+}
+
+@if (TempData["invalidmsg"] != null)
+{
+    <script>        $("#divinvalid").show();
+
+        //window.location.href = "/BrandHygieneLocation/Index";
+    </script>// this script to show failed alerts
+}
+@if (TempData["notice"] != null)
+{
+     
+    <script>        //$("#divSuccess").show(); 
+        //window.location.href = "/BrandHygieneLocation/Index";
+        var url = '@Url.Action("Index", "BrandHygieneLocation")';
+        window.location = url;
+    </script>// this script to show failed alerts
+
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 class="modal-title">Add Camera Location</h3>
+</div>
+
+@using (Html.BeginForm("Create", "BrandHygieneLocation", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(Model => Model.Location, htmlAttributes: new { @class = "form-control" , @onkeypress = "return charandnumbers()"})
+                    @Html.ValidationMessageFor(Model => Model.Location, null, htmlAttributes: new { @class = "valiation" ,id="errorIsValidLocation"})
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["invalidmsg"] != null)
+            {      
+                @TempData["invalidmsg"]
+            }
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["notice"] != null)
+            {     
+                 @TempData["notice"]
+            }
+        </div>
+        @*<span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="wait" />
+            Wait..
+        </span>*@
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Add" id="btnaddCameraLocation" />
+            <input type="button"  class="btn btn-warning"  value="Cancel" onclick="@("window.location.href='" + @Url.Action("Index", "BrandHygieneLocation") + "'")    ;" />
+        </div>
+    </div>
+}
+
+<style>
+    .textbox
+    {
+        display: block;
+        width: 116px;
+        height: 21px;
+        padding: 1px 5px;
+        font-size: 11px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+</style>
+
+
+<script>
+    function charonly() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii == 38)) {            
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+    function charandnumbers() {
+        debugger;
+        var ascii = event.keyCode
+        if ((ascii == 8 || ascii == 127) || (ascii > 64 && ascii < 91) || (ascii > 96 && ascii < 123) || (ascii == 32) || (ascii > 47 && ascii < 58)) {
+            $("#errorIsValidLocation").html('');
+            event.returnValue = true;
+        }
+        else {
+            event.returnValue = false;
+        }
+    }
+</script>

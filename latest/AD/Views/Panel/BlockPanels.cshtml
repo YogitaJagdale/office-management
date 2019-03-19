@@ -1,0 +1,177 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.Panel>
+
+@{
+    ViewBag.Title = "BlockPanels";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["ErrorMessageBlockPanel"] != null)
+{
+    <script>
+
+        alert('@TempData["ErrorMessageBlockPanel"]');
+    
+    </script>
+}
+
+
+@if (TempData["SucessMessageBlockPanel"] != null)
+{
+    <script>
+
+        alert('@TempData["SucessMessageBlockPanel"]');
+    
+    </script>
+}
+
+<style>
+    footer#colophon {
+        position: relative!important;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        // 1st replace first column header text with checkbox
+
+        $("#checkableGrid th").each(function () {
+            if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                $(this).text('');
+                $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                $(this).append("<span>Select All</span>");
+            }
+        });
+
+        //2nd click event for header checkbox for select /deselect all
+        $("#cbSelectAll").on("click", function () {
+            var ischecked = this.checked;
+            $('#checkableGrid').find("input:checkbox").each(function () {
+                this.checked = ischecked;
+            });
+        });
+
+
+        //3rd click event for checkbox of each row
+        $("input[name='ids']").click(function () {
+            var totalRows = $("#checkableGrid td :checkbox").length;
+            var checked = $("#checkableGrid td :checkbox:checked").length;
+
+            if (checked == totalRows) {
+                $("#checkableGrid").find("input:checkbox").each(function () {
+                    this.checked = true;
+                });
+            }
+            else {
+                $("#cbSelectAll").removeAttr("checked");
+            }
+        });
+
+    });
+</script>
+
+
+
+@using (Html.BeginForm())
+{
+    //var grid = new WebGrid(@Model.BlockPanelsList, canSort: false);
+    var grid = new WebGrid(Model, canSort: false);
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+             <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Block Panels</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-4">
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline" placeholder="Search by panel" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" name="Command" value="Search">Go</button>
+                                </span>
+                            </div>
+                            <!-- /input-group -->
+
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-1 col-md-1">
+                                         
+
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <div class="pull-right">Total no. records found : @ViewBag.TotalRowCount</div>
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", htmlAttributes: new { id = "checkableGrid" }, footerStyle: "tfoot dataTables_paginate", columns:
+                            grid.Columns
+                            (
+                                grid.Column(format: @<text><input type="checkbox" value="@item.ClientPanel" name="ids" /></text>, header: "{checkall}"),
+                                grid.Column("PanelID", "Panel ID"),
+                                grid.Column("ClientID", "Client ID"),
+                                 grid.Column("Panel_IP", "Panel IP")
+                          ), mode: WebGridPagerModes.Numeric)
+
+
+                    <script type="text/javascript">
+                        function updateGrid() {
+        @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                            }
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+
+        <div class="alert alert-danger" id="divinvalid" role="alert" style="display: none" align="Left">
+            @if (TempData["ErrorMessageBlockPanel"] != null)
+            {      @TempData["ErrorMessageBlockPanel"]
+            }
+        </div>
+        <div class="panel-footer text-center">
+        </div>
+
+        <div class="alert alert-success" role="alert" id="divSuccess" style="display: none" align="Left">
+            @if (TempData["SucessMessageBlockPanel"] != null)
+            {
+                @TempData["SucessMessageBlockPanel"]
+            }
+        </div>
+
+        <span id="progress" class="text-center" style="display: none;">
+            <img src="/images/ajax-loader.gif" alt="Wait" />
+            Wait..
+        </span>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" name="Command" value="Unblock" id="btnUnblock" onclick="return confirm('Are you sure you wish to unblock panels?');" />
+
+        </div>
+    </div>
+}
+
+@*<script>
+    $(document).ready(function () {
+
+        $("#btnUnblock").on("click", function () {
+            debugger;
+            $.ajax({
+                type: "POST",
+                traditional: true,
+                url: '@Url.Action("assigntickets")',
+                //data: { ChkPendingArray: ChkPendingArray, SupervisorName: Supervisor },
+                success: function (data) {
+                    //alert(data.Text);
+                    //location.reload();
+                },
+                error: function (ex) {
+                    alert('Failed to unblock panels.' + ex);
+                }
+            });
+        });
+    });
+</script>    *@

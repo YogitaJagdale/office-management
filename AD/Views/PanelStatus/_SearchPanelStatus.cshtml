@@ -1,0 +1,73 @@
+﻿@model SECU_CAMSPlus_DEV.Models.PanelStatus
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm())
+{
+   
+                       
+         @Html.Hidden( "hdnaccessbit",Session["BinaryAccessBit"], new { @id = "hdnaccessbit" })
+          @Html.Hidden("hdnactivebit", Session["rbtnActive"], new { @id = "hdnactivebit" })   
+      @Html.Hidden("hdnFilterValue", Session["filterValue"], new { @id = "hdnFilterValue" })           
+   
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" name="filter" value="@ViewBag.filter" class="form-control m-bot15" placeholder="Search by panelID and client name" id="txtsearch"/>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                         
+                        @Html.RadioButton("Active", "1", true, new { id = "rboAct" }) Active
+                                  @Html.RadioButton("Active", "0", false, new { id = "rboDeactive" }) Deactive
+                                @Html.RadioButton("Active", "2", false, new { id = "rboAll" }) All                          
+                
+                      <button class="btn btn-success" type="submit" id="btnsearch">Search</button>
+            </div>
+        </div>
+
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-inline PanelStatus">
+                <li><span class="orange"></span>Armed</li>
+                <li><span class="green"></span>Dis-Armed</li>
+                <li><span class="yellow"></span>Disconnected</li>
+                <li><span class="blue"></span>Armed & Faulty	</li>
+                <li><span class="light-blue"></span>Dis-Armed & Faulty</li>
+            </ul>
+        </div>
+    </div>
+}
+  <script>
+    $(document).ready(function () {
+
+        var access = $('#hdnaccessbit').val();
+        var accessbitSearch = access.substr(0, 1);
+
+        if (accessbitSearch == 0) {
+           $('#btnsearch').prop('disabled', true);
+           $('#btnsearch').attr("title", "No Rights To View");
+       }     
+
+        if ($('#hdnactivebit').val() == "1") {
+            $('#rboAct').attr('checked', 'checked')
+        }
+        else if ($('#hdnactivebit').val() == "0") {
+
+            $('#rboDeactive').attr('checked', 'checked')
+        }
+        else if ($('#hdnactivebit').val() == "2") {
+
+            $('#rboAll').attr('checked', 'checked')
+        }
+       
+        if ($('#hdnFilterValue').val() != "") {
+
+            $('#txtsearch').val($('#hdnFilterValue').val());
+        }
+    });
+</script>

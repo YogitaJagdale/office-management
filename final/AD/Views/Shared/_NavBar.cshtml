@@ -1,0 +1,292 @@
+﻿@helper ActiveItem(string actionName, string controllerName, string areaName)
+{
+    if (ViewContext.RouteData.Values["action"].ToString() == actionName &&
+            ViewContext.RouteData.Values["controller"].ToString() == controllerName &&
+            (ViewContext.RouteData.DataTokens["area"] == null || ViewContext.RouteData.DataTokens["area"].ToString() == areaName))
+    {
+    @:active
+ }
+
+}
+
+<script>
+    $(document).ready(function () {
+        var Url = "ShiftChange";
+    $("#btnShiftChange").on("click", function () {
+        debugger;
+        
+        $.ajax({
+            url: Url,
+            data: {  },
+            cache: false,
+            type: "POST",
+            success: function (data) {
+                debugger;
+                if (data.Success) {
+                    var result = data.Result
+                    alert(result);
+                    $.ajax({
+                        url: '@Url.Content("~/")' + "User/LogOut",
+                        data: {},                     
+                        type: "GET",
+                        success: function (data) {
+                            location.reload();
+                        }
+                    
+                    });
+                }
+                else
+                {
+                    var result = data.Result
+                    alert(result);
+                }
+                
+               
+                }
+        });
+        });
+       
+    });
+
+
+</script>
+
+
+<header>
+    @if (Convert.ToString(HttpContext.Current.Session["LoginStatus"]) != null && Convert.ToString(HttpContext.Current.Session["LoginStatus"]) != "")
+    {
+   
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+
+                    <a class="navbar-brand" href="#">
+
+                        <img src="~/Images/camslogo.png" alt="CAMSPlus Logo">
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="@ActiveItem("Index", "Home", null)">@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
+                        <li class="@ActiveItem("Home", "Home", null) dropdown">
+                            @if (HttpContext.Current.Session["UserType"].ToString() == "1")
+                            {
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Master<span class="caret"></span>
+                            </a>
+                            }
+                            <ul class="dropdown-menu multi-column columns-2">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <ul class="multi-column-dropdown">
+                                            <li>@Html.ActionLink("City", "Index", "City", null, null)</li>
+                                            <li>@Html.ActionLink("National Holiday", "Index", "Holiday")</li>
+                                            <li>@Html.ActionLink("Operator Comments", "Index", new { Controller = "Comments", name = "1" })</li>
+                                            <li>@Html.ActionLink("Sensors", "Index", "Sensors")</li>
+                                            <li>@Html.ActionLink("Manufacturer", "Index", "Manufacturer")</li>
+                                            <li>@Html.ActionLink("Make Model", "index", "MakeModel")</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <ul class="multi-column-dropdown">
+
+                                            <li>@Html.ActionLink("Dispatch Vendor", "Index", "DispatchVendor")</li>
+                                            <li>@Html.ActionLink("Panel Service Vendor", "Index", "PanelServiceVendor")</li>
+                                            <li>@Html.ActionLink("Shift", "ShiftMaster", "shift")</li>
+                                            <li>@Html.ActionLink("CRA Agency", "Index", new { Controller = "AgencyMaster", name = "CRA" })</li>
+                                            <li>@Html.ActionLink("HK Agency", "Index", new { Controller = "AgencyMaster", name = "HKA" })</li>
+                                            <li>@Html.ActionLink("MSP Agency", "Index", "MSPVendor")</li>
+
+                                        </ul>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <ul class="multi-column-dropdown">
+
+                                            <li>@Html.ActionLink("QRT Agency", "Index", new { Controller = "AgencyMaster", name = "QRT" })</li>
+                                            <li>@Html.ActionLink("Network Provider", "Index", "NetworkProvider")</li>
+                                            <li>@Html.ActionLink("Installation Vendor", "Index", new { Controller = "AgencyMaster", name = "INS" })</li>
+                                            <li>@Html.ActionLink("Territory Manager", "Index", "TerritoryMaster")</li>
+                                            <li>@Html.ActionLink("Escallation", "Index", "EscalationMaster")</li>
+                                            <li>@Html.ActionLink("Service Partner", "Index", new { Controller = "AgencyMaster", name = "SRV" })</li>
+                                            <li>@Html.ActionLink("Subscription Details", "Index", "Subscription")</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </ul>
+
+                        </li>
+                        <li class="@ActiveItem("Home", "Home", null) dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Configuration<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu multi-column columns-3">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <ul class="multi-column-dropdown">
+
+                                            <li>@Html.ActionLink("Master Template", "Index", "MasterTemplate")</li>
+                                            <li>@Html.ActionLink("Client", "Index", "ClientList")</li>
+                                            <li>@Html.ActionLink("Project", "Index", "Project")</li>
+
+                                            <li>@Html.ActionLink("Project Team", "ProjectTeamIndex", "ProjectTeam")</li>
+                                            <li>@Html.ActionLink("Panel Category", "Index", "SetPanelCategory")</li>
+                                            <li>@Html.ActionLink("Panels", "Index", "Panel")</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <ul class="multi-column-dropdown">
+
+                                            <li>@Html.ActionLink("Dealers", "Index", "Dealer")</li>
+                                            @if (HttpContext.Current.Session["UserType"].ToString() != "7" && HttpContext.Current.Session["UserType"].ToString() != "1")
+                                            {
+                                            <li>@Html.ActionLink("Circles", "Index", "Circle")</li>
+                                            }
+                                                @if (HttpContext.Current.Session["UserType"].ToString() == "7" && HttpContext.Current.Session["UserType"].ToString() != "1")
+                                            {
+                                            <li>@Html.ActionLink("Dashboard Circles", "Index", "DashCircle")</li>
+                                              }
+
+                                            @if (HttpContext.Current.Session["UserType"].ToString() == "1" || HttpContext.Current.Session["UserType"].ToString() == "2" || HttpContext.Current.Session["UserType"].ToString() == "3" || HttpContext.Current.Session["UserType"].ToString() == "4" || HttpContext.Current.Session["UserType"].ToString() == "11" || HttpContext.Current.Session["UserType"].ToString() == "13" || HttpContext.Current.Session["UserType"].ToString() == "14" || HttpContext.Current.Session["UserType"].ToString() == "15" || HttpContext.Current.Session["UserType"].ToString() == "16" || HttpContext.Current.Session["UserType"].ToString() == "17" || HttpContext.Current.Session["UserType"].ToString() == "18")
+                                            {
+                                              <li>@Html.ActionLink("System Maintenance", "Index", "SystemMaintenance")</li>
+                                            }
+                                                @if (HttpContext.Current.Session["UserType"].ToString() == "1")
+                                            {
+                                              <li>@Html.ActionLink("Block Panels", "BlockPanels", "Panel")</li>
+                                            }
+                                            
+                                            <li>@Html.ActionLink("Panel Template", "Index", "PanelTemplate")</li>
+                                            <li>@Html.ActionLink("Bulk Upload", "Upload", "BulkUpload")</li>
+
+                                        </ul>
+                                    </div>
+
+                                </div>
+                            </ul>
+
+                        </li>
+                        <li class="@ActiveItem("Home", "Home", null) dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Monitoring<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>@Html.ActionLink("Ticket Transaction", "Ticketing", "OpenTicket")</li>
+
+                                
+                                    <li>@Html.ActionLink("Search Ticket", "Index", "SearchTickets")</li>
+                                 
+                               
+                                <li>@Html.ActionLink("Panel Message Tracking", "Index", "PanelMessageTrackPartial")</li>
+                                <li>@Html.ActionLink("Panel Status", "Index", "PanelStatus")</li>
+                                <li>@Html.ActionLink("Active Deterrence on Request", "Index", "RequestAD")</li>
+
+                            </ul>
+                        </li>
+                        <li class="@ActiveItem("Home", "Home", null) dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Administrator<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>@Html.ActionLink("Users", "Index", "Admin")</li>
+
+                            </ul>
+                        </li>
+                         <li class="@ActiveItem("Home", "Home", null) dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Brand Hygiene<span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>@Html.ActionLink("CheckList", "Index", "BrandHygieneChecklist")</li>
+                                 <li>@Html.ActionLink("Camera Location", "Index", "BrandHygieneLocation")</li>
+                                 <li>@Html.ActionLink("Site Configuration", "Index", "BrandHygieneSite")</li>
+                                 @*<li>@Html.ActionLink("Monitoring", "Index", "Admin")</li>*@
+
+                            </ul>
+                        </li>
+                        <li>@Html.ActionLink("Change Password", "ChangePassword", "User")</li>
+
+                    </ul>
+
+                    <ul class="nav navbar-nav dropdown-user navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" id="ddlticketCount">
+
+                                @if (HttpContext.Current.Session["UserImage"] != null && HttpContext.Current.Session["UserImage"] != "")
+                                {                            
+                                    <img src= "@Url.Content(HttpContext.Current.Session["UserImage"].ToString())" alt="" class="img-circle user-img"/>
+                                }
+                                else
+                                {
+                                    <img src="~/UserImage/User.jpg" alt="" class="img-circle user-img" />                                 
+                                }
+
+                                @if (HttpContext.Current.Session["LoginID"] != null)
+                                {
+                                    <span class="usernkasa ame">@HttpContext.Current.Session["LoginID"].ToString()</span>
+                                }
+                                else
+                                {
+                                    @Html.Action("Login", "User")           
+                                }
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu dropdownhover-bottom" role="menu">
+                               @* <li><a href="#"><i class="fa fa-ticket"></i>Open Tickets<span class="badge label-orange">@Convert.ToString(HttpContext.Current.Session["OpenTickets"]) </span></a></li>
+                                <li><a href="#"><i class="fa fa-ticket"></i>Closed Tickets<span class="badge badge-green">@Convert.ToString(HttpContext.Current.Session["ClosedTickets"])</span></a></li>*@
+                                <li><a href="#"><i class=" fa fa-user"></i>User Type :@Convert.ToString(HttpContext.Current.Session["User"])</a></li>
+                                <li><a href="#"><i class=" fa fa-calendar-o"></i>Last Login:@Convert.ToString(HttpContext.Current.Session["LastLoginDate"])</a></li>
+                                <li class="shift-chng-btn"><button id="btnShiftChange"><i class=" fa fa-clock-o"></i> Shift Change</button></li>
+                                <li><a href="~/User/LogOut"><i class="glyphicon glyphicon-log-out"></i>Log Out</a></li>
+                             @*   <li id="btnShiftChange"><i class="glyphicon glyphicon-log-out"></i>Shift Change</li>*@
+                            @*   <li> <input class="glyphicon glyphicon-log-out" type="button" value="Shift Change" name="Command" id="btnShiftChange" /></li>*@
+                                 
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+</header>
+    @*<script src="~/Scripts/jquery-1.9.1.js"></script>*@
+    @if ((Session["Project_Status"] != null && Session["Project_In_Process"] != null && ViewContext.RouteData.Values["controller"].ToString() != "Project"))
+    {
+    <script>
+        $(document).ready(function () {
+            debugger;
+            alert('Project was not completed and hence not saved.');
+            $.ajax({
+                //url: "~/Project/DiscardChnages",
+                 url : '@Url.Content("~/")' + "Project/DiscardChnages",
+                data: {  },
+                cache: false,
+                type: "POST",
+                success: function (data) {
+                },
+                error: function (reponse) {
+                    alert("error : " + reponse);
+                }
+            });
+        });
+
+            </script>
+
+     
+    }
+@*       @if (Session["Project_Status"] == "" && Session["Project_In_Process"] != null && (ViewContext.RouteData.Values["controller"].ToString() == "Project" && ViewContext.RouteData.Values["action"].ToString() == "Index"))
+       { 
+        
+          <script>
+              $(document).ready(function () {
+                  debugger;
+                  alert('Project was not completed and hence not saved.');
+                  $.ajax({
+                      //url: "~/Project/DiscardChnages",
+                      url : '@Url.Content("~/")' + "Project/DiscardChnages",
+                      data: {  },
+                      cache: false,
+                      type: "POST",
+                      success: function (data) {
+                      },
+                      error: function (reponse) {
+                          alert("error : " + reponse);
+                      }
+                  });
+              });
+              </script>
+              }*@

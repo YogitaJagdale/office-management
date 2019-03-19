@@ -1,0 +1,376 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.BrandHygieneSite>
+
+
+@{
+    ViewBag.Title = "Brand Hygiene Scheduler :: CAMSPlus";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@*@if (TempData["SchedulerNoRecordMsg"] != null)
+{
+    
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["SchedulerNoRecordMsg"]
+ </div>
+</div>
+}*@
+
+@if (TempData["Success"] != null)
+{
+    
+    <div class="col-md-3 col-md-offset-9">
+      <div  class="alert alert-success alert-dismissible fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">
+	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	@TempData["Success"]
+ </div>
+</div>
+}
+
+<p id="message"></p>
+<input id ="ScheduleID" type="hidden" value ="0">
+@using (Html.BeginForm("", "BrandHygieneSite", FormMethod.Post))
+{
+   var StrscheduleID = "0";        
+    
+    <div id="msg" width="100px" ></div>
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-7 col-md-7">
+                        <h2>Image Scheduler</h2>
+                    </div>                                      
+                </div>                           
+             </div>
+
+            <div class="panel-body">
+                @foreach (var item1 in Model)
+                 {
+                     StrscheduleID  = item1.ScheduleID.ToString();
+                      <div class="row">
+                            <div class="col-lg-12">
+                                <div class="note note-info">
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <h3 class="box-heading">
+                                                @Html.Label("lblSiteID", "SiteID :", new { @class = "ProjectLabel" })
+                                                @Html.Label("lblSiteID", item1.ScSiteID, new { @class = "ProjectLabel", @id = "lblSiteID" })
+                                                @Html.Label(item1.ScClientID.ToString(), new { @class = "form-control hide" ,@id = "lblClientID"})                               
+                                            </h3>
+
+                                        </div>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                    </div>
+                   
+                    <div class="row"> 
+                        <div class="col-xs-12 col-sm-3 col-md-3" >
+                            <div class="form-group">
+                                    <label>Location*</label>
+                                    @Html.DropDownListFor(model => item1.ScCameraLocation, new SelectList(item1.LocationList, "Value", "Text", item1.ScCameraLocationID), "---Select---", new {@onclick = "IsselectedCameraLocation()",  @class = "form-control required", @id = "ddlCameraLoc" })  @*@onclick = "IsselectedCameraLocation()",*@
+                                    @Html.ValidationMessageFor(model => item1.ScCameraLocation,null,new { @class = "valiation",id="errorIsValidCameraLocation" })
+                            
+                             </div>
+                        </div>                                     
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="form-group">
+                                <label>From Time (HH:mm)*</label>
+                                @Html.TextBox("txtTimeFrom", "{HH:mm}", new { type = "time", @class = "form-control required ", @Value = item1.ScTimeFrom.ToString("HH:mm") })
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="form-group">
+                                <label>To Time (HH:mm)*</label>
+                                @Html.TextBox("txtTimeTo", "{HH:mm}", new { type = "time", @class = "form-control required ", @Value = item1.ScTimeTo.ToString("HH:mm") })
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-2">
+                            <div class="form-group">
+                                <label>Image Interval (In min.)*</label>
+                                @Html.DropDownList("ddlImageInterval", ViewData["ImageInterval"] as SelectList, new { @class = "form-control required " })
+
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6 col-md-3 mt-20">
+                            <input class="btn btn-success" type="button" value="Save" id="btnUpdateImageScheduler" onclick ="SaveImageSchedule();"   />
+                            @*<a class="btn btn-warning" href="IndexScheduler">Reset</a>*@
+                            <input class="btn btn-warning" type="reset" value="Reset" onclick ="ChangeButtonText();" />
+                            @*<button class="btn btn-warning" data-dismiss="modal">Cancel</button>*@
+                        </div>
+                    </div>
+                    break;
+                }
+                   
+
+                <div class="table-responsive">
+                    
+                     @foreach (var item1 in Model)
+                     {
+                         if (item1.ScheduleID > 0)
+                         {
+                            <div class="pull-right">Total number of records found : @grid.TotalRowCount</div> 
+                         }
+                         
+                         break;
+                     }
+                    @if (grid.TotalRowCount > 0 && StrscheduleID  != "0")
+                    {
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+
+                        grid.Column("CameraLocation", "Location"),
+                        grid.Column("TimeFrom", "From Time (HH:mm)",format: (item) => string.Format("{0:HH:mm}", item.TimeFrom)),
+                        grid.Column("TimeTo", "To Time (HH:mm)",format: (item) => string.Format("{0:HH:mm}", item.TimeTo)),
+                        grid.Column("ImageInterval", "Image Interval (In min.)"),
+                        
+                        grid.Column(header: "", canSort: false, style: "action",
+                            format: @<text>
+                    
+                                @*@Html.Raw("<a  name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='Edit/" + item.ScheduleID + "' id='" + item.ScheduleID + "''></a>")*@
+
+                                @Html.Raw("<a  name='Edit' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='#' onclick='EditSchedule(" + item.ScheduleID + ")''></a>")
+                    
+
+                                @Html.Raw("<button name='EditNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to edit' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></button>")           
+                                </text>),
+
+                        grid.Column(header: "", format: (item) => Html.ActionLink(" ", "DeleteImageScheduler", new { id = item.ScheduleID },
+                        new { onclick = "return confirm('Do you want to delete this image schedule?'); ", @Name = "Delete", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs", @title = "Delete", data_toggle = "tooltip", data_placement = "right" })),
+                            grid.Column(header: "", canSort: false, style: "action",
+                                        format: @<text>
+                                @* @Html.Raw("<a  name='Delete' data-modal='' data-toggle='tooltip' data-placement='right' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs'></a>")*@
+                               @* @Html.Raw("<button name='DeleteNew' disabled='disabled' data-placement='right' style='display:none' title='No rights to delete' data-original-title='Delete' class='glyphicon glyphicon-trash btn btn-danger btn-xs' ></button>")*@
+                                        </text>)
+                   
+
+     ), mode: WebGridPagerModes.All)
+                    } 
+                </div>
+                <br />
+                <div>
+                    @foreach (var item1 in Model)
+                     {
+                        @Html.ActionLink("Camera Configuration", "BindCameraConfiguration", new { SiteID = Session["BrandHygieneSiteSiteID"], ClientID = Session["BrandHygieneSiteClientID"], SiteLocationID = 0, CameraLocationID = 0 }, htmlAttributes: new { @class = "btn btn-info pull-right", @Id = "btnImageScheduler" })
+                         break;
+                    }
+                 </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    @*<a class="btn btn btn-info pull-right" href="CameraConfiguration" >Camera Configuration</a>*@
+    
+}
+
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        window.setTimeout(function () {
+            $(".AutoHide").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+                var x = document.getElementById("message");
+                x.innerHTML = "";
+            });
+        }, 5000);
+
+
+    });
+
+    function IsselectedCameraLocation() {
+        var ddlCamraLoc = $("#ddlCameraLoc");
+        if (ddlCamraLoc.val() == "") {
+            return false;
+        }
+        else {
+            $("#errorIsValidCameraLocation").html('');
+        }
+    }
+    function ChangeButtonText() {
+        $("#btnUpdateImageScheduler").val("Save");
+        $("#errorIsValidCameraLocation").html('');
+    }
+</script>
+<script>
+    function SaveImageSchedule() {
+        //debugger;
+        //var ClientID = $("#lblClientID").val()
+        //var SiteID = $("#lblSiteID").val()
+        var TimeFrom = $("#txtTimeFrom").val();
+        var TimeTo = $("#txtTimeTo").val();
+        var ImageInterval = $("#ddlImageInterval").val();
+        var CameraLocatioID = $("#ddlCameraLoc").val();
+        var ScheduleID = $("#ScheduleID").val();
+
+        //ImageInterval = ImageInterval - 1;
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        var SiteID = vars["SiteID"];
+        var ClientID = vars["ClientID"];
+        if (CameraLocatioID == "") {
+            $("#errorIsValidCameraLocation").html('Required');
+            return false;
+        }
+        else {
+            $("#errorIsValidCameraLocation").html('');
+        }
+          
+        if (TimeFrom == "") {
+            alert("Invalid from time.");
+            return false;
+        }
+
+        if (TimeTo == "") {
+            alert("Invalid to time.");
+            return false;
+        }
+
+        if (TimeFrom > TimeTo) {
+            alert("Time from should not greater than Time to");
+            return false;
+        }
+        else if (TimeTo < TimeFrom) {
+            alert("Time To should not less than Time From");
+            return false;
+        }
+
+        var diff = (new Date("1900-1-1 " + TimeTo) - new Date("1900-1-1 " + TimeFrom));
+        diff = diff / 60000;
+        if (diff < 1) {
+            alert("The difference between From time and To time can not be less than 1 minutes.");            
+            return false;
+        }
+
+        if (ImageInterval > diff) {
+            alert("Image interval should be equal or less than time diffrence of from time and to time");
+            return false;
+        }
+
+        //var dt1 = new Date(TimeFrom);
+        //var dt2 = new Date(TimeTo);
+        //var diff = new Date(dt2 - dt1);
+        //alert(diff.toString());
+        var x = document.getElementById("Message");
+
+            jQuery.ajax({
+                
+                url: '@Url.Action("AddImageSchedule")',
+                type: "POST",
+                data: {
+                    ClientID: ClientID,
+                    SiteID: SiteID,
+                    CameraLocationID: CameraLocatioID,
+                    TimeFrom: TimeFrom,
+                    TimeTo: TimeTo,
+                    ImageInterval: ImageInterval,
+                    ScheduleID: ScheduleID,
+                },
+                success: function (data) {
+                    //debugger;
+                    //alert(data);
+                    if (data == "Image schedule added successfully" || data == "Image schedule updated successfully") {
+                        //alert("got here");
+                        location.reload();
+                    }
+                    else {
+                        //alert(data);
+                        ShowMessage(data);
+
+                        //setTimeout(function () {
+                        //    $('#message').fadeOut('fast');
+                        //}, 5000);
+
+                        //setTimeout(function () {
+                        //    $("#message").fadeTo(500, 0).slideUp(500, function () {
+                        //        //$(this).remove();
+                        //        var x = document.getElementById("message");
+                        //        x.innerHTML = '';
+                        //    });
+                        //}, 5000);
+
+                    }
+                },
+                error: function (reponse) {
+                    //debugger;
+
+                    //alert("Error!!")
+                   
+                    ShowMessage("Error while processing...");
+                    return false;
+                }
+            });
+    }
+    function ShowMessage(message) {
+        //alert(message);
+        var x = document.getElementById("message");
+        var txt = '<div class="col-md-3 col-md-offset-9">';
+        txt = txt + '<div  class="alert alert-success fade in AutoHide" style ="display:block; margin: 15px 0 0 0;">';
+        txt = txt + '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+        txt = txt + message + '. </div> </div>';
+        x.innerHTML = txt;
+
+
+        
+    }
+
+    function EditSchedule(id) {
+        //debugger;
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetImageScheduleByID")',
+            data: { id: id },
+            success: function (returndata) {
+                //window.alert(' success : ' + returndata);
+                var str = returndata;
+                
+                var res = str.split("$");
+                var interval = new Number(res[4])+ 0;
+
+                //alert(res[4]);
+                //alert(interval);
+                
+                $("#ScheduleID").val(res[0]);
+                $("#ddlCameraLoc").val(res[1]);
+                $("#txtTimeFrom").val(res[2]);
+                $("#txtTimeTo").val(res[3]);
+                $("#ddlImageInterval").val(interval);
+                $("#btnUpdateImageScheduler").val("Update");
+                $("#errorIsValidCameraLocation").html('');
+                //var id1 = $("#ScheduleID").val();
+                //alert(id1);
+            },
+            error: function (reponse) {
+                //debugger;
+
+                alert("Error!!")
+
+                //ShowMessage("Error while processing...");
+                return false;
+            }
+        });
+    }
+
+   
+ 
+    
+</script>

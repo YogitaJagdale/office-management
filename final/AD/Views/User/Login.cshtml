@@ -1,0 +1,165 @@
+﻿@model SECU_CAMSPlus_DEV.Models.UserInfo.LoginUser
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <link href="~/Content/animate.min.css" rel="stylesheet" />
+</head>
+<body class="loginwrapper">
+
+    <script src="~/Scripts/jquery-1.12.0.min.js"></script>
+    <script src="~/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/wow.min.js"></script>  
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>    
+     <script type="text/javascript">
+        new WOW().init();
+    </script>
+
+   
+
+    @if (TempData["ChangePwdSuccess"] != null)
+    {
+    <script>
+        alert('@TempData["ChangePwdSuccess"]');
+        TempData["ChangePwdSuccess"] = null;
+    </script>
+    }
+
+    @if (TempData["ChangePwdFail"] != null)
+    {
+    <script>
+        alert('@TempData["ChangePwdFail"]');
+        TempData["ChangePwdFail"] = null;
+    </script>
+    }
+     @*Forgot  password*@
+     @if (TempData["ForgotSuccess"] != null)
+    {
+    <script>
+        alert('@TempData["ForgotSuccess"]');       
+    </script>
+    }
+    @*  @if (TempData["ForgotFailure"] != null)
+    {
+    <script>
+        alert('@TempData["ForgotFailure"]');
+       
+    </script>
+    }*@
+    @if (TempData["LoginFailure"] != null)
+    {
+        <script> $(document).ready(function () { $("#divinvalid").show(); });</script>// this script to show failed alerts
+    }
+    @if (TempData["LoginSuccess"] != null)
+    {
+        <script> $(document).ready
+     (
+     function () {
+         $("#divSuccess").show();
+     });
+
+        </script>// this script to show failed alerts
+    }
+   
+    <script>        
+        function show() {
+            $('#btnSubmit').on("click", function (e) {
+                var msg = TempData["AlertMessage"]
+                if (msg == "") {
+                    e.preventDefault();
+                    alert(msg);
+                }
+            });
+        }    
+    </script>
+
+    @using (Html.BeginForm("Login", "User", FormMethod.Post))
+    {
+      
+            @*New login page code here*@
+            @*<div id="bg">*@@Html.ValidationMessage("error1")@*</div>*@
+       
+        <div class="login-overlay"></div>
+        <div class="loginpanel"></div>
+        <!--login Box Start here-->
+        <div class="panel signin animated slideInDown">
+            <div class="panel-heading">
+                <div class="text-center">
+                    <img src="~/Images/loginpage-logo.png" alt="CAMSPlus Logo" />
+                </div>
+            </div>
+            <h4 class="panel-title">
+                <strong>Welcome to CAMSPlus</strong> </h4>
+
+            <div class="panel-body">
+                <form id="form1" runat="server" enableviewstate="false" action="#">
+                    <div id="divinvalid" style="display: none;" class="alert alert-danger alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        @if (TempData["LoginFailure"] != null)
+                        {      @TempData["LoginFailure"]
+
+                        }
+                    </div>
+
+                    <div id="divSuccess" style="display: none;" class="alert alert-danger alert-dismissible fade in" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                        @if (TempData["LoginSuccess"] != null)
+                        {     @TempData["LoginSuccess"]
+                        }
+                    </div>
+                    <div class="form-group mb10">
+                        @Html.LabelFor(model => model.loginID, new { @class = "sr-only" })
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            @Html.TextBoxFor(model => model.loginID, new { @class = "form-control", @placeholder = "Enter Username" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.loginID)                      
+                    </div>
+                    <div class="form-group nomargin">
+                        @Html.LabelFor(model => model.Password, new { @class = "sr-only" })
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            @Html.TextBoxFor(model => model.Password, new { @class = "form-control", @Type = "password", @placeholder = "Enter Password" })
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Password)                       
+                    </div>
+                    <div class="form-group">
+                        <p class="shift"><strong>@Html.Label("Shift", new { @class = "" })</strong> 
+                            @Html.DisplayFor(o => o.lblShiftID, new { @CssClass = "SuccessMessage" })</p>
+                             @Html.HiddenFor(o => o.lblShiftID)
+                         </div>
+                    <div class="form-group">
+                        <button id="btnSubmit"  class="btn btn-warning  btn-block">Sign In</button>                   
+                    </div>
+                    <div class="form-group">                      
+                        @Html.ActionLink("Forgot password? Reset now!", "ForgotPassword", null, htmlAttributes: new { @class = "btn btn-default btn-stroke btn-sign btn-stroke-thin btn-block" })
+                    </div>
+                    <div class="form-group">
+                        @Html.DisplayFor(model => model.lblMessage, new { @class = "errorMessage", @ConsoleColor = "Red" })                       
+                    </div>
+                </form>
+            </div>
+        </div>
+      
+           
+    }
+</body>
+
+</html>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

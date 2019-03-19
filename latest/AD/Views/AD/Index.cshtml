@@ -1,0 +1,148 @@
+﻿@model IList<SECU_CAMSPlus_DEV.Models.ADinfo>
+@{
+    Layout = null;
+    ViewBag.Title = "AD :: CAMSPlus";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script> 
+    <script src="~/Scripts/bootstrap.js"></script>  
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />  
+    <script src="~/Scripts/AD.js"></script> 
+     <meta http-equiv="refresh" content="5" />
+    <style>  
+    .imageclass  
+    {  
+        max-width: 100%;  
+        -webkit-border-radius: 5px;  
+        -moz-border-radius: 5px;  
+        border-radius: 5px;  
+    }  
+      
+    .thumbmain  
+    {  
+        margin: 3px;  
+        border: 1px solid #A0ACC0;  
+        height: auto;  
+        float: left;  
+        text-align: center;  
+    }  
+      
+    .thumbimg  
+    {  
+        display: inline;  
+        margin: 5px;  
+        border: 1px solid #A0ACC0;  
+    }  
+</style> 
+</head>
+<body>
+    <div class="container">  
+  
+  
+  
+<div class="main">  
+<div style="float:right;">  
+    @if (Session["LoginID"] != null)  
+            {  
+                <text>  
+                    Welcome @Session["LoginID"].ToString()   @System.DateTime.Now.ToString() 
+                </text>  
+            }  
+  
+     
+</div>  
+    <div id="divAD">
+        @using (Ajax.BeginForm("Index", "AD", FormMethod.Post, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "divAD" }))
+{
+            <table style="border: solid 2px Green; padding: 5px; width: 100%;">  
+                <tr>  
+                     
+                </tr>  
+                <tr>  
+                    <td>  
+                        <table>  
+                            @{           
+                                const int ShowColumn = 3;  
+                                int OldRecords = 0;  
+                                var items = Model.Skip(OldRecords).Take(ShowColumn);  
+  
+                                while (items.Count() > 0)  
+                                {  
+                                <tr>  
+                                                @foreach (var item in items)  
+            {  
+                <td width="450">  
+                    <table class="thumbmain">  
+                        <tr>  
+                            <td>  
+                                <img src="~/AD/RetrieveImage/@item.SrNo" width="120" height="120" class="imageclass" />  
+                            </td>  
+                        </tr>  
+                        <tr>  
+                            <td style="text-align: center; font-weight: bold; color: Teal">@item.TicketID  
+                            </td>  
+                        </tr>  
+                    </table>  
+                </td>  
+            }  
+                                </tr>  
+                                    OldRecords += ShowColumn;  
+                                    items = Model.Skip(OldRecords).Take(ShowColumn);  
+                                }  
+                            }  
+                        </table>  
+                    </td>  
+                </tr>  
+            </table> 
+}
+    </div>
+    </div>  
+<script src="~/Scripts/jquery.validate.min.js"></script>  
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>  
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">  
+    <div class="modal-dialog">  
+            <div class="modal-content">  
+                <div class="modal-header">  
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                    <button type="button" class="close" data-dismiss="modal">×</button>  
+                      
+                </div>  
+                <div class="modal-body">  
+
+                    <form>  
+
+                        @Html.Hidden("id", "", new { @class = "hiddenid" })
+                        <div class="form-group">  
+                                                        <label for="SrNo">Sr. No.</label>  
+                            <input type="text" class="form-control" id="SrNo" placeholder="SrNo" /> 
+                            </div>
+                        <div class="form-group">  
+                            <img  id="DvrImage" width="140" /> 
+                        </div>  
+                        <div class="form-group">  
+                          
+                           
+                            <input type="text" class="form-control" id="TicketNo" placeholder="TicketNo"/>  
+                        </div>  
+ 
+                    </form>  
+                </div>  
+                <div class="modal-footer">  
+                    <button type="button" class="btn btn-primary" id="btnAdd" onclick="return Add();">Add</button>  
+                    <button type="button" class="btn btn-primary" id="btnDelete" style="display:none;" onclick="Delete();">Delete</button> 
+                    <button type="button" class="btn btn-primary" id="btnUpdate" style="display:none;" onclick="Update();">Update</button>  
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>  
+                </div>  
+            </div>  
+        </div>    
+    </div>
+</body>
+</html>

@@ -1,0 +1,416 @@
+﻿@model IList<SECU_CAMSPlus_DEV.Models.Project>
+
+@{
+    ViewBag.Title = "Project";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@if (TempData["ErrAddProject"] != null)
+{
+    <script>
+        $(document).ready(function () {
+            //  $("#divSuccess").show();
+            var msg = "@TempData["ErrAddProject"]";
+            alert(msg);
+        });
+    </script>// this script to show successslerts
+}
+<script>
+    $(document).ready(function () {
+
+
+
+        $(".zone").keydown(function (e) {
+            // Allow: backspace, delete, tab, escape, enter and .
+            if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+                // Allow: Ctrl+A, Command+A
+                (e.keyCode == 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+                // Allow: home, end, left, right, down, up
+                (e.keyCode >= 35 && e.keyCode <= 40)) {
+                // let it happen, don't do anything
+                return;
+            }
+            // Ensure that it is a number and stop the keypress
+            if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+                e.preventDefault();
+            }
+        });
+        $("#btnadd").on("click", function () {
+            var status = true;
+            var errors = "";
+            var selected = "0";
+            $('.table >  tbody  > tr').each(function (index) {
+
+
+
+                var id = $(this)[0].id;
+                console.log(id);
+                if ($('#chk' + id).prop('checked') == true) {
+                    selected++;
+                    if (index == 0) {
+                        var zone = $('#txtzone' + id).val();
+                        if (zone != "") {
+
+                            if (zone.length < 3) {
+
+                                errors += "Zone number should contain 3 digits.<br/>";
+                                $('#txtzone' + id).focus();
+                                status = false;
+                                return false
+
+                            } else {
+                                //   $('#txtzone' + id).numeric();
+                                var value = $('#txtzone' + id).val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                                var intRegex = /^\d+$/;
+                                if (!intRegex.test(value)) {
+                                    errors += "Zone no must be numeric.<br/>";
+                                    status = false;
+                                }
+                            }
+                        } else {
+                            errors += "Zone no can not be blank.</br />";
+                            status = false;
+                        }
+                        console.log(index);
+                        if ($("#txtlocation" + id).val() == "" && $("#txtdescription" + id).val() == "") {
+                            errors += "Sensor location and description can not be blank.<br/>";
+                            status = false;
+                            $("#txtlocation" + id).focus()
+                            return false
+
+                        }
+                       else if ($("#txtlocation" + id).val() == "") {
+                            errors += "Sensor location can not be blank.<br/>";
+                            status = false;
+                            $("#txtlocation" + id).focus()
+                            return false
+
+                        }
+                        else if ($("#txtdescription" + id).val() == "") {
+                            errors += "Sensor description can not be blank.<br/>";
+                            status = false;
+                            $("#txtdescription" + id).focus();
+                            return false
+                        }
+                    }
+                    else if (index % 5 == 0) {
+                      //  console.log(index);
+                        var zone = $('#txtzone' + id).val();
+                        if (zone != "") {
+
+                            if (zone.length < 3) {
+
+                                errors += "Zone number should contain 3 digits.<br/>";
+                                $('#txtzone' + id).focus();
+                                status = false;
+                                return false
+
+                            } else {
+                                //   $('#txtzone' + id).numeric();
+                                var value = $('#txtzone' + id).val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+                                var intRegex = /^\d+$/;
+                                if (!intRegex.test(value)) {
+                                    errors += "Zone no must be numeric.<br/>";
+                                    status = false;
+                                }
+                            }
+                        } else {
+                            errors += "Zone no can not be blank.</br />";
+                            status = false;
+                        }
+                        if ($("#txtlocation" + id).val() == "" && $("#txtdescription" + id).val() == "") {
+                            errors += "Sensor location and description can not be blank.<br/>";
+                            status = false;
+                            $("#txtlocation" + id).focus()
+                            return false
+
+                        }
+                        else if ($("#txtlocation" + id).val() == "") {
+                            errors += "Sensor location can not be blank.<br/>";
+                            status = false;
+                            $("#txtlocation" + id).focus()
+                            return false
+
+                        }
+                        else if ($("#txtdescription" + id).val() == "") {
+                            errors += "Sensor description can not be blank.<br/>";
+                            status = false;
+                            $("#txtdescription" + id).focus();
+                            return false
+                        }
+                    }
+
+                    if ($('#chksch' + id).prop('checked') == true) {
+                        if (index == 0) {
+
+                            if ($("#" + id + "_TimeFrom")[0].value == "") {
+                                errors += "Time from can not be blank.<br/>";
+                                // alert("Sensor location can not be blank.");
+                                status = false;
+                                $(id + "_TimeFrom").focus()
+                                return false
+
+                            }
+                            if ($("#" + id + "_TimeTo")[0].value == "") {
+                                errors += "Time to can not be blank.<br/>";
+                                // alert("Sensor location can not be blank.");
+                                status = false;
+                                $(id + "_TimeFrom").focus()
+                                return false
+
+                            }
+                        }
+                        else if (index % 5 == 0) {
+
+                            if (("#" + id + "_TimeTo")[0].value == "") {
+                                errors += "Time to can not be blank.<br/>";
+                                status = false;
+                                $(id + "_TimeFrom").focus()
+                                return false
+
+                            }
+                            if ($("#" + id + "_TimeTo")[0].value == "") {
+                                errors += "Time to can not be blank.<br/>";
+                                // alert("Sensor location can not be blank.");
+                                status = false;
+                                $(id + "_TimeFrom").focus()
+                                return false
+
+                            }
+
+                        }
+                    }
+
+                }
+
+
+                //index = index + 5;
+            });
+            if (selected == 0) {
+                alert("Please select atleast one sensor.");
+                status = false;
+                return false
+            }
+            if (status == true) {
+                $("form")[0].submit();
+            }
+            else {
+                $('#divval').html(errors);
+            }
+
+        });
+
+    });
+
+</script>
+
+
+@using (Html.BeginForm("NewTemplateStep1", "Project", FormMethod.Post, null))
+{
+
+    //  @Html.ValidationSummary(false, null, htmlAttributes: new { @class = "valiation" })
+
+    @Html.AntiForgeryToken()
+
+    <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>View Project</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="note note-info margin-top0 ">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3 class="box-heading">@Html.Label("lblprojectname", Convert.ToString(Session["ProjectName"]), new { @class = "ProjectLabel" })</h3>
+                                    <p>Inherit Sensors From Template with scheduler, camera and SMS alerts settings</p>
+
+                                    @if (Convert.ToString(Session["strSensors"]) != "")
+                                    {
+                                        <p>Configured sensors :  @Html.Label(Convert.ToString(Session["strSensors"]))  </p>
+           
+                                    }
+                                    @if (Convert.ToString(Session["ConfigZones"]) != "" && Session["ZoneNotInProject"] == "Yes")
+                                    {
+                                        <p>Configured sensors :  @Html.Label(Convert.ToString(Session["ConfigZones"]))  </p>
+           
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
+
+                <div id="divval" class="valiation"></div>
+
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+
+                                        <th>Select
+                                        </th>
+                                        <th>Zone No.
+                                        </th>
+                                        <th>Sensor Type*
+                                        </th>
+                                        <th>Location*
+                                        </th>
+                                        <th>Description*
+                                        </th>
+                                        <th>Scheduler
+                                        </th>
+                                        <th style="width:118px;">Camera
+                                        </th>
+                                        <th>SMS
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Count; i++)
+                                    {                    
+                                        <tr id=@Model[i].TemplateID >
+
+                                            <td>
+                                                @Html.CheckBoxFor(x => x[i].SelectBool, htmlAttributes: new { @id = "chk" + @Model[i].TemplateID })
+                                            </td>
+
+
+                                            <td>
+                                                @Html.TextBoxFor(m => m[i].ZoneNo, htmlAttributes: new { @class = "form-control zone", @style = "width: 40%;", @required = "Required", @id = "txtzone" + @Model[i].TemplateID, @maxlength="3" })
+                                            </td>
+                                            <td style="color: #E6560F; font-weight: 600;">
+                                                @Html.DisplayFor(m => m[i].SensorType, new { @class = "form-control required " })
+                                                @Html.HiddenFor(m => m[i].SensorType, new { @class = "form-control required " })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(m => m[i].SensorLocation, htmlAttributes: new { @class = "form-control ", @required = "Required", @id = "txtlocation" + @Model[i].TemplateID })
+
+                                            </td>
+                                            <td>
+
+                                                @Html.TextBoxFor(m => m[i].ZoneDescription, new { @class = "form-control required", @required = "Required", @id = "txtdescription" + @Model[i].TemplateID })
+
+                                            </td>
+                                            <td>
+                                                @Html.CheckBoxFor(x => x[i].SchedulerBool, new { @class = "chk", @id = "chksch" + @Model[i].TemplateID })
+                                                @*   @Html.CheckBox("chkScheduler", Model[i].SchedulerBool, new { @class = "chk" })*@
+                                            </td>
+                                            <td>
+                                                @Html.DropDownListFor(x => x[i].CameraNo,
+                         new SelectList(ViewBag.CameraList, "Value", "Text", Model[i].CameraNo), new { @class = "form-control required", @style = "width: 70%;" })
+                                            </td>
+                                            <td>
+
+                                                @Html.CheckBoxFor(x => x[i].SMSBool)
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="10" style="padding: 0px;">
+
+                                                <div id="showscheduler" style="@( Model[i].SchedulerBool ? "display:block" : "display:none") ">
+                                                    <table class="table">
+                                                        <tr>
+                                                            <td>Siren
+                                                            </td>
+                                                            <td>
+                                                                @Html.RadioButtonFor(m => Model[i].SirenBool, true) ON
+                                                                        @Html.RadioButtonFor(m => Model[i].SirenBool, false) OFF
+                                                            </td>
+                                                            <td>Raise Ticket
+                                                            </td>
+                                                            <td>
+                                                                @Html.RadioButtonFor(m => Model[i].RaiseTicketBool, true) ON
+                                                                        @Html.RadioButtonFor(m => Model[i].RaiseTicketBool, false) OFF
+                                                            </td>
+                                                            <td>Send Alert
+                                                            </td>
+                                                            <td>
+                                                                @Html.RadioButtonFor(m => Model[i].SendAlertBool, true) ON
+                                                                        @Html.RadioButtonFor(m => Model[i].SendAlertBool, false) OFF
+                                                            </td>
+                                                            <td>Send Video
+                                                            </td>
+                                                            <td>
+                                                                @Html.RadioButtonFor(m => Model[i].SendVideoBool, true) ON
+                                                                        @Html.RadioButtonFor(m => Model[i].SendVideoBool, false) OFF
+                                                            </td>
+
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Weekdays</td>
+                                                            <td>@Html.TextBoxFor(m => m[i].TimeFrom, "{0:HH:mm:ss}", new { step="1",type = "time", @id = Model[i].TemplateID + "_TimeFrom", @Value = Model[i].TimeFrom.ToString("HH:mm:ss"), @class = "form-control required" })</td>
+                                                            <td>to</td>
+                                                            <td>@Html.TextBoxFor(m => m[i].TimeTo, "{0:HH:mm:ss}", new { step="1",type = "time", @id = Model[i].TemplateID + "_TimeTo", @Value = Model[i].TimeTo.ToString("HH:mm:ss"), @class = "form-control required" })</td>
+
+                                                            <td colspan="4"></td>
+                                                        </tr>
+                                                    </table>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            @Html.HiddenFor(m => m[i].ProjectName, new { @class = "form-control required" })
+                                            @Html.HiddenFor(m => m[i].ProjectID, new { @class = "form-control required" })
+                                            @Html.HiddenFor(m => m[i].PanelType, new { @class = "form-control required" })
+
+                                            <td colspan="12"></td>
+                                        </tr>@*
+                                if (Model[i].ZoneNo != null )
+                                {
+                                          @Html.ValidationMessageFor(m => m[i].SensorLocation, "This field can not be blank", new { @class = "valiation" })  
+                                
+                     
+                            }*@
+                                
+                                
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-footer text-center">
+                <input class="btn btn-success" type="button" value="Add" id="btnadd" />
+                @if (Convert.ToString(Session["ZoneNotInProject"]) == "Yes")
+                {
+                    <a class="btn btn-warning" id="btncancel1" href="BindTemplate">Cancel</a>
+                }
+                else
+                {
+                    <a class="btn btn-warning" id="btncancel2" href="Index">Cancel</a>
+                }
+            </div>
+        </div>
+    </div>
+
+}
+
+
+
+
+<script>
+
+
+
+
+    $(document).ready(function () {
+        //$(".chk").on("change", function (a) { console.log($(this).parent().find("#showscheduler").toggle()) });
+        $(".chk").on("change", function (a) { console.log($(this).parent().parent().next().find("#showscheduler").toggle()) });
+    });
+</script>

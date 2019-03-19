@@ -1,0 +1,185 @@
+﻿@model IEnumerable<SECU_CAMSPlus_DEV.Models.UsersList>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["Message"]');
+
+        $('#btnCreate').click(function () {
+            window.location.href = 'Create';
+            return false;
+        });
+
+        function empFormSubmit() {
+            var rbtAdmin = { "rbtAdmin": $("#rbtAdmin").val() };
+            alert("Hello! I am an alert box!!");
+            $.ajax({
+                url: '/UsersList/Index',
+                type: "POST",
+                dataType: 'application/json; charset=utf-8',
+                data: rbtAdmin,
+                beforeSend: function () {
+                },
+                success: function (data, status, jqXHR) {
+
+                },
+                error: function (jqXHR, status, err) {
+
+                },
+                complete: function (jqXHR, status) {
+
+                }
+            });
+        }
+        //);
+
+    </script>
+}
+
+
+@using (Html.BeginForm("Index", null, FormMethod.Get))
+{
+    var grid = new WebGrid(Model, canSort: true, rowsPerPage: 10);       
+       <div class="col-lg-12 animated fadeIn margin-top">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>User</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-md-6">
+                        @ViewBag.RbtActiveClient
+                        @{Html.RenderAction("RbtDetails", "UsersList"); }
+                    </div>
+                    <div class="col-xs-12 col-md-5">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <i class="fa fa-search"></i>
+                                <input type="text" name="filter" value="@ViewBag.filter" class="form-control" style="display: inline"
+                                     placeholder="Search by Company Name or Address" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit" value="Create">Go</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+               <div class="col-xs-12 col-md-1" id="divnewadd">
+                <a class="btn btn-success pull-right" href="~/UsersList/Create" id="btnCreate"> <span class="glyphicon glyphicon-plus"></span>&nbsp;Add</a>
+                <a class="btn btn-success" id="hidebtnCreate" style="display:none" ><i class="fa fa-plus"></i>&nbsp;Add</a>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="table-responsive">
+                    @grid.GetHtml(tableStyle: "table table-hover table-striped", footerStyle: "tfoot dataTables_paginate", columns:
+                grid.Columns
+                (
+                   grid.Column("ULoginID", "Login ID"),
+                   grid.Column("UserName", "User"),
+                   grid.Column("UserType", "User Type"),
+                   grid.Column("CellNumber", "Mobile No"),
+                   grid.Column("Address", "Address"),
+                   grid.Column("Email", "Email Id"),
+                   grid.Column(header: "", canSort: false, style: "action",
+                format: @<text>
+
+                 @Html.Raw("<a name='Edit' data-toggle='tooltip' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs' href='/UsersList/Edit/" + item.ULoginID + "'> </a>")
+                 @Html.Raw("<a name='EditHide' data-toggle='tooltip' style='display:none' data-placement='right' data-original-title='Edit' class='glyphicon glyphicon-edit btn btn-success btn-xs'></a>")
+
+                  </text>),
+                    
+                grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Delete", new { id = item.ULoginID },
+                 new { onclick = "return confirm('Are you sure you wish to Delete this User Details?');  ",@Name = "Delete", 
+                 @class = "glyphicon glyphicon-trash btn btn-danger btn-xs" })),
+                        
+                 grid.Column(header: "", format: (item) => Html.ActionLink(" ", "Index", new {  },
+            new { @Name = "DeleteHide", @class = "glyphicon glyphicon-trash btn btn-danger btn-xs",@style="display:none"}
+                ))), mode: WebGridPagerModes.Numeric)
+
+             <script type="text/javascript">
+                        function updateGrid()
+                        {
+                            @Html.Raw(HttpUtility.HtmlDecode(grid.GetContainerUpdateScript("/?page=" + (grid.PageIndex + 1)).ToString()))
+                        }
+                    </script>
+
+                </div>
+            </div>
+         
+        </div>
+    </div>
+    <div class="clearfix"></div>    
+
+}
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        debugger;
+        var UserTypes = '@ViewData["rbtnUserTypes"]';
+        if (UserTypes != null)
+        {
+            $('input[value="' + UserTypes + '"]:radio').attr('checked', true);
+        }
+        else if (UserTypes == 'Admin') {
+            $('input[value="Admin"]:radio').attr('checked', true);
+        }
+        var Active = '@ViewData["Active"]';
+        if (Active != null) {
+            $('input[value="' + Active + '"]:radio').attr('checked', true);
+        }
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function ()
+    {
+        var res = '@ViewBag.NewAdd';
+        if (res == "False" || res == "false")
+        {
+            $('#btnCreate').hide();
+            $('#hidebtnCreate').show();
+            $('#hidebtnCreate').attr('disabled', true);
+            $('#hidebtnCreate').attr("title", "No Rights To Add");
+        }
+        var allowEdit = '@ViewBag.AllowEdit'
+        if (allowEdit == "False" || allowEdit == "false")
+        {
+            $('[name=Edit]').hide();
+            $('[name=EditHide').show();
+            $('[name=EditHide').attr('disabled', true);
+            $('[name=EditHide').attr("title", "No Rights To Edit");
+        }
+        var allowDelete = '@ViewBag.Delete'
+        if (allowDelete == "False" || allowDelete == "false")
+        {
+            $('[name=Delete]').hide();
+            $('[name=DeleteHide]').show();
+            $('[name=DeleteHide]').attr('disabled', true);
+            $('[name=DeleteHide').attr("title", "No Rights To Delete");
+        }
+    });
+</script>
+
+@section scripts{
+    @Scripts.Render("~/scripts/Popup.js")
+}
